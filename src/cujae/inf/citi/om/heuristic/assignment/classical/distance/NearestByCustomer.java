@@ -1,0 +1,111 @@
+package cujae.inf.citi.om.heuristic.assignment.classical.distance;
+
+import java.util.ArrayList;
+
+import cujae.inf.citi.om.heuristic.output.Cluster;
+import cujae.inf.citi.om.heuristic.output.Solution;
+import cujae.inf.citi.om.problem.input.Customer;
+import cujae.inf.citi.om.problem.input.InfoProblem;
+import libmatrix.cujae.inf.citi.om.matrix.NumericMatrix;
+import libmatrix.cujae.inf.citi.om.matrix.RowCol;
+
+/*Clase que modela como asignar los clientes a los depósitos considerando el orden de la lista de clientes y se parte del criterio de cercanía a los depósitos*/
+
+public class NearestByCustomer extends ByDistance {
+
+	public NearestByCustomer() {
+		super();
+	}
+
+	@Override
+	public Solution toClustering() {
+    	Solution solution = new Solution();		
+		
+    	ArrayList<Cluster> listClusters = initializeClusters(); 
+		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(InfoProblem.getProblem().getCustomers());
+        NumericMatrix costMatrix = new NumericMatrix(InfoProblem.getProblem().getCostMatrix());
+		int totalCustomers = listCustomersToAssign.size();
+        int totalDepots = InfoProblem.getProblem().getDepots().size();
+		
+        RowCol rcBestDepot = null;
+        int countTry = 0;  
+        
+        int idDepot = -1;
+        int posDepot = -1;
+        double capacityDepot = 0.0;
+
+		int posCustomer = 0;
+        double requestCustomer = 0.0;
+		
+		int posCluster = -1;
+		double requestCluster = 0.0;
+		
+		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty()) && (!costMatrix.fullMatrix(totalCustomers, 0, (totalCustomers + totalDepots - 1), (totalCustomers - 1), Double.POSITIVE_INFINITY)))
+		{	
+			rcBestDepot = costMatrix.indexLowerValue(totalCustomers, posCustomer, (totalCustomers + totalDepots - 1), posCustomer);
+			
+			posDepot = (rcBestDepot.getRow() - totalCustomers);
+			idDepot = InfoProblem.getProblem().getListIDDepots().get(posDepot);
+			capacityDepot = InfoProblem.getProblem().getTotalCapacityByDepot(InfoProblem.getProblem().getDepotByIDDepot(idDepot));
+			
+			requestCustomer = listCustomersToAssign.get(0).getRequestCustomer();
+			
+			costMatrix.setItem(rcBestDepot.getRow(), rcBestDepot.getCol(), Double.POSITIVE_INFINITY);
+			
+			posCluster = findCluster(idDepot, listClusters);
+		
+			if(posCluster != -1)
+			{
+				requestCluster = listClusters.get(posCluster).getRequestCluster();
+				
+				if(capacityDepot >= (requestCluster + requestCustomer)) 
+				{
+					requestCluster += requestCustomer;
+
+					listClusters.get(posCluster).setRequestCluster(requestCluster);
+					listClusters.get(posCluster).getItemsOfCluster().add(listCustomersToAssign.get(0).getIDCustomer());
+
+					listCustomersToAssign.remove(0);
+					posCustomer++;
+
+					if(countTry != 0)
+						countTry = 0;
+				} 
+				else 
+				{
+					countTry++;
+
+					if(countTry >= listClusters.size())
+					{
+						countTry = 0;
+						
+						solution.getUnassignedItems().add(listCustomersToAssign.get(0).getIDCustomer());
+						listCustomersToAssign.remove(0);
+						posCustomer++;
+					}
+				}
+				
+				if(isFullDepot(listCustomersToAssign, requestCluster, capacityDepot))
+				{
+					if(!(listClusters.get(posCluster).getItemsOfCluster().isEmpty()))
+						solution.getClusters().add(listClusters.remove(posCluster));
+					else
+						listClusters.remove(posCluster);
+
+					costMatrix.fillValue(rcBestDepot.getRow(), 0, rcBestDepot.getRow(), (totalCustomers - 1), Double.POSITIVE_INFINITY);
+				}
+			}
+		}
+		
+		if(!listCustomersToAssign.isEmpty())					
+			for(int j = 0; j < listCustomersToAssign.size(); j++)	
+				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());
+
+		if(!listClusters.isEmpty())
+			for(int k = 0; k < listClusters.size(); k++)
+				if(!(listClusters.get(k).getItemsOfCluster().isEmpty()))
+					solution.getClusters().add(listClusters.get(k));
+
+		return solution;
+	}
+}
