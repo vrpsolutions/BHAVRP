@@ -1,7 +1,3 @@
-"""
-Enumerado que indica los tipos de m�todos de asignaci�n
-"""
-
 from enum import Enum
 
 class AssignmentType(Enum):
