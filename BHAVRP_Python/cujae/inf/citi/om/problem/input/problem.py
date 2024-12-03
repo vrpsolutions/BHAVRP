@@ -3,7 +3,7 @@ from customer import Customer
 from depot import Depot
 from fleet import Fleet
 from location import Location
-from ...utils.distance import Distance, DistanceType
+from ...controller.utils import Distance, DistanceType
 from ...controller.utils import Tools
 import numpy as np
 
