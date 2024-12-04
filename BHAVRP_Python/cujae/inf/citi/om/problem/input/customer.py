@@ -1,3 +1,5 @@
+from location import Location
+
 class Customer:
     
     """
@@ -6,31 +8,30 @@ class Customer:
     :param request_customer: Solicitud del cliente (carga o demanda).
     :param location_customer: Ubicación del cliente. 
     """
-    def __init__(self, id_customer, request_customer, location_customer):
+    def __init__(
+        self, 
+        id_customer: int, 
+        request_customer: float, 
+        location_customer: Location
+    ):
         self.id_customer = id_customer
         self.request_customer = request_customer
         self.location_customer = location_customer
     
-    @property
-    def id_customer(self):
-        return self._id_customer
+    def get_id_customer(self) -> int:
+        return self.id_customer
 
-    @id_customer.setter
-    def id_customer(self, value):
-        self._id_customer = value
+    def set_id_customer(self, value: int):
+        self.id_customer = value
 
-    @property
-    def request_customer(self):
-        return self._request_customer
+    def get_request_customer(self) -> float:
+        return self.request_customer
 
-    @request_customer.setter
-    def request_customer(self, value):
-        self._request_customer = value
+    def set_request_customer(self, value: float):
+        self.request_customer = value
 
-    @property
-    def location_customer(self):
-        return self._location_customer
+    def get_location_customer(self) -> Location:
+        return self.location_customer
 
-    @location_customer.setter
-    def location_customer(self, value):
-        self._location_customer = value
+    def set_location_customer(self, value: Location):
+        self.location_customer = value

@@ -1,3 +1,5 @@
+from typing import List
+
 class Cluster:
     
     """
@@ -6,38 +8,35 @@ class Cluster:
     :param request_cluster: Valor de la solicitud del cluster.
     :param items_of_cluster: Lista de elementos que pertenecen al cluster.
     """
-    def __init__(self, id_cluster =- 1, request_cluster = 0.0, items_of_cluster = None):
+    def __init__(
+        self, 
+        id_cluster: int = -1, 
+        request_cluster: float = 0.0, 
+        items_of_cluster: List[int] = None
+    ):
         self._id_cluster = id_cluster
         self._request_cluster = request_cluster
         self._items_of_cluster = items_of_cluster if items_of_cluster is not None else []
         
-    @property
-    def id_cluster(self):
-        return self._id_cluster
+    def get_id_cluster(self) -> int:
+        return self.id_cluster
     
-    @id_cluster.setter
-    def id_cluster(self, value):
-        self._id_cluster = value
+    def set_id_cluster(self, value: int):
+        self.id_cluster = value
         
-    @property
-    def request_cluster(self):
-        return self._request_cluster
+    def get_request_cluster(self) -> float:
+        return self.request_cluster
     
-    @request_cluster.setter
-    def request_cluster(self, value):
-        self._request_cluster = value
+    def set_request_cluster(self, value: float):
+        self.request_cluster = value
         
-    @property
-    def items_of_cluster(self):
-        return self._items_of_cluster
+    def get_items_of_cluster(self) -> List[int]:
+        return self.items_of_cluster
 
-    @items_of_cluster.setter
-    def items_of_cluster(self, value):
-        self._items_of_cluster = value
+    def set_items_of_cluster(self, value: List[int]):
+        self.items_of_cluster = value
         
-    """
-    Limpia el cluster reiniciando la solicitud y vaciando la lista de elementos.
-    """        
+    # Limpia el cluster reiniciando la solicitud y vaciando la lista de elementos.       
     def clean_cluster(self):
-        self._request_cluster = 0.0
-        self._items_of_cluster.clear()
+        self.request_cluster = 0.0
+        self.items_of_cluster.clear()

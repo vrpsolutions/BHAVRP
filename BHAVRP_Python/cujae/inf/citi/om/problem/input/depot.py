@@ -1,3 +1,5 @@
+from typing import List
+from fleet import Fleet
 from location import Location
 
 class Depot:
@@ -8,7 +10,13 @@ class Depot:
     :param location_depot: Ubicación del depósito (por defecto es None, se inicializa más tarde).
     :param fleet_depot: Flota del depósito (por defecto es una lista vacía).
     """
-    def __init__(self, id_depot, location_depot=None, fleet_depot=None):
+    def __init__(
+        self, 
+        id_depot: int, 
+        location_depot: Location = None, 
+        fleet_depot: List[Fleet] = None
+    ):
+        # Si no se pasa una ubicación, se inicializa con coordenadas por defecto
         if location_depot is None:
             location_depot = Location(0.0, 0.0)
         if fleet_depot is None:
@@ -18,26 +26,20 @@ class Depot:
         self.location_depot = location_depot
         self.fleet_depot = fleet_depot
     
-    @property
-    def id_depot(self):
-        return self._id_depot
+    def get_id_depot(self) -> int:
+        return self.id_depot
 
-    @id_depot.setter
-    def id_depot(self, value):
-        self._id_depot = value
+    def set_id_depot(self, value: int):
+        self.id_depot = value
 
-    @property
-    def location_depot(self):
-        return self._location_depot
+    def get_location_depot(self) -> Location:
+        return self.location_depot
 
-    @location_depot.setter
-    def location_depot(self, value):
-        self._location_depot = value
+    def set_location_depot(self, value: Location):
+        self.location_depot = value
 
-    @property
-    def fleet_depot(self):
-        return self._fleet_depot
+    def get_fleet_depot(self) -> List[Fleet]:
+        return self.fleet_depot
 
-    @fleet_depot.setter
-    def fleet_depot(self, value):
-        self._fleet_depot = value
+    def set_fleet_depot(self, value: List[Fleet]):
+        self.fleet_depot = value

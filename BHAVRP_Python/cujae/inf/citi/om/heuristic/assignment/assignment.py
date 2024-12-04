@@ -7,10 +7,10 @@ from ...problem.output.solution.cluster import Cluster
 class Assignment(ABC):
     
     @abstractmethod
-    def toClustering(self):
+    def to_clustering(self):
         pass
     
-    def initializeCluster(self):
+    def initialize_cluster(self):
         listClusters = []
         
         totalClusters = len(Problem.get_problem().get_depots())
@@ -30,7 +30,7 @@ class Assignment(ABC):
 
         return listClusters
     
-    def initializeClustersWithElements(self, listIDElements: List[int]):
+    def initialize_clusters_with_elements(self, listIDElements: List[int]):
         clusters = []
         
         totalElements = len(listIDElements)
@@ -64,7 +64,7 @@ class Assignment(ABC):
 
         return clusters
     
-    def findCluster(self, idCluster: int, clusters: List[Cluster]) -> int:
+    def find_cluster(self, idCluster: int, clusters: List[Cluster]) -> int:
         posCluster = -1
         for i, cluster in enumerate(clusters):
             if cluster.getIDCluster() == idCluster:
@@ -72,7 +72,7 @@ class Assignment(ABC):
                 break
         return posCluster
     
-    def getPosMaxValue(self, list: List[float]) -> int:
+    def get_pos_max_value(self, list: List[float]) -> int:
         if not list:
             return -1
 
@@ -85,7 +85,7 @@ class Assignment(ABC):
                 posMaxValue = i
         return posMaxValue
 
-    def getPosMinValue(self, list: List[float]) -> int:
+    def get_pos_min_value(self, list: List[float]) -> int:
         if not list:
             return -1
 
@@ -98,7 +98,7 @@ class Assignment(ABC):
                 posMinValue = i
         return posMinValue
     
-    def isFullDepot(self, customers: List[Customer], requestCluster: float, capacityDepot: float) -> bool:
+    def is_full_depot(self, customers: List[Customer], requestCluster: float, capacityDepot: float) -> bool:
         isFull = True
         currentRequest = capacityDepot - requestCluster
         if currentRequest > 0:
@@ -108,7 +108,7 @@ class Assignment(ABC):
                     break
         return isFull
 
-    def getCustomersOutDepot(self, customers: List[Customer], requestCluster: float, capacityDepot: float) -> List[int]:
+    def get_customers_out_depot(self, customers: List[Customer], requestCluster: float, capacityDepot: float) -> List[int]:
         customersOutDepot = []
         currentRequest = capacityDepot - requestCluster
         if currentRequest != 0:
@@ -117,14 +117,14 @@ class Assignment(ABC):
                     customersOutDepot.append(i)
         return customersOutDepot
 
-    def getPosCluster(self, posCustomer: int, clusters: List[Cluster]) -> int:
+    def get_pos_cluster(self, posCustomer: int, clusters: List[Cluster]) -> int:
         idCustomer = Problem.getProblem().getListIDCustomers()[posCustomer]
         for i, cluster in enumerate(clusters):
             if idCustomer in cluster.getItemsOfCluster():
                 return i
         return -1
     
-    def recalculateTest(self, clusterOne: Cluster, clusterTwo: Cluster, customersToAssign: List[Customer]) -> Location:
+    def recalculate_test(self, clusterOne: Cluster, clusterTwo: Cluster, customersToAssign: List[Customer]) -> Location:
         locationOne = customersToAssign[Problem.getProblem().findPosCustomer(customersToAssign, clusterOne.getIDCluster())].getLocationCustomer()
         locationTwo = customersToAssign[Problem.getProblem().findPosCustomer(customersToAssign, clusterTwo.getIDCluster())].getLocationCustomer()
 
@@ -137,7 +137,7 @@ class Assignment(ABC):
 
         return location
     
-    def recalculateCentroid(self, cluster: Cluster) -> Location:
+    def recalculate_centroid(self, cluster: Cluster) -> Location:
         aveAxisX = 0.0
         aveAxisY = 0.0
         countCustomers = len(cluster.getItemsOfCluster())
@@ -156,7 +156,7 @@ class Assignment(ABC):
 
         return locationCentroid
     
-    def updateCustomerToAssign(self, customerToAssign: List[Customer], idElements: List[int]):
+    def update_customer_to_assign(self, customerToAssign: List[Customer], idElements: List[int]):
         for idElement in idElements:
             customerToAssign = [customer for customer in customerToAssign if customer.getIDCustomer() != idElement]
 
