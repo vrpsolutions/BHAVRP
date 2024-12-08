@@ -1,9 +1,7 @@
 import random
 from typing import List
 from .....problem.input.problem import Problem
-from .....problem.input.customer import Customer
-from .....problem.output.solution import Solution
-from .....problem.output.solution import Cluster
+from .....problem.output.solution.solution import Solution
 from other import Other
 
 class RandomByElement(Other):
@@ -20,6 +18,7 @@ class RandomByElement(Other):
         list_customers_to_assign = List(Problem.get_problem().get_customers())
          
         while list_customers_to_assign and list_clusters:
+            
             # Selección aleatoria de un depósito y un cliente
             pos_rdm_depot = random.randint(0, len(list_id_depots) - 1)
             id_depot = list_id_depots[pos_rdm_depot]
@@ -28,9 +27,9 @@ class RandomByElement(Other):
             )
             
             pos_rdm_customer = random.randint(0, len(list_customers_to_assign) - 1)
-            Customer = list_customers_to_assign[pos_rdm_customer]
-            id_customer = Customer.get_id_customer()
-            request_customer = Customer.get_request_customer()
+            customer = list_customers_to_assign[pos_rdm_customer]
+            id_customer = customer.get_id_customer()
+            request_customer = customer.get_request_customer()
             
             pos_cluster = self.find_cluster(id_depot, list_clusters)
             

@@ -9,7 +9,7 @@ from ...controller.utils.tools import Tools
 import numpy as np
 
 class Problem:
-    _problem = None   # Atributo para la instancia Singleton
+    _problem = None   # Atributo para la instancia Singleton.
     
     def __init__(self):
         self.customers: List[Customer] = []
@@ -50,86 +50,86 @@ class Problem:
     def set_cost_matrix(self, cost_matrix: np.ndarray):
         self.cost_matrix = cost_matrix
 
-    # Método para obtener el total de los clientes
+    # Método para obtener el total de los clientes.
     def get_total_customers(self) -> int:
         return len(self.customers)
 
-    # Método para obtener el total de los depósitos
+    # Método para obtener el total de los depósitos.
     def get_total_depots(self) -> int:
         return len(self.depots)
     
-    # Método para obtener la lista de IDs de clientes
+    # Método para obtener la lista de IDs de clientes.
     def get_list_id_customers(self) -> List[int]:
         list_id_customers = [customer.get_id_customer() for customer in self.customers]
         return list_id_customers
     
-    # Método para obtener la lista de coordenadas de los clientes
+    # Método para obtener la lista de coordenadas de los clientes.
     def get_list_coordinates_customers(self) -> List[Location]:
         list_coordinates_customers = [customer.get_location_customer() for customer in self.customers]
         return list_coordinates_customers
 
-    # Método para obtener la demanda total
+    # Método para obtener la demanda total.
     def get_total_request(self) -> float:
         total_request = sum(customer.get_request_customer() for customer in self.customers)
         return total_request
 
-    # Método para obtener un cliente dado su ID
+    # Método para obtener un cliente dado su ID.
     def get_customer_by_id_customer(self, id_customer: int) -> Customer:
         for customer in self.customers:
             if customer.get_id_customer() == id_customer:
                 return customer
         return None  # Retorna None si no encuentra el cliente
 
-    # Método para obtener las coordenadas de un cliente dado su ID
+    # Método para obtener las coordenadas de un cliente dado su ID.
     def get_location_by_id_customer(self, id_customer: int) -> Location:
         for customer in self.customers:
             if customer.get_id_customer() == id_customer:
                 return customer.get_location_customer()
         return None  # Retorna None si no encuentra las coordenadas
     
-    # Método encargado de buscar un depósito dado su identificador
+    # Método encargado de buscar un depósito dado su identificador.
     def get_depot_by_id_depot(self, id_depot: int) -> Depot:
         for depot in self.depots:
             if depot.get_id_depot() == id_depot:
                 return depot
         return None  # Retorna None si no encuentra el depósito
     
-    # Método encargado de buscar las coordenadas de un depósito dado su identificador
+    # Método encargado de buscar las coordenadas de un depósito dado su identificador.
     def get_location_by_id_depot(self, id_depot: int) -> Location:
         for depot in self.depots:
             if depot.get_id_depot() == id_depot:
                 return depot.get_location_depot()
         return None  # Retorna None si no encuentra las coordenadas
     
-    # Método encargado de devolver la posición que ocupa un depósito en la lista de depósitos pasada por parámetro
+    # Método encargado de devolver la posición que ocupa un depósito en la lista de depósitos pasada por parámetro.
     def find_pos_element(self, list_id: List[int], id_element: int) -> int:
         try:
             return list_id.index(id_element)
         except ValueError:
             return -1  # Retorna -1 si no encuentra el elemento
 
-    # Método encargado de devolver la posición que ocupa un cliente en la lista pasada por parámetro
+    # Método encargado de devolver la posición que ocupa un cliente en la lista pasada por parámetro.
     def find_pos_customer(self, customers: List[Customer], id_customer: int) -> int:
         for i, customer in enumerate(customers):
             if customer.get_id_customer() == id_customer:
                 return i
         return -1  # Retorna -1 si no encuentra el cliente
 
-    # Método encargado de devolver la posición que ocupa un depósito en la lista pasada por parámetro
+    # Método encargado de devolver la posición que ocupa un depósito en la lista pasada por parámetro.
     def find_pos_depot(self, depots: List[Depot], id_element: int) -> int:
         for i, depot in enumerate(depots):
             if depot.get_id_depot() == id_element:
                 return i
         return -1  # Retorna -1 si no encuentra el depósito
     
-    # Método encargado de devolver la demanda de un cliente dado su identificador
+    # Método encargado de devolver la demanda de un cliente dado su identificador.
     def get_request_by_id_customer(self, id_customer: int) -> float:
         for customer in self.customers:
             if customer.get_id_customer() == id_customer:
                 return customer.get_request_customer()
         return 0.0  # Retorna 0.0 si no encuentra la demanda del cliente
     
-    # Método encargado de devolver la posición del elemento en la matriz de costo
+    # Método encargado de devolver la posición del elemento en la matriz de costo.
     def get_pos_element(self, id_element: int) -> int:
         # Buscar en los depósitos
         for i, depot in enumerate(self.depots):
@@ -142,7 +142,7 @@ class Problem:
                 return i
         return -1  # Retorna -1 si no encuentra el elemento
     
-    # Método encargado de devolver la posición del elemento en la matriz de costo (usando una lista personalizada de clientes)
+    # Método encargado de devolver la posición del elemento en la matriz de costo (usando una lista personalizada de clientes).
     def get_pos_element(self, id_element: int, list_customers: List[Customer]) -> int:
         # Buscar en los depósitos
         for i, depot in enumerate(self.depots):
@@ -155,14 +155,14 @@ class Problem:
                 return i
         return -1  # Retorna -1 si no encuentra el elemento
     
-    # Método encargado de devolver la capacidad total de los depósitos
+    # Método encargado de devolver la capacidad total de los depósitos.
     def get_total_capacity(self) -> float:
         total_capacity = 0.0
         for depot in self.depots:
             total_capacity += self.get_total_capacity_by_depot(depot)
         return total_capacity
 
-    # Método encargado de devolver la capacidad total de un depósito dado el depósito
+    # Método encargado de devolver la capacidad total de un depósito dado el depósito.
     def get_total_capacity_by_depot(self, depot: Depot) -> float:
         total_capacity = 0.0
         for fleet in depot.get_fleet_depot():
@@ -171,7 +171,7 @@ class Problem:
             total_capacity += capacity_vehicle * count_vehicles
         return total_capacity
     
-    # Método encargado de devolver la capacidad total de un depósito dado su identificador
+    # Método encargado de devolver la capacidad total de un depósito dado su identificador.
     def get_total_capacity_by_depot(self, id_depot: int) -> float:
         total_capacity = 0.0
         # Encontrar el depósito por ID
@@ -185,7 +185,7 @@ class Problem:
                 total_capacity += capacity_vehicle * count_vehicles
         return total_capacity
     
-    # Método encargado de obtener la lista de las capacidades de los depósitos
+    # Método encargado de obtener la lista de las capacidades de los depósitos.
     def get_capacities_depot(self) -> List[float]:
         capacities = []
         for depot in self.depots:
@@ -193,7 +193,7 @@ class Problem:
             capacities.append(capacity_depot)
         return capacities
     
-    # Método encargado de obtener el id del depósito con mayor capacidad
+    # Método encargado de obtener el id del depósito con mayor capacidad.
     def get_depot_with_mu(self) -> int:
         max_capacity_depot = self.get_total_capacity_by_depot(self.depots[0].get_id_depot())
         id_depot_mu = self.depots[0].get_id_depot()
@@ -205,7 +205,7 @@ class Problem:
                 id_depot_mu = depot.get_id_depot()
         return id_depot_mu
     
-    # Método encargado de obtener el id del depósito con mayor capacidad de la lista
+    # Método encargado de obtener el id del depósito con mayor capacidad de la lista.
     def get_depot_with_mu(self, depots: List[Depot]) -> int:
         max_capacity_depot = self.get_total_capacity_by_depot(depots[0].get_id_depot())
         id_depot_mu = depots[0].get_id_depot()
@@ -217,7 +217,7 @@ class Problem:
                 id_depot_mu = depot.get_id_depot()
         return id_depot_mu
     
-    # Método encargado de obtener la capacidad del depósito con mayor capacidad de la lista
+    # Método encargado de obtener la capacidad del depósito con mayor capacidad de la lista.
     def get_capacity_depot_with_mu(self, depots: List[Depot]) -> float:
         max_capacity_depot = self.get_total_capacity_by_depot(depots[0].get_id_depot())
         
@@ -228,23 +228,23 @@ class Problem:
         
         return max_capacity_depot
     
-    # Método encargado de obtener la lista de los id de los clientes y los depósitos
+    # Método encargado de obtener la lista de los id de los clientes y los depósitos.
     def get_list_id_elements(self) -> List[int]:
         list_id_elements = [customer.get_id_customer() for customer in self.customers]
         list_id_elements.extend(depot.get_id_depot() for depot in self.depots)
         return list_id_elements
 
-    # Método encargado de obtener la lista de los id de los depósitos
+    # Método encargado de obtener la lista de los id de los depósitos.
     def get_list_id_depots(self) -> List[int]:
         list_id_depots = [depot.get_id_depot() for depot in self.depots]
         return list_id_depots
     
-    # Método encargado de obtener los identificadores de los elementos en la lista pasada por parámetros
+    # Método encargado de obtener los identificadores de los elementos en la lista pasada por parámetros.
     def get_list_id(self, customers: List[Customer]) -> List[int]:
         list_id = [customer.get_id_customer() for customer in customers]
         return list_id
 
-    # Método encargado de cargar los datos de los clientes sin coordenadas
+    # Método encargado de cargar los datos de los clientes sin coordenadas.
     def load_customer(
         self, 
         id_customers: List[int], 
@@ -256,7 +256,7 @@ class Problem:
             customer.set_request_customer(request_customers[i])
             self.customers.append(customer)
 
-    # Método encargado de cargar los datos de los clientes con coordenadas
+    # Método encargado de cargar los datos de los clientes con coordenadas.
     def load_customer(
         self, 
         id_customers: List[int], 
@@ -274,7 +274,7 @@ class Problem:
             
             self.customers.append(customer)
             
-    # Método encargado de cargar los datos de los depósitos (con coordenadas) y las flotas
+    # Método encargado de cargar los datos de los depósitos (con coordenadas) y las flotas.
     def load_depot(
         id_depots: List[int], 
         axis_x_depots: List[float], 
@@ -305,7 +305,7 @@ class Problem:
             depot.set_fleet_depot(fleets)
             depots.append(depot)
             
-    # Método encargado de cargar los datos de los depósitos (sin coordenadas) y las flotas
+    # Método encargado de cargar los datos de los depósitos (sin coordenadas) y las flotas.
     def load_depot(
         id_depots: List[int], 
         count_vehicles: List[List[int]], 
@@ -331,7 +331,7 @@ class Problem:
             depot.set_fleet_depot(fleets)
             depots.append(depot)
             
-    # Método encargado de llenar la matriz de costo usando listas de distancias
+    # Método encargado de llenar la matriz de costo usando listas de distancias.
     def fill_cost_matrix(distances: List[List[float]]):
         total_distances = len(distances)
         cost_matrix = np.zeros((total_distances, total_distances))
@@ -341,7 +341,7 @@ class Problem:
                 cost_in_distance = distances[i][j]
                 cost_matrix[i, j] = cost_in_distance
             
-    # Método encargado de llenar la matriz de costo usando la distancia deseada
+    # Método encargado de llenar la matriz de costo usando la distancia deseada.
     def fill_cost_matrix(
         self, customers: List[Customer], 
         depots: List[Depot], 
@@ -386,7 +386,7 @@ class Problem:
 
         return cost_matrix
     
-    # Método encargado de llenar la matriz de costo usando el tipo de distancia deseada
+    # Método encargado de llenar la matriz de costo usando el tipo de distancia deseada.
     def fill_cost_matrix(self, distance_type: DistanceType) -> np.ndarray:
         total_customers = len(self.customers)
         total_depots = len(self.depots)
@@ -429,7 +429,7 @@ class Problem:
 
         return cost_matrix
     
-    # Método para llenar la matriz de costos usando el tipo de distancia proporcionado
+    # Método para llenar la matriz de costos usando el tipo de distancia proporcionado.
     def fill_cost_matrix_xxx(
         self, 
         customers: List[Customer], 
@@ -480,7 +480,7 @@ class Problem:
 
         return cost_matrix
     
-    # Método encargado de llenar la matriz de costo usando la distancia deseada
+    # Método encargado de llenar la matriz de costo usando la distancia deseada.
     def create_cost_matrix(
         self, 
         customers: List[Customer], 
@@ -530,7 +530,7 @@ class Problem:
 
         return cost_matrix
     
-    # Método para calcular la matriz de costos entre centroides y depósitos
+    # Método para calcular la matriz de costos entre centroides y depósitos.
     def calculate_cost_matrix(
         self, 
         centroids: List[Depot], 
@@ -574,7 +574,7 @@ class Problem:
 
         return cost_matrix
     
-    # Método para calcular la matriz de costos entre medoids y clientes
+    # Método para calcular la matriz de costos entre medoids y clientes.
     def calculate_cost_matrix(
         self, 
         medoids: List[Depot], 
@@ -608,7 +608,7 @@ class Problem:
 
         return cost_matrix
     
-    # Método para limpiar la información del problema
+    # Método para limpiar la información del problema.
     def clean_info_problem(self):
         self.customers.clear()
         self.depots.clear()
