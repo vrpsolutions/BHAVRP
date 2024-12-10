@@ -184,7 +184,7 @@ class ThreeCriteriaClustering(ByCluster):
         return solution
     
     # Este método devuelve la diferencia entre los dos clústers más cercanos a un cliente dado.
-    def get_difference(self, list_values, pos_first_min):
+    def get_difference(self, list_values: List[float], pos_first_min: int):
         second_min = float("inf")
         for i, value in enumerate(list_values):
             if i != pos_first_min and value < second_min:
@@ -193,41 +193,69 @@ class ThreeCriteriaClustering(ByCluster):
 
     # Este método se encarga de devolver una lista con los valores de uno de los dos criterios 
     # de un cliente dado a todos los clústers.
-    def get_list_criterias_by_clusters(self, id_customer, clusters, criteria, problem):
-        list_values = []
-        cost_matrix = problem.get_cost_matrix()
-        pos_customer = problem.get_pos_element(id_customer)
-
+    def get_list_criterias_by_clusters(
+        self, 
+        id_customer: int, 
+        clusters: List[Cluster], 
+        criteria: int
+    ) -> float:
+        list_values: List[float] = []
+        cost_matrix = Problem.get_problem().get_cost_matrix()
+        pos_customer = Problem.get_problem().get_pos_element(id_customer)
         if criteria == 1:
             for cluster in clusters:
                 list_values.append(
-                    self.get_avg_by_cluster(pos_customer, cluster, cost_matrix, problem)
+                    self.get_avg_by_cluster(pos_customer, cluster, cost_matrix)
                 )
         elif criteria == 2:
             for cluster in clusters:
                 list_values.append(
-                    self.get_var_by_cluster(pos_customer, cluster, cost_matrix, problem)
+                    self.get_var_by_cluster(pos_customer, cluster, cost_matrix)
                 )
 
         return list_values
     
     # Este método devuelve la distancia promedio de un cliente a un cluster.
-    def get_avg_by_cluster(self, pos_customer, cluster, cost_matrix, problem):
+    def get_avg_by_cluster(
+        self, 
+        pos_customer: int, 
+        cluster: Cluster, 
+        cost_matrix: np.ndarray
+    ) -> float:
         distances = 0.0
         for item in cluster.get_items_of_cluster():
-            distances += cost_matrix[pos_customer, problem.get_pos_element(item)]
-        distances += cost_matrix[pos_customer, problem.get_pos_element(cluster.get_id_cluster())]
+            distances += cost_matrix[pos_customer, Problem.get_problem().get_pos_element(item)]
+        distances += cost_matrix[pos_customer, Problem.get_problem().get_pos_element(cluster.get_id_cluster())]
         return distances / (len(cluster.get_items_of_cluster()) + 1)
     
     # Este método calcula la varianza del promedio de distancias de un cliente dado a un cluster.
-    def get_var_by_cluster(self, pos_customer, cluster, cost_matrix, problem):
-        avg_dist = self.get_avg_by_cluster(pos_customer, cluster, cost_matrix, problem)
+    def get_var_by_cluster(
+        self, 
+        pos_customer: int, 
+        cluster: Cluster, 
+        cost_matrix: np.ndarray
+    ) -> float:
+        avg_dist = self.get_avg_by_cluster(pos_customer, cluster, cost_matrix)
         variance = 0.0
         for item in cluster.get_items_of_cluster():
-            diff = cost_matrix[pos_customer, problem.get_pos_element(item)] - avg_dist
+            diff = cost_matrix[pos_customer, Problem.get_problem().get_pos_element(item)] - avg_dist
             variance += diff ** 2
-        return variance / len(cluster.get_items_of_cluster())
+        cluster_id_pos = Problem.get_problem().get_pos_element(cluster.get_id_cluster())
+        diff = cost_matrix[pos_customer, cluster_id_pos] - avg_dist
+        variance += diff ** 2
+        return variance / len(cluster.get_items_of_cluster() + 1)
     
-    # Este metodo devuelve una lista con las distancias de un cliente a cada cliente del cluster que se pasa por parametros.
-    def get_distances_in_cluster(self):
-        pass
+    # Este metodo devuelve una lista con las distancias de un cliente a cada cliente del 
+    # cluster que se pasa por parametros.
+    def get_distances_in_cluster(self, id_customer_ref: int, cluster: Cluster) -> List[float]:
+        list_dist_cluster: List[float] = []
+        pos_customer_ref = Problem.get_problem().get_pos_element(id_customer_ref)
+        cost_matrix = np.ndarray(Problem.get_problem().get_cost_matrix())
+        for item in cluster.get_items_of_cluster():
+            pos_cc = Problem.get_problem().get_pos_element(item)
+            list_dist_cluster.append(cost_matrix[pos_customer_ref, pos_cc])
+        if not list_dist_cluster:
+            pos_cc = Problem.get_problem().get_pos_element(cluster.get_id_cluster())
+            list_dist_cluster.append(cost_matrix[pos_customer_ref, pos_cc])
+        return list_dist_cluster
+        
