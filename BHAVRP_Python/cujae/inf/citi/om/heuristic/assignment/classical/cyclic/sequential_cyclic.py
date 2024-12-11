@@ -20,7 +20,7 @@ class SequentialCyclic(Cyclic):
         # Inicialización de las listas.
         list_clusters: List[Cluster] = self.initialize_clusters()
         list_customers_to_assign: List[Customer] = list(Problem.get_problem().get_customers().copy())
-        list_id_depots = list(Problem.get_problem().get_list_id_depots())
+        list_id_depots: List[int] = list(Problem.get_problem().get_list_id_depots())
         
         # Obtener la matriz de costos.
         cost_matrix = np.array(Problem.get_problem().get_cost_matrix())
