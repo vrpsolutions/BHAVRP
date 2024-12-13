@@ -17,6 +17,8 @@ class Partitional(Assignment, ABC):
     def __init__(self):
         super().__init__()
         
+    # Método que limpia los clusters eliminando sus elementos y muestra información detallada 
+    # de cada cluster.
     def clean_clusters(self, clusters: List[Cluster]):
         for cluster in clusters:
             cluster.clean_cluster()
@@ -29,6 +31,8 @@ class Partitional(Assignment, ABC):
             print(f"ELEMENTOS DEL CLUSTER: {cluster.get_items_of_cluster()}")
         print("--------------------------------------------------")
         
+    # Método que actualiza los clusters asignándoles nuevos elementos y ajustando su demanda 
+    # en base a los IDs proporcionados.
     def update_clusters(self, clusters: List[Cluster], id_elements: List[int]):
         for i in range(len(clusters)):
             clusters[i].get_items_of_cluster().append(id_elements[i])
@@ -41,7 +45,8 @@ class Partitional(Assignment, ABC):
             print(f"DEMANDA DEL CLUSTER: {cluster.get_request_cluster()}")
             print(f"ELEMENTOS DEL CLUSTER: {cluster.get_items_of_cluster()}")
         print("--------------------------------------------------")
-        
+    
+    # Método que genera elementos iniciales (centroides o medoides) para los clústeres.
     def generate_elements(self, seed_type: SeedType, distance_type: DistanceType) -> List[int]:
         id_elements: List[int] = []
         
@@ -59,7 +64,9 @@ class Partitional(Assignment, ABC):
             print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
             
             while counter > 0:
-                row, col = np.unravel_index(np.argmax(cost_matrix[total_customers:, :]), cost_matrix[total_customers:, :].shape)
+                row, col = np.unravel_index(
+                    np.argmax(cost_matrix[total_customers:, :]), cost_matrix[total_customers:, :].shape
+                )
                 row += total_customers
                 
                 print(f"FILA SELECCIONADA: {row}")
@@ -82,7 +89,9 @@ class Partitional(Assignment, ABC):
             print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
             
             while counter > 0:
-                row, col = np.unravel_index(np.argmin(cost_matrix[total_customers:, :]), cost_matrix[total_customers:, :].shape)
+                row, col = np.unravel_index(
+                    np.argmin(cost_matrix[total_customers:, :]), cost_matrix[total_customers:, :].shape
+                )
                 row += total_customers
                 
                 print(f"FILA SELECCIONADA: {row}")
@@ -118,6 +127,7 @@ class Partitional(Assignment, ABC):
         
         return id_elements
     
+    # Método que genera elementos iniciales (centroides o medoides) para los clústeres.
     def generate_elements(self, customers: List[Customer], distance_type: DistanceType) -> List[int]:
         id_elements: List[int] = [-1] * Problem.get_problem().get_total_depots()
         
@@ -131,7 +141,9 @@ class Partitional(Assignment, ABC):
         print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
         
         while counter > 0:
-            row, col = np.unravel_index(np.argmin(cost_matrix[total_customers:, :]), cost_matrix[total_customers:, :].shape)
+            row, col = np.unravel_index(
+                np.argmin(cost_matrix[total_customers:, :]), cost_matrix[total_customers:, :].shape
+            )
             
             print(f"FILA SELECCIONADA: {row}")
             print(f"COLUMNA SELECCIONADA: {col}")
@@ -154,6 +166,7 @@ class Partitional(Assignment, ABC):
         
         return id_elements
     
+    # Método que genera elementos iniciales (centroides o medoides) para los clústeres.
     def generate_elements(self, distance_type: DistanceType) -> List[int]:
         id_elements: List[int] = []
         
@@ -183,7 +196,9 @@ class Partitional(Assignment, ABC):
         print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
         
         while counter > 0:
-            row, col = np.unravel_index(np.argmax(cost_matrix[:total_customers, :total_customers]), cost_matrix[:total_customers, :total_customers].shape)
+            row, col = np.unravel_index(
+                np.argmax(cost_matrix[:total_customers, :total_customers]), cost_matrix[:total_customers, :total_customers].shape
+            )
             
             print(f"FILA SELECCIONADA: {row}")
             print(f"COLUMNA SELECCIONADA: {col}")
@@ -202,6 +217,7 @@ class Partitional(Assignment, ABC):
         
         return self.sorted_elements(id_elements, distance_type)
     
+    # Método que genera elementos iniciales (centroides o medoides) para los clústeres.
     def generate_elements_xxx(self, distance_type: DistanceType) -> List[int]:
         id_elements: List[int] = []
         
@@ -210,7 +226,6 @@ class Partitional(Assignment, ABC):
         counter = total_depots
         
         cost_matrix: np.ndarray = None
-        id_element = -1
         
         if distance_type.value in [1, 2, 3, 4]:
             try:
@@ -250,6 +265,7 @@ class Partitional(Assignment, ABC):
         
         return self.sorted_elements(id_elements, distance_type)
     
+    # Método que genera elementos iniciales (centroides o medoides) para los clústeres.
     def generate_elements_xx(self, distance_type: DistanceType) -> List[int]:
         list_centroids: List[int] = []
         list_customers: List[Customer] = list(Problem.get_problem().get_customers())
@@ -279,7 +295,7 @@ class Partitional(Assignment, ABC):
             cost_matrix = np.array(Problem.get_problem().get_cost_matrix())
             
         pos_centroid_row, pos_centroid_col = np.unravel_index(
-        np.argmax(cost_matrix[pos_centroid, :total_customers]), cost_matrix.shape
+            np.argmax(cost_matrix[pos_centroid, :total_customers]), cost_matrix.shape
         )
         id_element = Problem.get_problem().get_customers()[pos_centroid_col].get_id_customer()
         list_centroids.append(id_element)
@@ -313,7 +329,13 @@ class Partitional(Assignment, ABC):
         
         return self.sorted_elements(list_centroids, distance_type)
     
-    def verify_centroids(self, clusters: List[Cluster], centroids: List[Depot], distance_type: DistanceType) -> bool:
+    # Método que verifica y actualiza los centroides de los clústeres.
+    def verify_centroids(
+        self, 
+        clusters: List[Cluster], 
+        centroids: List[Depot], 
+        distance_type: DistanceType
+    ) -> bool:
         change: bool = False
         dummy_depot: Location = None
         
@@ -355,7 +377,13 @@ class Partitional(Assignment, ABC):
         
         return change
     
-    def update_centroids(self, clusters: List[Cluster], centroids: List[Depot], distance_type: DistanceType):
+    # Método que actualiza los centroides de los clústeres.
+    def update_centroids(
+        self, 
+        clusters: List[Cluster], 
+        centroids: List[Depot], 
+        distance_type: DistanceType
+    ):
         cost_matrix: np.ndarray = None
         
         try:
@@ -382,7 +410,10 @@ class Partitional(Assignment, ABC):
             print("---------------------------------------------")
             
         while not np.all(cost_matrix[:total_centroids, :total_centroids] == float('inf')):
-            row, col = np.unravel_index(np.argmin(cost_matrix[:total_centroids, :total_centroids]), cost_matrix[:total_centroids, :total_centroids].shape)
+            row, col = np.unravel_index(
+                np.argmin(cost_matrix[:total_centroids, :total_centroids]), 
+                cost_matrix[:total_centroids, :total_centroids].shape
+            )
 
             print(f"BestAllRow: {row}")
             print(f"BestAllCol: {col}")
@@ -421,6 +452,7 @@ class Partitional(Assignment, ABC):
                     print(f"Row: {i} Col: {j} VALUE: {cost_matrix[i, j]}")
                 print("---------------------------------------------")
                 
+    # Método que calcula el costo total de los clústeres.
     def calculate_cost(self, clusters: List[Cluster], cost_matrix: np.ndarray) -> float:
         cost: float = 0.0
         
@@ -442,6 +474,7 @@ class Partitional(Assignment, ABC):
                 
         return cost
     
+    # Método que calcula el costo total de los clústeres considerando los depósitos como medoides.
     def calculate_cost(self, clusters: List[Cluster], cost_matrix: np.ndarray, medoids: List[Depot]) -> float:
         cost: float = 0.0
         
@@ -476,7 +509,14 @@ class Partitional(Assignment, ABC):
         
         return cost
     
-    def calculate_cost(self, clusters: List[Cluster], cost_matrix: np.ndarray, medoids: List[Depot], list_partition: List[Customer]) -> float:
+    # Método que calcula el costo total de los clústeres considerando los depósitos como medoides.
+    def calculate_cost(
+        self, 
+        clusters: List[Cluster], 
+        cost_matrix: np.ndarray, 
+        medoids: List[Depot], 
+        list_partition: List[Customer]
+    ) -> float:
         cost = 0.0
 
         print("-------------------------------------------------------------------------------")
@@ -510,6 +550,7 @@ class Partitional(Assignment, ABC):
         
         return cost
 
+    # Método que replica los depósitos actuales para crear una nueva lista de depósitos.
     def replicate_depots(self, depots: List[Depot]) -> List[Depot]:
         new_depots: List[Depot] = []
         
@@ -543,7 +584,14 @@ class Partitional(Assignment, ABC):
 
         return new_depots
 
-    def step_assignment(self, clusters: List[Cluster], customer_to_assign: List[Customer], cost_matrix: np.ndarray) -> List[Cluster]:
+    # Método de asignación de clientes a clusters según los depósitos, basado en la matriz de costos, 
+    # la demanda de los clientes y la capacidad de los depósitos.
+    def step_assignment(
+        self, 
+        clusters: List[Cluster], 
+        customer_to_assign: List[Customer], 
+        cost_matrix: np.ndarray
+    ) -> List[Cluster]:
         id_depot = -1
         pos_depot = -1
         capacity_depot = 0.0
@@ -562,9 +610,15 @@ class Partitional(Assignment, ABC):
         print("--------------------------------------------------------------------")
         print(f"PROCESO DE ASIGNACIÓN")
         
-        while customer_to_assign and not np.all(cost_matrix[0:total_customers, 0:total_customers + total_depots - 1] == float('inf')):
-            row_best, col_best = np.unravel_index(np.argmin(
-                cost_matrix[0:total_customers, 0:total_customers + total_depots - 1]), (total_customers, total_customers + total_depots - 1)
+        while customer_to_assign and not np.all(
+            cost_matrix[0:total_customers, 0:total_customers + total_depots - 1] == float('inf')
+        ):
+            
+            row_best, col_best = np.unravel_index(
+                np.argmin(
+                    cost_matrix[0:total_customers, 0:total_customers + total_depots - 1]), 
+                    (total_customers, total_customers + total_depots - 1
+                )
             )
 
             pos_customer = col_best
@@ -605,7 +659,9 @@ class Partitional(Assignment, ABC):
                     print(f"ELEMENTOS DEL CLUSTER: {clusters[pos_cluster].get_items_of_cluster()}")
 
                     cost_matrix[row_best, pos_customer] = float('inf')
-                    customer_to_assign.remove(Problem.get_problem().find_pos_customer(customer_to_assign, id_customer))
+                    customer_to_assign.remove(
+                        Problem.get_problem().find_pos_customer(customer_to_assign, id_customer)
+                    )
 
                     print(f"CANTIDAD DE CLIENTES SIN ASIGNAR: {len(customer_to_assign)}")
                 else:
@@ -627,6 +683,8 @@ class Partitional(Assignment, ABC):
 
         return clusters
     
+    # Método que crea una lista de centroides a partir de los identificadores de elementos, 
+    # asignando a cada uno su ubicación correspondiente según la posición de los clientes.
     def create_centroids(self, id_elements: List[int]) -> List[Depot]:
         centroids: List[Depot] = []
 
@@ -645,6 +703,8 @@ class Partitional(Assignment, ABC):
 
         return centroids
 
+    # Método que verifica si ha habido cambios en las ubicaciones de los medoides 
+    # comparando sus coordenadas actuales con las anteriores.
     def verify_medoids(self, old_medoids: List[Depot], current_medoids: List[Depot]) -> bool:
         change: bool = False
         i = 0
@@ -660,7 +720,14 @@ class Partitional(Assignment, ABC):
 
         return change
 
-    def step_search_medoids(self, clusters: List[Cluster], medoids: List[Depot], cost_matrix: np.ndarray, best_cost: float):
+    # Método que realiza la búsqueda de mejores medoides en cada clúster evaluando diferentes candidatos.
+    def step_search_medoids(
+        self, 
+        clusters: List[Cluster], 
+        medoids: List[Depot], 
+        cost_matrix: np.ndarray, 
+        best_cost: float
+    ):
         current_cost: float = 0.0
         
         old_medoids: List[Depot] = self.replicate_depots(medoids)
@@ -739,8 +806,16 @@ class Partitional(Assignment, ABC):
                 print("---------------------------------------------")
             
             medoids[i].set_location_depot(best_loc_medoid)
-            
-    def step_search_medoids(self, clusters: List[Cluster], medoids: List[Depot], cost_matrix: np.ndarray, best_cost: float, list_partition: List[Customer]):
+        
+    # Método que realiza la búsqueda de mejores medoides en cada clúster evaluando diferentes candidatos.    
+    def step_search_medoids(
+        self, 
+        clusters: List[Cluster], 
+        medoids: List[Depot], 
+        cost_matrix: np.ndarray, 
+        best_cost: float, 
+        list_partition: List[Customer]
+    ):
         current_cost: float = 0.0
         
         old_medoids: List[Depot] = self.replicate_depots(medoids)
@@ -819,6 +894,7 @@ class Partitional(Assignment, ABC):
             
             medoids[i].set_location_depot(best_loc_medoid)
             
+    # Método que obtiene y retorna una lista de los identificadores de los medoides actuales.
     def get_id_medoids(self, medoids: List[Depot]) -> List[int]:
         id_medoids: List[int] = []
         
@@ -832,6 +908,7 @@ class Partitional(Assignment, ABC):
         
         return id_medoids
     
+    # Método que calcula y retorna la coordenada promedio de todas las ubicaciones de los clientes.
     def calculate_mean_coordinate(self) -> Location:
         axis_x: float = 0.0
         axis_y: float = 0.0
@@ -849,6 +926,8 @@ class Partitional(Assignment, ABC):
 
         return mean_location
 
+    # Método que ordena los elementos por proximidad a los depósitos según el tipo de distancia, 
+    # utilizando una matriz de costos para determinar el orden.
     def sorted_elements(self, id_elements: List[int], distance_type: DistanceType) -> List[int]:
         total_depots = Problem.get_problem().get_total_depots()
         j = 0
@@ -872,7 +951,11 @@ class Partitional(Assignment, ABC):
             pass
         
         while j < len(id_elements):
-            row, col = np.unravel_index(np.argmin(cost_matrix[0:len(id_elements), len(id_elements):len(id_elements) + total_depots]), cost_matrix[0:len(id_elements), len(id_elements):len(id_elements) + total_depots].shape)
+            row, col = np.unravel_index(
+                np.argmin(
+                    cost_matrix[0:len(id_elements), len(id_elements):len(id_elements) + total_depots]
+                    ), cost_matrix[0:len(id_elements), len(id_elements):len(id_elements) + total_depots].shape
+            )
             
             print(f"ROW SELECCIONADA: {row}")
             print(f"COL SELECCIONADA: {col}")
@@ -891,6 +974,8 @@ class Partitional(Assignment, ABC):
 
         return sorted_elements
     
+    # Método que genera particiones de clientes con tamaños especificados, 
+    # utilizando un muestreo aleatorio o secuencial según el tipo de muestreo indicado.
     def generate_partitions(self, sampsize: int, sampling_type: SamplingType) -> List[List[Customer]]:
         partitions: List[List[Customer]] = []
         partition: List[Customer] = []
@@ -942,6 +1027,7 @@ class Partitional(Assignment, ABC):
         
         return partitions
     
+    # Método que genera elementos iniciales (centroides o medoides) para los clústeres.
     def generate_elements(self, p_customers: List[Customer], sampsize: int, distance_type: DistanceType) -> List[int]:
         id_elements: List[int] = []
         
@@ -961,7 +1047,9 @@ class Partitional(Assignment, ABC):
         print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
         
         while counter > 0:
-            row, col = np.unravel_index(np.argmin(cost_matrix[total_customers:, total_customers:]), cost_matrix[total_customers:, total_customers:].shape)
+            row, col = np.unravel_index(
+                np.argmin(cost_matrix[total_customers:, total_customers:]), cost_matrix[total_customers:, total_customers:].shape
+            )
 
             print(f"ROW SELECCIONADA: {row}")
             print(f"COL SELECCIONADA: {col}")
@@ -973,7 +1061,6 @@ class Partitional(Assignment, ABC):
             print(f"ELEMENTO: {id_element}")
             print(f"LISTADO DE ELEMENTOS ACTUALIZADOS: {id_elements}")
 
-            # Rellenar con infinito en las posiciones seleccionadas
             cost_matrix[total_customers:, col] = np.inf
             cost_matrix[row, :] = np.inf
 
@@ -986,6 +1073,8 @@ class Partitional(Assignment, ABC):
 
         return id_elements
     
+    # Método que calcula el coeficiente de disimilitud promedio entre los elementos de los clústeres, 
+    # utilizando una matriz de disimilitud basada en el tipo de distancia especificado.
     def calculate_dissimilarity(self, distance_type: DistanceType, clusters: List[Cluster]) -> float:
         current_dissimilarity: float = 0.0
         dissimilarity_matrix: np.ndarray = None
