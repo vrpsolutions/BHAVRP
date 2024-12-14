@@ -1,10 +1,10 @@
 """
-Interfaz que define c�mo crear un objeto Assignment
+Interfaz que define como crear un objeto Assignment
 """
 
 from abc import ABC, abstractmethod
 from assignment_type import AssignmentType
-from assignment import Assignment
+from ...heuristic.assignment import Assignment
 
 class IFactoryAssignment(ABC):
     
