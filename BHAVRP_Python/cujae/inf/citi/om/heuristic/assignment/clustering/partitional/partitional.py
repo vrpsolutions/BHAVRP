@@ -976,7 +976,11 @@ class Partitional(Assignment, ABC):
     
     # Método que genera particiones de clientes con tamaños especificados, 
     # utilizando un muestreo aleatorio o secuencial según el tipo de muestreo indicado.
-    def generate_partitions(self, sampsize: int, sampling_type: SamplingType) -> List[List[Customer]]:
+    def generate_partitions(
+        self, 
+        sampsize: int, 
+        sampling_type: SamplingType
+    ) -> List[List[Customer]]:
         partitions: List[List[Customer]] = []
         partition: List[Customer] = []
         
@@ -1028,7 +1032,12 @@ class Partitional(Assignment, ABC):
         return partitions
     
     # Método que genera elementos iniciales (centroides o medoides) para los clústeres.
-    def generate_elements(self, p_customers: List[Customer], sampsize: int, distance_type: DistanceType) -> List[int]:
+    def generate_elements(
+        self, 
+        p_customers: List[Customer], 
+        sampsize: int, 
+        distance_type: DistanceType
+    ) -> List[int]:
         id_elements: List[int] = []
         
         total_customers = len(Problem.get_problem().get_customers())
