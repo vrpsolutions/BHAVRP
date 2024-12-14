@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from interfaces.assignment_type import AssignmentType
-from ...heuristic.assignment import Assignment
+from ...heuristic.assignment.assignment import Assignment
 
 class FactoryAssignment:
     
     def create_assignment(self, assignment_type: AssignmentType) -> Assignment:
-        assignment = None
+        assignment: Assignment = None
         
         try:
             class_name = assignment_type.name
