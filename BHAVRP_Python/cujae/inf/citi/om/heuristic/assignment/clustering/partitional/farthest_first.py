@@ -31,6 +31,8 @@ class FarthestFirst(Partitional):
         list_customers_to_assign: List[Customer] = []
         list_centroids: List[Depot] = []
         
+        # Ciclo que itera hasta que los centroides dejen de cambiar o se alcance el número máximo de 
+        # iteraciones, asignando clientes a clústeres y actualizando los centroides en cada ciclo.
         while change and self.current_iteration < self.count_max_iterations:
             list_customers_to_assign = list(Problem.get_problem().get_customers())
 
@@ -68,6 +70,6 @@ class FarthestFirst(Partitional):
         if list_clusters:
             for cluster in list_clusters:
                 if cluster.get_items_of_cluster():
-                    solution.get_clusters().append(cluster)
+                    solution.get_clusters().append(cluster) 
 
         return solution
