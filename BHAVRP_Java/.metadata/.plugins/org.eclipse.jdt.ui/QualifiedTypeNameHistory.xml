@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="cujae.inf.ic.om.problem.output.solution.Solution"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="cujae.inf.ic.om.problem.input.Customer"/>
+<fullyQualifiedTypeName name="cujae.inf.ic.om.matrix.NumericMatrix"/>
+<fullyQualifiedTypeName name="cujae.inf.ic.om.heuristic.assignment.classical.urgency.IUrgency"/>
+<fullyQualifiedTypeName name="cujae.inf.ic.om.heuristic.assignment.Heuristic"/>
+<fullyQualifiedTypeName name="cujae.inf.ic.om.heuristic.assignment.ByNoUrgency"/>
+<fullyQualifiedTypeName name="java.util.Collections"/>
+<fullyQualifiedTypeName name="cujae.inf.ic.om.heuristic.assignment.ByNotUrgency"/>
+<fullyQualifiedTypeName name="cujae.inf.ic.om.heuristic.assignment.Assignment"/>
+<fullyQualifiedTypeName name="cujae.inf.ic.om.heuristic.assignment.IAssignment"/>
+</qualifiedTypeNameHistroy>
