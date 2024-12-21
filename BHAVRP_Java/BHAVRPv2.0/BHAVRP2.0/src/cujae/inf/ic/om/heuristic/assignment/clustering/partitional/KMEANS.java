@@ -17,14 +17,14 @@ import cujae.inf.ic.om.problem.output.solution.Solution;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
-public class KMEANS extends Partitional {
+public class Kmeans extends ByCentroids {
 
 	public static DistanceType distanceType = DistanceType.Euclidean;
 	public static SeedType seedType = SeedType.Nearest_Depot;  
 	private final int countMaxIterations = 100; // UN VALOR APROPIADO COMFIGURABLE ?
 	private int currentIteration = 0;
 	
-	public KMEANS() {
+	public Kmeans() {
 		super();
 	}
 

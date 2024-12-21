@@ -15,7 +15,7 @@ import cujae.inf.ic.om.problem.output.solution.Solution;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
-public class Farthest_First extends Partitional {
+public class Farthest_First extends ByCentroids {
 
 	
 	public static DistanceType distanceType = DistanceType.Euclidean;

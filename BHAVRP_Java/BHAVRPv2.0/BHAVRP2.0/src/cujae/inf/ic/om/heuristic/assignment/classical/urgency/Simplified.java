@@ -11,7 +11,7 @@ import cujae.inf.ic.om.problem.output.solution.Solution;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
 
-public class Simplified extends ByUrgency {
+public class Simplified extends ByUrgency implements IUrgency {
 
 	public Simplified() {
 		super();
@@ -31,7 +31,7 @@ public class Simplified extends ByUrgency {
 		NumericMatrix closestMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
 		
 		ArrayList<ArrayList<Integer>> listDepotsOrdered = getDepotsOrdered(listCustomersToAssign, listIDDepots.get(0), closestMatrix);
-		ArrayList<Double> listUrgencies = getListUrgencies(listCustomersToAssign, listIDDepots, urgencyMatrix, -1);
+		ArrayList<Double> listUrgencies = getListUrgencies(listCustomersToAssign, listIDDepots, urgencyMatrix);
 		
 		int posCustomer = -1;
 		int idCustomer = -1;
@@ -84,7 +84,7 @@ public class Simplified extends ByUrgency {
 							listDepotsOrdered.remove(posCustomer);
 						}
 						else
-							listUrgencies.set(posCustomer, getUrgency(idCustomer, listIDDepots.get(0), urgencyMatrix, -1));
+							listUrgencies.set(posCustomer, getUrgency(idCustomer, listIDDepots.get(0), urgencyMatrix));
 					}
 					else
 					{							
@@ -111,7 +111,7 @@ public class Simplified extends ByUrgency {
 								else
 								{
 									if(currentPosDepot == 0)
-										listUrgencies.set(i, getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(0), urgencyMatrix, -1));
+										listUrgencies.set(i, getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(0), urgencyMatrix));
 									else 
 									{
 										if(currentPosDepot == 1)
@@ -160,6 +160,28 @@ public class Simplified extends ByUrgency {
 
 		return solution;
 	}
+	
+	 /**
+     * @param  ArrayList<Customer> listado de clientes
+     * @param  ArrayList<Integer> listado de identificadores de depósitos
+     * @param  NumericMatrix matriz con las distancias
+     * @param  int identificador del depósito de mayor demanda insatisfecha
+     * @return ArrayList<Double> listado de urgencia
+     * Retorna un listado con las urgencias de los clientes del listado entrado por parámetro
+     **/
+	@Override
+	public ArrayList<Double> getListUrgencies(ArrayList<Customer> listCustomersToAssign, ArrayList<ArrayList<Integer>> listIDDepots, NumericMatrix urgencyMatrix){
+		ArrayList<Double> urgencies = new ArrayList<Double>();
+		
+		if(listIDDepots.size() > 1)
+			for(int i = 0; i < listCustomersToAssign.size(); i++)
+				urgencies.add(getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(i), urgencyMatrix));
+		else
+			for(int i = 0; i < listCustomersToAssign.size(); i++)
+				urgencies.add(getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(0), urgencyMatrix));
+
+		return urgencies;
+	}
 
 	/**
      * @param  int identificador del cliente
@@ -171,7 +193,7 @@ public class Simplified extends ByUrgency {
      **/
 	
 	@Override
-	protected double getUrgency(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix urgencyMatrix, int muIDDepot){
+	public double getUrgency(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix urgencyMatrix){
 		double urgency = 0.0;
 		double closestDist = 0.0;
 		double otherDist = 0.0;

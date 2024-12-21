@@ -120,7 +120,7 @@ public class MainDePrueba
 							{
 								cujae.inf.ic.om.controller.Controller.getController().executeAssignment(AssignmentType.KMEANS);
 								break;
-							}
+							}/*
 							case 7:
 							{
 								cujae.inf.ic.om.controller.Controller.getController().executeAssignment(AssignmentType.Modified_KMEANS);
@@ -130,7 +130,7 @@ public class MainDePrueba
 							{
 								cujae.inf.ic.om.controller.Controller.getController().executeAssignment(AssignmentType.Modified_PAM);
 								break;
-							}
+							}*/
 							case 9:
 							{
 								cujae.inf.ic.om.controller.Controller.getController().executeAssignment(AssignmentType.NearestByCustomer);

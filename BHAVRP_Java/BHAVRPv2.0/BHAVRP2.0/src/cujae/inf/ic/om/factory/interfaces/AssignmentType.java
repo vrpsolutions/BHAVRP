@@ -8,7 +8,7 @@ public enum AssignmentType {
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.classical.cyclic.BestCyclicAssignment.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.others.basedcyclic.BestCyclicAssignment.class.getName(); 
 		}
 	}, 
 
@@ -17,7 +17,7 @@ public enum AssignmentType {
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.classical.other.distance.BestNearest.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.others.distance.BestNearest.class.getName(); 
 		}
 	}, 
 
@@ -26,7 +26,7 @@ public enum AssignmentType {
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.clustering.partitional.CLARA.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.clustering.partitional.Clara.class.getName(); 
 		}
 	}, 
 	
@@ -38,7 +38,7 @@ public enum AssignmentType {
 			return cujae.inf.ic.om.heuristic.assignment.classical.cluster.CoefficientPropagation.class.getName(); 
 		}
 	}, 
-	
+	/*
 	CURE
 	{
 		@Override
@@ -47,7 +47,7 @@ public enum AssignmentType {
 			return cujae.inf.ic.om.heuristic.assignment.clustering.hierarchical.CURE.class.getName(); 
 		}
 	}, 
-	
+	*/
 	CyclicAssignment
 	{
 		@Override
@@ -56,15 +56,15 @@ public enum AssignmentType {
 			return cujae.inf.ic.om.heuristic.assignment.classical.cyclic.CyclicAssignment.class.getName(); 
 		}
 	}, 
-	
+	/*
 	DBSCAN	
- /*{
+	{
 	   @Override
 	   public String toString()
 	   {
 		return cujae.inf.citi.om.heuristic.assignment.clustering.DBSCAN.class.getName(); 
 	   }
-    }*/,
+    }*/
 	
 	Farthest_First
 	{
@@ -80,10 +80,10 @@ public enum AssignmentType {
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.clustering.partitional.KMEANS.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.clustering.partitional.Kmeans.class.getName(); 
 		}
 	}, 
-	
+	/*
 	Modified_KMEANS
 	{
 		@Override
@@ -92,7 +92,7 @@ public enum AssignmentType {
 			return cujae.inf.ic.om.heuristic.assignment.others.Modified_KMEANS.class.getName(); 
 		}
 	}, 
-	
+	/*
 	Modified_PAM
 	{
 		@Override
@@ -101,13 +101,13 @@ public enum AssignmentType {
 			return cujae.inf.ic.om.heuristic.assignment.others.Modified_PAM.class.getName(); 
 		}
 	}, 
-	
+	*/
 	NearestByCustomer
 	{
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.classical.other.distance.NearestByCustomer.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.others.distance.NearestByCustomer.class.getName(); 
 		}
 	}, 
 	
@@ -116,7 +116,7 @@ public enum AssignmentType {
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.classical.other.distance.NearestByDepot.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.others.distance.NearestByDepot.class.getName(); 
 		}
 	}, 
 	
@@ -137,25 +137,25 @@ public enum AssignmentType {
 			return cujae.inf.ic.om.heuristic.assignment.classical.urgency.Parallel.class.getName(); 
 		}
 	}, 
-	
+	/*
 	ParallelPlus
 	{
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.classical.urgency.ParallelPlus.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.others.others.ParallelPlus.class.getName(); 
 		}
 	}, 
-	
+	*/
 	RandomByElement
 	{
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.classical.other.RandomByElement.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.others.distance.RandomByElement.class.getName(); 
 		}
 	}, 
-	
+	/*
 	RandomNearestByCustomer
 	{
 		@Override
@@ -173,27 +173,28 @@ public enum AssignmentType {
 			return cujae.inf.ic.om.heuristic.assignment.others.RandomNearestByDepot.class.getName(); 
 		}
 	}, 
-	
+	*/
 	RandomSequentialCyclic
 	{
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.classical.cyclic.RandomSequentialCyclic.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.others.basedcyclic.RandomSequentialCyclic.class.getName(); 
 		}
 	}, 
 	
 	RandomSequentialNearestByDepot
-	{
+	/*{
 		@Override
 		public String toString()
 		{
 			return cujae.inf.ic.om.heuristic.assignment.others.RandomSequentialNearestByDepot.class.getName(); 
 		}
 	}, 
-	
+	*/
+	/*
 	ROCK
-	/*{
+	{
 		@Override
 		public String toString()
 		{
@@ -206,10 +207,10 @@ public enum AssignmentType {
 		@Override
 		public String toString()
 		{
-			return cujae.inf.ic.om.heuristic.assignment.classical.cyclic.SequentialCyclic.class.getName(); 
+			return cujae.inf.ic.om.heuristic.assignment.others.basedcyclic.SequentialCyclic.class.getName(); 
 		}
 	}, 
-	
+	/*
 	SequentialNearestByDepot
 	{
 		@Override
@@ -218,7 +219,7 @@ public enum AssignmentType {
 			return cujae.inf.ic.om.heuristic.assignment.others.SequentialNearestByDepot.class.getName(); 
 		}
 	}, 
-	
+	*/
 	Simplified
 	{
 		@Override

@@ -10,7 +10,7 @@ import cujae.inf.ic.om.problem.output.solution.Solution;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
-public class Sweep extends ByUrgency {
+public class Sweep extends ByUrgency implements IUrgencyWithMU {
 
 	public Sweep() {
 		super();
@@ -175,6 +175,27 @@ public class Sweep extends ByUrgency {
 
 		return idDepot;
 	}
+	
+	 /**
+     * @param  ArrayList<Customer> listado de clientes
+     * @param  ArrayList<Integer> listado de identificadores de depósitos
+     * @param  NumericMatrix matriz con las distancias
+     * @param  int identificador del depósito de mayor demanda insatisfecha
+     * @return ArrayList<Double> listado de urgencia
+     * Retorna un listado con las urgencias de los clientes del listado entrado por parámetro
+     **/
+	public ArrayList<Double> getListUrgencies(ArrayList<Customer> listCustomersToAssign, ArrayList<ArrayList<Integer>> listIDDepots, NumericMatrix urgencyMatrix, int muIDDepot){
+		ArrayList<Double> urgencies = new ArrayList<Double>();
+		
+		if(listIDDepots.size() > 1)
+			for(int i = 0; i < listCustomersToAssign.size(); i++)
+				urgencies.add(getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(i), urgencyMatrix, muIDDepot));
+		else
+			for(int i = 0; i < listCustomersToAssign.size(); i++)
+				urgencies.add(getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(0), urgencyMatrix, muIDDepot));
+
+		return urgencies;
+	}
 
 	/**
      * @param  int identificador del cliente
@@ -185,7 +206,7 @@ public class Sweep extends ByUrgency {
      * Retorna la urgencia del cliente 
      **/
 	@Override
-	protected double getUrgency(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix urgencyMatrix, int muIDDepot) {
+	public double getUrgency(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix urgencyMatrix, int muIDDepot) {
 		double urgency = 0.0;
 		int posCustomerMatrix = -1;
 		double muDist = 0.0;

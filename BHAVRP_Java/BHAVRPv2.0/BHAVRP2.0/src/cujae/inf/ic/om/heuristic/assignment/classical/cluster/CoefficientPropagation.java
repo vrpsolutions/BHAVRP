@@ -7,10 +7,11 @@ import cujae.inf.ic.om.problem.input.Problem;
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
 
+import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
 
-public class CoefficientPropagation extends ByCluster {
+public class CoefficientPropagation extends ByNotUrgency {
 
 	public static double degradationCoefficient = 0.5;
 
@@ -136,7 +137,7 @@ public class CoefficientPropagation extends ByCluster {
 
 
 	/*Este método calcula el coeficiente de atracción dados, el identificador del cliente asignado, y el cliente por el que se asignó*/
-	public void calculateAttractionCoefficient(int posCustomer, int posElement, ArrayList<Double> coefficients){
+	private void calculateAttractionCoefficient(int posCustomer, int posElement, ArrayList<Double> coefficients){
 		double currentAttCoeff = 1.0;
 		double newAttCoeff = 1.0;
 
@@ -245,5 +246,38 @@ public class CoefficientPropagation extends ByCluster {
 
 			scaledMatrix.setItem(posCustomer, posNewCustomer, scaledDistance);
 		}
+	}
+	
+	/*Este método devuelve la posición del cluster (en la lista de clusters) al que debe asignarse el cliente que se está analizando, dado el identificador del elemento por el que se va a asignar dicho cliente*/
+	private int getPosCluster(int posCustomer, ArrayList<Cluster> clusters){
+		int posCluster = -1;
+		int idCustomer = Problem.getProblem().getListIDCustomers().get(posCustomer);
+		int i = 0;
+		int j;
+		boolean found = false;
+
+		while((i < clusters.size()) && (!found))
+		{
+			j = 0;
+
+			if(!clusters.get(i).getItemsOfCluster().isEmpty())
+			{
+				while((j < clusters.get(i).getItemsOfCluster().size()) && (!found))
+				{
+					if(clusters.get(i).getItemsOfCluster().get(j) == idCustomer)
+					{
+						posCluster = i;
+						found = true;
+					}
+
+					else
+						j++;
+				}
+			}
+
+			i++;
+		}
+
+		return posCluster;
 	}
 }

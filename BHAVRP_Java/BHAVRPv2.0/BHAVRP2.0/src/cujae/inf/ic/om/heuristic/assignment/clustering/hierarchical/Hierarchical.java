@@ -2,12 +2,12 @@ package cujae.inf.ic.om.heuristic.assignment.clustering.hierarchical;
 
 import java.util.ArrayList;
 
-import cujae.inf.ic.om.heuristic.assignment.Assignment;
+import cujae.inf.ic.om.heuristic.assignment.clustering.Clustering;
 
 import cujae.inf.ic.om.problem.input.Problem;
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 
-public abstract class Hierarchical extends Assignment {
+public abstract class Hierarchical extends Clustering {
 
 	protected boolean findDepotOfCluster(ArrayList<Cluster> clusters){
 		int i = 0;

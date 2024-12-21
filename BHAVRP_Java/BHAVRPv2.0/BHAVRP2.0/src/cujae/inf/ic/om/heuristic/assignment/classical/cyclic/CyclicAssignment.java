@@ -7,11 +7,12 @@ import cujae.inf.ic.om.problem.input.Problem;
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
 
+import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
 
 /*Clase que modela como asignar el mejor cliente al último cliente - depósito asignado en forma paralela por depósitos*/
-public class CyclicAssignment extends Cyclic { 
+public class CyclicAssignment extends ByNotUrgency { 
 
 	public CyclicAssignment() {
 		super();

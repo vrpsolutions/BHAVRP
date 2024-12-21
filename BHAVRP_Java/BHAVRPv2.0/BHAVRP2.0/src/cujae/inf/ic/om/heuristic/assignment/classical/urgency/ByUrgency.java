@@ -2,7 +2,7 @@ package cujae.inf.ic.om.heuristic.assignment.classical.urgency;
 
 import java.util.ArrayList;
 
-import cujae.inf.ic.om.heuristic.assignment.Assignment;
+import cujae.inf.ic.om.heuristic.assignment.classical.Heuristic;
 
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Problem;
@@ -10,7 +10,8 @@ import cujae.inf.ic.om.problem.input.Problem;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
 
-public abstract class ByUrgency extends Assignment {
+public abstract class ByUrgency extends Heuristic {
+	
 	 /**
      * @param  double distancia más cercana
      * @param  double distancia de referencia
@@ -44,7 +45,7 @@ public abstract class ByUrgency extends Assignment {
      * @return ArrayList<Integer> listado de identificadores de depósitos ordenados
      * Para un cliente dado crea un listado con los identificadores de los depósitos ordenados por cercanía
      **/
-	protected ArrayList<Integer> getDepotsOrderedByCustomer(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix costMatrix, int currentDepots){
+	private ArrayList<Integer> getDepotsOrderedByCustomer(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix costMatrix, int currentDepots){
 		ArrayList<Integer> listClosestDepotsByCustomer = new ArrayList<Integer>();
 	
 		int posCustomer = Problem.getProblem().getPosElement(idCustomer);		
@@ -72,27 +73,45 @@ public abstract class ByUrgency extends Assignment {
 
 		return listClosestDepotsByCustomer;
 	}
-	 /**
-     * @param  ArrayList<Customer> listado de clientes
-     * @param  ArrayList<Integer> listado de identificadores de depósitos
-     * @param  NumericMatrix matriz con las distancias
-     * @param  int identificador del depósito de mayor demanda insatisfecha
-     * @return ArrayList<Double> listado de urgencia
-     * Retorna un listado con las urgencias de los clientes del listado entrado por parámetro
-     **/
-	protected ArrayList<Double> getListUrgencies(ArrayList<Customer> listCustomersToAssign, ArrayList<ArrayList<Integer>> listIDDepots, NumericMatrix urgencyMatrix, int muIDDepot){
-		ArrayList<Double> urgencies = new ArrayList<Double>();
-		
-		if(listIDDepots.size() > 1)
-			for(int i = 0; i < listCustomersToAssign.size(); i++)
-				urgencies.add(getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(i), urgencyMatrix, muIDDepot));
-		else
-			for(int i = 0; i < listCustomersToAssign.size(); i++)
-				urgencies.add(getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(0), urgencyMatrix, muIDDepot));
 
-		return urgencies;
-}
-	
-	/*Método encargado de obtener la urgencia*/
-	protected abstract double getUrgency(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix urgencyMatrix, int muIDDepot);	
+	protected int getPosMaxValue(ArrayList<Double> list){
+		int posMaxValue = -1;
+
+		if((list != null) && (!list.isEmpty()))
+		{
+			posMaxValue = 0;
+			Double maxValue = list.get(0);
+
+			for(int i = 1; i < list.size(); i++)
+			{
+				if(list.get(i).doubleValue() > maxValue.doubleValue())
+				{
+					maxValue = list.get(i);
+					posMaxValue = i;
+				}
+			}	
+		}
+
+		return posMaxValue;
+	}
+
+	protected int getPosMinValue(ArrayList<Double> list){
+		int posMinValue = -1;
+
+		if((list != null) && (!list.isEmpty()))
+		{
+			posMinValue = 0;
+			Double minValue = list.get(0);
+
+			for(int i = 1; i < list.size(); i++)
+			{
+				if(list.get(i).doubleValue() < minValue.doubleValue())
+				{
+					minValue = list.get(i);
+					posMinValue = i;
+				}
+			}
+		}
+		return posMinValue;
+	}
 }

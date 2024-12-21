@@ -10,7 +10,7 @@ import cujae.inf.ic.om.problem.output.solution.Solution;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
-public class Parallel extends ByUrgency {
+public class Parallel extends ByUrgency implements IUrgency {
 
 	public Parallel() {
 		super();
@@ -28,7 +28,7 @@ public class Parallel extends ByUrgency {
 		NumericMatrix closestMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
 		
 		ArrayList<ArrayList<Integer>> listDepotsOrdered = getDepotsOrdered(listCustomersToAssign, listIDDepots, closestMatrix);
-		ArrayList<Double> listUrgencies = getListUrgencies(listCustomersToAssign, listDepotsOrdered, urgencyMatrix, -1);
+		ArrayList<Double> listUrgencies = getListUrgencies(listCustomersToAssign, listDepotsOrdered, urgencyMatrix);
 
 		int posCustomer = -1;
 		int idCustomer = -1;
@@ -81,7 +81,7 @@ public class Parallel extends ByUrgency {
 							listDepotsOrdered.remove(posCustomer);							
 						}
 						else	
-							listUrgencies.set(posCustomer, getUrgency(idCustomer, listDepotsOrdered.get(posCustomer), urgencyMatrix, -1));
+							listUrgencies.set(posCustomer, getUrgency(idCustomer, listDepotsOrdered.get(posCustomer), urgencyMatrix));
 					}
 					else 
 					{ 
@@ -105,7 +105,7 @@ public class Parallel extends ByUrgency {
 									listDepotsOrdered.remove(i);
 								}
 								else
-									listUrgencies.set(i, getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listDepotsOrdered.get(i), urgencyMatrix, -1));
+									listUrgencies.set(i, getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listDepotsOrdered.get(i), urgencyMatrix));
 							}
 						}
 
@@ -132,6 +132,28 @@ public class Parallel extends ByUrgency {
 		return solution;
 	}
 	
+	 /**
+     * @param  ArrayList<Customer> listado de clientes
+     * @param  ArrayList<Integer> listado de identificadores de depósitos
+     * @param  NumericMatrix matriz con las distancias
+     * @param  int identificador del depósito de mayor demanda insatisfecha
+     * @return ArrayList<Double> listado de urgencia
+     * Retorna un listado con las urgencias de los clientes del listado entrado por parámetro
+     **/
+	@Override
+	public ArrayList<Double> getListUrgencies(ArrayList<Customer> listCustomersToAssign, ArrayList<ArrayList<Integer>> listIDDepots, NumericMatrix urgencyMatrix){
+		ArrayList<Double> urgencies = new ArrayList<Double>();
+		
+		if(listIDDepots.size() > 1)
+			for(int i = 0; i < listCustomersToAssign.size(); i++)
+				urgencies.add(getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(i), urgencyMatrix));
+		else
+			for(int i = 0; i < listCustomersToAssign.size(); i++)
+				urgencies.add(getUrgency(listCustomersToAssign.get(i).getIDCustomer(), listIDDepots.get(0), urgencyMatrix));
+
+		return urgencies;
+	}
+	
 	/**
      * @param  int identificador del cliente
      * @param  ArrayList<Integer> listado de identificadores de depósitos
@@ -141,7 +163,7 @@ public class Parallel extends ByUrgency {
      * Retorna la urgencia del cliente 
      **/
 	@Override
-	protected double getUrgency(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix urgencyMatrix, int muIDDepot) {
+	public double getUrgency(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix urgencyMatrix) {
 		double urgency = 0.0;
 		double closestDist = 0.0;
 		double otherDist = 0.0;

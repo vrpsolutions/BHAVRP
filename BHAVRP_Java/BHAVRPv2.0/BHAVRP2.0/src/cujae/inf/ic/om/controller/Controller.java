@@ -12,7 +12,6 @@ import cujae.inf.ic.om.factory.interfaces.AssignmentType;
 import cujae.inf.ic.om.factory.interfaces.IFactoryAssignment;
 
 import cujae.inf.ic.om.factory.methods.FactoryAssignment;
-
 import cujae.inf.ic.om.heuristic.assignment.Assignment;
 
 import cujae.inf.ic.om.problem.input.Problem;
