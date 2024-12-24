@@ -15,37 +15,49 @@ import cujae.inf.ic.om.matrix.RowCol;
 /*Clase que modela como asignar clientes a los depósitos dn forma secuencial por depósitos escogiendo el depósito al azar*/
 public class RandomSequentialCyclic extends ByNotUrgency {
 	
+	Random random = new Random();
+	private Solution solution = new Solution();	
+	
+	private ArrayList<Cluster> listClusters;
+	private ArrayList<Customer> listCustomersToAssign;
+	private ArrayList<Integer> listIDDepots;
+	private NumericMatrix costMatrix;
+	
+	private int posElementMatrix = -1;
+	private int idCustomer = -1;
+	private double requestCustomer = 0.0;
+	private int posRDMDepot = -1;
+	private double capacityDepot = 0.0;
+	private int posCluster = -1;
+	private double requestCluster = 0.0;
+	
+	private RowCol rcBestElement = null;
+	private int countTry = 0;
+	private boolean isFull = false;
+	
 	public RandomSequentialCyclic() {
 		super();
 	}
 
 	@Override
 	public Solution toClustering() {
-		Solution solution = new Solution();		
-		
-		ArrayList<Cluster> listClusters = initializeClusters();
-		
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-		ArrayList<Integer> listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
-		
+		initialize();
+		assign();
+		return finish();
+	}
+	
+	@Override
+	public void initialize() {
+		listClusters = initializeClusters();
+		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
+		costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+	}	
+	
+	@Override
+	public void assign() {
 		int totalItems = listCustomersToAssign.size();
 		int totalClusters = listIDDepots.size();
-		
-		RowCol rcBestElement = null;
-		boolean isFull = false;
-		int countTry = 0;
-		
-		int posElementMatrix = -1;
-		int idCustomer = -1;
-		double requestCustomer = 0.0;
-		
-		Random random = new Random();
-		int posRDMDepot = -1;
-		double capacityDepot = 0.0;
-		
-		int posCluster = -1;
-		double requestCluster = 0.0;
 		
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty()))
 		{
@@ -113,7 +125,10 @@ public class RandomSequentialCyclic extends ByNotUrgency {
 				countTry = 0;				
 			}		
 		}
+	}
 
+	@Override
+	public Solution finish() {
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());

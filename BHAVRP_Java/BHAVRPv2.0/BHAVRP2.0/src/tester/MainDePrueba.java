@@ -24,7 +24,7 @@ public class MainDePrueba
 		SaveFile.getSaveFile().createResultFile(pathFileEnd);
 		
 		String pathFiles = "C-mdvrp//p"; 
-		int totalInstances = 500; // instancia 6, 10, 15 y 19
+		int totalInstances = 1; // instancia 6, 10, 15 y 19
 		LoadFile load = new LoadFile();
 
 		for(int i = 0; i < totalInstances; i++)
@@ -70,7 +70,7 @@ public class MainDePrueba
 				ArrayList<Double> listSSB = new ArrayList<Double>();
 				ArrayList<Double> listExTime = new ArrayList<Double>();
 				
-				int run = 1;
+				int run = 100;
 				
 				SaveFile.getSaveFile().createSheet(pathFileEnd, "p1", run, Problem.getProblem().getTotalRequest(), 0, 0);
 				//SaveFile.getSaveFile().writeData(idFile, countExecution, nameHeuristic, variant, pathFileEnd);
@@ -80,7 +80,7 @@ public class MainDePrueba
 				{
 					double start = System.currentTimeMillis();
 					
-					int j = 5;  // 0 y 7 23
+					int j = 6;  // 0 y 7 23
 					
 					//for(int j = 1; j < AssignmentType.values().length; j++)
 					//{
@@ -138,7 +138,7 @@ public class MainDePrueba
 							}
 							case 10:
 							{
-								//cujae.inf.citi.om.controller.Controller.getController().executeAssignment(AssignmentType.NearestByDepot);
+								cujae.inf.ic.om.controller.Controller.getController().executeAssignment(AssignmentType.NearestByDepot);
 								break;
 							}
 							case 11:
@@ -169,7 +169,7 @@ public class MainDePrueba
 							}
 							case 16:
 							{
-								//cujae.inf.citi.om.controller.Controller.getController().executeAssignment(AssignmentType.RandomSequentialCyclic);
+								cujae.inf.ic.om.controller.Controller.getController().executeAssignment(AssignmentType.RandomSequentialCyclic);
 								break;
 							}
 							case 17:
@@ -220,8 +220,10 @@ public class MainDePrueba
 					avgTime += runTime;
 					
 					listExTime.add(runTime);
+					System.out.println();
 					System.out.println("Tiempo de Ejecución " + (k + 1) + ": " + runTime + " ms");
 					System.out.println("Tiempo de Ejecución " + (k + 1) + ": " + listExTime.get(k) + " ms");
+					System.out.println();
 					
 					int totalClusters = Controller.getController().getSolution().getClusters().size(); 
 					
@@ -269,11 +271,17 @@ public class MainDePrueba
 					System.out.println("SSB " + result3);
 					System.out.println("SSB1 " + result4); */
 				}
-				
+				System.out.println("-------------------------------------------------------------------------------");
+				System.out.println("Resultados:");
+				System.out.println();
+				System.out.println("Número de Ejecuciones: " + run);
+				System.out.println();
+				System.out.println("Tiempo de Ejecución Total: " + avgTime + " ms");
+				System.out.println("Tiempo de Ejecución Total: " + avgTime/1000 + " s");
 				System.out.println();
 				System.out.println("Tiempo de Ejecución Promedio: " + (avgTime/run) + " ms");
-				
-				System.out.println("Tiempo de Ejecución Promedio: " + (avgTime/run) + " ms");
+				System.out.println("Tiempo de Ejecución Promedio: " + (avgTime/run)/1000 + " s");
+				System.out.println("-------------------------------------------------------------------------------");
 			}
 
 

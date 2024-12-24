@@ -11,31 +11,37 @@ import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class ThreeCriteriaClustering extends ByNotUrgency {
+	
+	private Solution solution = new Solution();
+	
+	private ArrayList<Cluster> listClusters;
+	private ArrayList<Customer> listCustomersToAssign;
+	
+	private int idCustomer = -1;
+	private double requestCustomer = 0.0;
+	private double capacityDepot = 0;
+	private int posCluster = -1;
+	private double requestCluster = 0.0;
 
 	public ThreeCriteriaClustering() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
+	@Override
 	public Solution toClustering(){
-		Solution solution = new Solution();	
-		
-		ArrayList<Cluster> listClusters = initializeClusters();
-		
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-
-		int idCustomer = -1;
-		double requestCustomer = 0.0;
-		
-		double capacityDepot = 0;
-		
-		int posCluster = -1;
-		double requestCluster = 0.0;
-		
-		ArrayList<Integer> listIDCandidates = new ArrayList<Integer>();
-		ArrayList<ArrayList<Double>> listValuesCandidates = new ArrayList<ArrayList<Double>>(); 
-		ArrayList<Double> listDifferences = new ArrayList<Double>();
-		
+		initialize();
+		assign();
+		return finish();
+	}
+	
+	@Override
+	public void initialize() {
+		listClusters = initializeClusters();
+		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+	}
+	
+	@Override
+	public void assign() {
 		// METODO DETERMINAR CANDIDATOS Y OTRO METODO ASIGNAR CANDIDATOS
 		
 		double difference = -1.0; 
@@ -45,7 +51,11 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 		
 		ArrayList<Double> listAverages = null;
 		ArrayList<Double> listVariances = null;
-			
+		
+		ArrayList<Integer> listIDCandidates = new ArrayList<Integer>();
+		ArrayList<ArrayList<Double>> listValuesCandidates = new ArrayList<ArrayList<Double>>(); 
+		ArrayList<Double> listDifferences = new ArrayList<Double>();
+		
 		bucleInit:
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty()))
 		{
@@ -236,7 +246,10 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 				}
 			}
 		}
-
+	}
+	
+	@Override
+	public Solution finish() {
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());

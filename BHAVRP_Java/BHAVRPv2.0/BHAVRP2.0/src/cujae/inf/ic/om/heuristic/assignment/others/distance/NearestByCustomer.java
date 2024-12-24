@@ -14,6 +14,26 @@ import cujae.inf.ic.om.matrix.RowCol;
 
 /*Clase que modela como asignar los clientes a los depósitos considerando el orden de la lista de clientes y se parte del criterio de cercanía a los depósitos*/
 public class NearestByCustomer extends ByNotUrgency {
+	
+	private Solution solution = new Solution();	
+	
+	private ArrayList<Cluster> listClusters; 
+	private ArrayList<Customer> listCustomersToAssign;
+	private NumericMatrix costMatrix;
+	
+	private int totalCustomers;
+	private int totalDepots;
+
+	private int idDepot = -1;
+	private int posDepot = -1;
+	private double capacityDepot = 0.0;
+	private int posCustomer = 0;
+	private double requestCustomer = 0.0;
+	private int posCluster = -1;
+	private double requestCluster = 0.0;
+	
+	private RowCol rcBestDepot = null;
+	private int countTry = 0;  
 
 	public NearestByCustomer() {
 		super();
@@ -21,26 +41,22 @@ public class NearestByCustomer extends ByNotUrgency {
 
 	@Override
 	public Solution toClustering() {
-    	Solution solution = new Solution();		
-		
-    	ArrayList<Cluster> listClusters = initializeClusters(); 
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-        NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
-		int totalCustomers = listCustomersToAssign.size();
-        int totalDepots = Problem.getProblem().getDepots().size();
-		
-        RowCol rcBestDepot = null;
-        int countTry = 0;  
-        
-        int idDepot = -1;
-        int posDepot = -1;
-        double capacityDepot = 0.0;
+		initialize();
+		assign();
+		return finish();
+	}
+	
+	@Override
+	public void initialize() {
+		listClusters = initializeClusters(); 
+		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+	}
 
-		int posCustomer = 0;
-        double requestCustomer = 0.0;
-		
-		int posCluster = -1;
-		double requestCluster = 0.0;
+	@Override
+	public void assign() {
+		totalCustomers = listCustomersToAssign.size();
+        totalDepots = Problem.getProblem().getDepots().size();
 		
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty()) && (!costMatrix.fullMatrix(totalCustomers, 0, (totalCustomers + totalDepots - 1), (totalCustomers - 1), Double.POSITIVE_INFINITY)))
 		{	
@@ -98,7 +114,10 @@ public class NearestByCustomer extends ByNotUrgency {
 				}
 			}
 		}
-		
+	}
+	
+	@Override
+	public Solution finish() {				
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());

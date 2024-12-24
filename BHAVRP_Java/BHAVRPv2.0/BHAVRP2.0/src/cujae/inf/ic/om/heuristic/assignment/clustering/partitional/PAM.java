@@ -25,22 +25,34 @@ public class PAM extends ByMedoids {
 	private final int countMaxIterations = 100; // UN VALOR APROPIADO CONFIGURABLE?
 	private int currentIteration = 0;
 	
+	private ArrayList<Integer> listIDElements;
+	private ArrayList<Cluster> listClusters;
+	private ArrayList<Customer> listCustomersToAssign;
+	
 	public PAM() {
 		super();
 	}
 
 	@Override
 	public Solution toClustering() {
-		Solution solution = new Solution();
+		initialize();
+		assign();
+		return finish();
+	}
+	
+	@Override	
+	public void initialize() {	
+		listIDElements = generateElements(seedType, distanceType);
+		listClusters = initializeClusters(listIDElements);		
+		listCustomersToAssign = new ArrayList<Customer>();
+	}	
 		
-		ArrayList<Integer> listIDElements = generateElements(seedType, distanceType);
-		ArrayList<Cluster> listClusters = initializeClusters(listIDElements);
+	@Override	
+	public void assign() {	
+		ArrayList<Depot> listMedoids = new ArrayList<Depot>();
 		
 		boolean change = true;
 		boolean first = true;
-		
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>();
-		ArrayList<Depot> listMedoids = new ArrayList<Depot>();
 		
 		while((change) && (currentIteration < countMaxIterations))
 		{
@@ -89,6 +101,11 @@ public class PAM extends ByMedoids {
 			
 			System.out.println("ITERACIÓN: " + currentIteration);
 		}
+	}	
+
+	@Override
+	public Solution finish() {
+		Solution solution = new Solution();
 		
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	

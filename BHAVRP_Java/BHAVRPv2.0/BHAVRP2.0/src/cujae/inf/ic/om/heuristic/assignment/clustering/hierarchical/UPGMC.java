@@ -314,27 +314,6 @@ public class UPGMC extends Hierarchical {
 		return idDepotMU;
 	}
 	
-	private boolean isFullDepot(ArrayList<Cluster> clusters, double requestCluster, double capacityDepot, int currentCustomer){
-		boolean isFull = true;
-
-		double currentRequest = capacityDepot - requestCluster;
-
-		if(currentRequest > 0)
-		{
-			int i = 0;
-
-			while(((i < clusters.size()) && (i < currentCustomer)) && (isFull))
-			{
-				if(clusters.get(i).getRequestCluster() <= currentRequest)
-					isFull = false;
-				else
-					i++;
-			}
-		}	
-
-		return isFull;
-	}
-	
 	private void finish(ArrayList<Cluster> clusters, Solution solution){
 		int posElement = -1;
 

@@ -24,6 +24,11 @@ public class Kmeans extends ByCentroids {
 	private final int countMaxIterations = 100; // UN VALOR APROPIADO COMFIGURABLE ?
 	private int currentIteration = 0;
 	
+	private ArrayList<Integer> listIDElements;
+	private ArrayList<Cluster> listClusters;
+	private ArrayList<Customer> listCustomersToAssign;
+	private ArrayList<Depot> listCentroids;
+	
 	public Kmeans() {
 		super();
 	}
@@ -34,18 +39,25 @@ public class Kmeans extends ByCentroids {
 
 	@Override
 	public Solution toClustering() {
-		Solution solution = new Solution();		
- 
-		ArrayList<Integer> listIDElements = generateElements(seedType, distanceType); // no volver a construir la matriz de costo
-
-		ArrayList<Cluster> listClusters = initializeClusters(listIDElements);
-
+		initialize();
+		assign();
+		return finish();
+	}
+	
+	@Override		
+	public void initialize() {
+		listIDElements = generateElements(seedType, distanceType); // no volver a construir la matriz de costo
+		listClusters = initializeClusters(listIDElements);
+		listCustomersToAssign = new ArrayList<Customer>();
+		listCentroids = new ArrayList<Depot>();
+	}	
+		
+	@Override	
+	public void assign() {	
+		
 		boolean change = false;
 		boolean first = true;
-
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>();
-		ArrayList<Depot> listCentroids = new ArrayList<Depot>();
-
+		
 		do 
 		{	
 			listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
@@ -81,7 +93,12 @@ public class Kmeans extends ByCentroids {
 			System.out.println("ITERACIÓN ACTUAL: " + currentIteration);
 
 		} while((change) && (currentIteration < countMaxIterations));
-
+	}	
+		
+	@Override
+	public Solution finish() {
+		Solution solution = new Solution();	
+		
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());

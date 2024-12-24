@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 
-
-public abstract class Assignment implements IAssignment {
+//public abstract class Assignment implements IAssignment {
+public abstract class Assignment extends AssignmentTemplate {
 	
 	/**
 	 * @param  int identificador del cluster

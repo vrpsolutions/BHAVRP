@@ -14,36 +14,52 @@ import cujae.inf.ic.om.matrix.RowCol;
 
 /*Clase que modela como asignar los clientes a los depósitos en el orden de la lista de depósitos partiendo del criterio de cercanía a los clientes*/
 public class NearestByDepot extends ByNotUrgency {
+	
+	private Solution solution = new Solution();	
 
+	private ArrayList<Cluster> listClusters;
+	private ArrayList<Customer> listCustomersToAssign;
+	private ArrayList<Integer> listIDDepots;
+	private NumericMatrix costMatrix;
+	
+	private RowCol rcBestCustomer = null;  
+	private int idDepot = -1;
+	private int posDepot = 0;
+	private double capacityDepot = 0.0;	
+	private int posDepotMatrix = -1;
+	private int idCustomer = -1;
+	private int posCustomer = -1;
+	private double requestCustomer = 0.0;
+	
+	public int posCluster = -1;
+	public double requestCluster = 0.0;
+	
+	private boolean isNext = true;
+	
 	public NearestByDepot() {
 		super();
 	}
-
+	
 	@Override
 	public Solution toClustering() {
-		Solution solution = new Solution();		
+		initialize();
+		assign();
+		return finish();
+	}	
+	
+	@Override
+	public void initialize() {
+		listClusters = initializeClusters();
+		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
+		costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+	}
+	
+	@Override
+	public void assign() {		
 		
-		ArrayList<Cluster> listClusters = initializeClusters();
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-		ArrayList<Integer> listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
 		int totalCustomers = listCustomersToAssign.size();
 		int totalDepots = listIDDepots.size();
-
-		RowCol rcBestCustomer = null;  
-		boolean isNext = true;
-		
-		int idDepot = -1;
-		int posDepot = 0;
-		double capacityDepot = 0.0;	
-		int posDepotMatrix = -1;
-		
-		int idCustomer = -1;
-		int posCustomer = -1;
-		double requestCustomer = 0.0;
-		
-		int posCluster = -1;
-		double requestCluster = 0.0;
 		
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty()) && (!costMatrix.fullMatrix(Double.POSITIVE_INFINITY)))
 		{	
@@ -61,13 +77,13 @@ public class NearestByDepot extends ByNotUrgency {
 			requestCustomer = Problem.getProblem().getCustomers().get(posCustomer).getRequestCustomer();
 
 			costMatrix.setItem(posDepotMatrix, posCustomer, Double.POSITIVE_INFINITY);
-
-			posCluster = findCluster(idDepot, listClusters);
+			
+			int posCluster = findCluster(idDepot, listClusters);
 
 			if(posCluster != -1) 
 			{
-				requestCluster = listClusters.get(posCluster).getRequestCluster();
-
+				double requestCluster = listClusters.get(posCluster).getRequestCluster();
+				
 				if(capacityDepot >= (requestCluster + requestCustomer)) 
 				{
 					requestCluster += requestCustomer;
@@ -121,7 +137,11 @@ public class NearestByDepot extends ByNotUrgency {
 				}
 			}
 		}	
-
+	}	
+	
+	@Override
+	public Solution finish() {
+		
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());

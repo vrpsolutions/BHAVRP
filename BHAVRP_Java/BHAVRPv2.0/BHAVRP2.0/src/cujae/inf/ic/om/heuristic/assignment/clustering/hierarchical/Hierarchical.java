@@ -30,4 +30,25 @@ public abstract class Hierarchical extends Clustering {
 		
 		return found;
 	}
+	
+	protected boolean isFullDepot(ArrayList<Cluster> clusters, double requestCluster, double capacityDepot, int currentCustomer){
+		boolean isFull = true;
+
+		double currentRequest = capacityDepot - requestCluster;
+
+		if(currentRequest > 0)
+		{
+			int i = 0;
+
+			while(((i < clusters.size()) && (i < currentCustomer)) && (isFull))
+			{
+				if(clusters.get(i).getRequestCluster() <= currentRequest)
+					isFull = false;
+				else
+					i++;
+			}
+		}	
+
+		return isFull;
+	}
 }

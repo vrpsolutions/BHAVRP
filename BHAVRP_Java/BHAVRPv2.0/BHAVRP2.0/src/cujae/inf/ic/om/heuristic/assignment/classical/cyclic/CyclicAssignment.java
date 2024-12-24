@@ -13,6 +13,23 @@ import cujae.inf.ic.om.matrix.RowCol;
 
 /*Clase que modela como asignar el mejor cliente al último cliente - depósito asignado en forma paralela por depósitos*/
 public class CyclicAssignment extends ByNotUrgency { 
+	
+	private Solution solution = new Solution();
+	
+	private ArrayList<Cluster> listClusters;
+	private ArrayList<Customer> listCustomersToAssign;
+	private NumericMatrix costMatrix;
+	
+	private int posElementMatrix = -1;
+	private double capacityDepot = 0.0;	
+	private int idCustomer = -1;
+	private double requestCustomer = 0.0;
+	private int posCluster = -1;
+	private double requestCluster = 0.0; 
+	
+	private RowCol rcBestElement = null;
+	private int j = 0;
+	private boolean isNext = true;
 
 	public CyclicAssignment() {
 		super();
@@ -20,33 +37,27 @@ public class CyclicAssignment extends ByNotUrgency {
 
 	@Override
 	public Solution toClustering() {
-		Solution solution = new Solution();		
-		
-		ArrayList<Cluster> listClusters = initializeClusters();
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
-		
+		initialize();
+		assign();
+		return finish();
+	}
+				
+	@Override
+	public void initialize() {
+		listClusters = initializeClusters();
+		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+	}
+	
+	@Override
+	public void assign() {
 		int totalClusters = Problem.getProblem().getDepots().size();
 		int totalItems = listCustomersToAssign.size();
-
+		
 		ArrayList<Integer> itemsSelected = new ArrayList<Integer>();
 
 		for (int i = 0; i < totalClusters; i++) 
 			itemsSelected.add((totalItems + i));
-
-		RowCol rcBestElement = null;
-		int j = 0;
-		boolean isNext = true;
-		
-		int posElementMatrix = -1;
-		double capacityDepot = 0.0;
-		
-		int idCustomer = -1;
-		double requestCustomer = 0.0;
-		
-		int posCluster = -1;
-		double requestCluster = 0.0; 
-
 
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty()))
 		{
@@ -143,7 +154,10 @@ public class CyclicAssignment extends ByNotUrgency {
 				}
 			}
 		}
-
+	}
+	
+	@Override
+	public Solution finish() {
 		if(!listCustomersToAssign.isEmpty())					
 			for(int i = 0; i < listCustomersToAssign.size(); i++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(i).getIDCustomer());

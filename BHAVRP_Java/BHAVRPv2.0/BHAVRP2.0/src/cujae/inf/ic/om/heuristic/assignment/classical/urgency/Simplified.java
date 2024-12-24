@@ -12,36 +12,56 @@ import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
 
 public class Simplified extends ByUrgency implements IUrgency {
+	
+	private Solution solution = new Solution();	
+	
+	private ArrayList<Cluster> listClusters;
+	private ArrayList<Customer> listCustomersToAssign;
+
+	private NumericMatrix urgencyMatrix;
+	private NumericMatrix closestMatrix;
+	
+	private ArrayList<ArrayList<Integer>> listIDDepots;
+	private ArrayList<ArrayList<Integer>> listDepotsOrdered;
+	private ArrayList<Double> listUrgencies;
+	
+	private int posCustomer = -1;
+	private int idCustomer = -1;
+	private double requestCustomer = 0.0;
+	private int idClosestDepot = -1;
+	private double capacityDepot = 0.0;
+	private int posCluster = -1;
+	private double requestCluster = 0.0;
 
 	public Simplified() {
 		super();
 	}
 	
+	@Override
 	public Solution toClustering(){
-		Solution solution = new Solution();		
+		initialize();
+		assign();
+		return finish();
+	}	
+	
+	@Override
+	public void initialize() {
+		listClusters = initializeClusters();
+		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
 		
-		ArrayList<Cluster> listClusters = initializeClusters();
+		urgencyMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		closestMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
 		
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-		int totalItems = listCustomersToAssign.size();
-		ArrayList<ArrayList<Integer>> listIDDepots = new ArrayList<ArrayList<Integer>>();
+		listIDDepots = new ArrayList<ArrayList<Integer>>();
 		listIDDepots.add(Problem.getProblem().getListIDDepots());
-
-		NumericMatrix urgencyMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
-		NumericMatrix closestMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
 		
-		ArrayList<ArrayList<Integer>> listDepotsOrdered = getDepotsOrdered(listCustomersToAssign, listIDDepots.get(0), closestMatrix);
-		ArrayList<Double> listUrgencies = getListUrgencies(listCustomersToAssign, listIDDepots, urgencyMatrix);
-		
-		int posCustomer = -1;
-		int idCustomer = -1;
-		double requestCustomer = 0.0;
-		
-		int idClosestDepot = -1;
-		double capacityDepot = 0.0;
-		
-		int posCluster = -1;
-		double requestCluster = 0.0;
+		listDepotsOrdered = getDepotsOrdered(listCustomersToAssign, listIDDepots.get(0), closestMatrix);
+		listUrgencies = getListUrgencies(listCustomersToAssign, listIDDepots, urgencyMatrix);
+	}
+	
+	@Override
+	public void assign() {
+		int totalItems = listCustomersToAssign.size();
 
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty())) 
 		{
@@ -148,7 +168,10 @@ public class Simplified extends ByUrgency implements IUrgency {
 				}
 			}
 		}
-
+	}
+	
+	@Override
+	public Solution finish() {
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());

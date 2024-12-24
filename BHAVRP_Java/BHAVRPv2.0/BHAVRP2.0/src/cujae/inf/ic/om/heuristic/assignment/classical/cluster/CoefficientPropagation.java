@@ -14,6 +14,27 @@ import cujae.inf.ic.om.matrix.RowCol;
 public class CoefficientPropagation extends ByNotUrgency {
 
 	public static double degradationCoefficient = 0.5;
+	
+	private Solution solution = new Solution();	
+	
+	private ArrayList<Cluster> listClusters;
+	private ArrayList<Customer> listCustomersToAssign;
+	
+	private ArrayList<Double> listCoefficients;
+	private ArrayList<ArrayList<Double>> listScaledDistances;
+	private NumericMatrix scaledMatrix; 
+
+	private int posCustomer = -1;
+	private int idCustomer = -1;
+	private double requestCustomer = 0.0;
+	private int posDepot = -1;
+	private int idDepot = -1;
+	private double capacityDepot = 0.0;
+	private int posCluster = -1;
+	private double requestCluster = 0.0;
+	
+	private int posElement = -1;
+	private RowCol rcBestAll = new RowCol();
 
 	public CoefficientPropagation() {
 		super();
@@ -24,34 +45,27 @@ public class CoefficientPropagation extends ByNotUrgency {
 	
 		if(degradationCoefficient > 1 || degradationCoefficient < 0)
 			degradationCoefficient = 0.5;
-
-		Solution solution = new Solution();		
 		
-		ArrayList<Cluster> listClusters = initializeClusters();
-		ArrayList<Double> listCoefficients = initializeCoefficients();
-
-		ArrayList<ArrayList<Double>> listScaledDistances = new ArrayList<ArrayList<Double>>(fillListScaledDistances());
-		NumericMatrix scaledMatrix = initializeScaledMatrix(listScaledDistances); 
-
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		initialize();
+		assign();
+		return finish();
+	}	
 		
+	@Override
+	public void initialize() {
+		listClusters = initializeClusters();
+		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		
+		listCoefficients = initializeCoefficients();
+		listScaledDistances = new ArrayList<ArrayList<Double>>(fillListScaledDistances());
+		scaledMatrix = initializeScaledMatrix(listScaledDistances); 
+	}
+
+	@Override
+	public void assign() {
 		int totalItems = listCustomersToAssign.size();
 		int totalClusters = Problem.getProblem().getDepots().size();
-
-		int posCustomer = -1;
-		int idCustomer = -1;
-		double requestCustomer = 0.0;
 		
-		int posDepot = -1;
-		int idDepot = -1;
-		double capacityDepot = 0.0;
-		
-		int posCluster = -1;
-		double requestCluster = 0.0;
-		
-		int posElement = -1;
-		RowCol rcBestAll = new RowCol();
-
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty()) && (!scaledMatrix.fullMatrix(Double.POSITIVE_INFINITY)))
 		{
 			rcBestAll = scaledMatrix.indexLowerValue();
@@ -122,7 +136,10 @@ public class CoefficientPropagation extends ByNotUrgency {
 				}
 			}
 		}
-
+	}
+	
+	@Override
+	public Solution finish() {
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());

@@ -12,34 +12,52 @@ import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class Parallel extends ByUrgency implements IUrgency {
 
+	private Solution solution = new Solution();	
+	
+	private ArrayList<Cluster> listClusters;	
+	private ArrayList<Customer> listCustomersToAssign;
+	private ArrayList<Integer> listIDDepots;
+	
+	private NumericMatrix urgencyMatrix;
+	private NumericMatrix closestMatrix;
+	
+	private ArrayList<ArrayList<Integer>> listDepotsOrdered;
+	private ArrayList<Double> listUrgencies;
+
+	private int posCustomer = -1;
+	private int idCustomer = -1;
+	private double requestCustomer = 0.0;	
+	private int idClosestDepot = -1;
+	private double capacityDepot = 0.0;
+	private int posCluster = -1;
+	private double requestCluster = 0.0;
+	
 	public Parallel() {
 		super();
 	}
 	
-	public Solution toClustering(){
-		Solution solution = new Solution();		
+	@Override
+	public Solution toClustering() {
+		initialize();
+		assign();
+		return finish();
+	}		
 		
-		ArrayList<Cluster> listClusters = initializeClusters();	
+	@Override
+	public void initialize() {
+		listClusters = initializeClusters();	
+		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
 		
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-		ArrayList<Integer> listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
+		urgencyMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		closestMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
 		
-		NumericMatrix urgencyMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
-		NumericMatrix closestMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		listDepotsOrdered = getDepotsOrdered(listCustomersToAssign, listIDDepots, closestMatrix);
+		listUrgencies = getListUrgencies(listCustomersToAssign, listDepotsOrdered, urgencyMatrix);
+	}	
 		
-		ArrayList<ArrayList<Integer>> listDepotsOrdered = getDepotsOrdered(listCustomersToAssign, listIDDepots, closestMatrix);
-		ArrayList<Double> listUrgencies = getListUrgencies(listCustomersToAssign, listDepotsOrdered, urgencyMatrix);
-
-		int posCustomer = -1;
-		int idCustomer = -1;
-		double requestCustomer = 0.0;
-		
-		int idClosestDepot = -1;
-		double capacityDepot = 0.0;
-		
-		int posCluster = -1;
-		double requestCluster = 0.0;
-
+	@Override
+	public void assign() {
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty())) 
 		{
 			posCustomer = getPosMaxValue(listUrgencies);
@@ -119,7 +137,10 @@ public class Parallel extends ByUrgency implements IUrgency {
 				}
 			}
 		}
-		
+	}	
+	
+	@Override
+	public Solution finish() {
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());

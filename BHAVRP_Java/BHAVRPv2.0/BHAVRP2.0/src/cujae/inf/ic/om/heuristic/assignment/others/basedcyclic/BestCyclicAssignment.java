@@ -14,37 +14,48 @@ import cujae.inf.ic.om.matrix.RowCol;
 /*Clase que modela como asignar el mejor cliente al último cliente - depósito asignando en forma paralela */
 public class BestCyclicAssignment extends ByNotUrgency {
 
+	private Solution solution = new Solution();
+	
+	private ArrayList<Cluster> clusters;
+	private ArrayList<Customer> customersToAssign;
+	private NumericMatrix costMatrix;
+    
+	private int posElementMatrix = -1;
+    private double capacityDepot = 0.0;   
+    private double requestCustomer = 0.0;    
+    private double requestCluster = 0.0; 
+    private int posCluster = -1;
+    
+    private RowCol rcBestAllSelected = null;
+	
 	public BestCyclicAssignment() {
 		super();
 	}
 
 	@Override
-	 public Solution toClustering() {
-    	Solution solution = new Solution();		
-		
-    	ArrayList<Cluster> clusters = initializeClusters();
-    	
-		ArrayList<Customer> customersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
-    	
+	public Solution toClustering() {
+		initialize();
+		assign();
+		return finish();
+	}
+	
+	@Override
+	public void initialize() {
+    	clusters = initializeClusters();
+		customersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+	}
+	
+	@Override
+    public void assign() {
 		int totalItems = customersToAssign.size();
 		int totalClusters = Problem.getProblem().getDepots().size();
-      
-        ArrayList<Integer> itemsSelected = new ArrayList<Integer>();
-        
-        for(int i = 0; i < totalClusters; i++) 
+		
+		ArrayList<Integer> itemsSelected = new ArrayList<>();
+		
+		for(int i = 0; i < totalClusters; i++) 
         	itemsSelected.add((totalItems + i));
-        
-        RowCol rcBestAllSelected = null;
-       
-        int posElementMatrix = -1;
-        double capacityDepot = 0.0;
-       
-        double requestCustomer = 0.0;
-        
-        double requestCluster = 0.0; 
-        int posCluster = -1;
-       
+		
         while((!customersToAssign.isEmpty()) && (!clusters.isEmpty()))
         {
         	rcBestAllSelected = getBestValueOfSelected(itemsSelected, costMatrix, totalItems);
@@ -100,7 +111,10 @@ public class BestCyclicAssignment extends ByNotUrgency {
 				}
 			}
         }
-        
+	}
+	
+    @Override
+    public Solution finish() {
 		if(!customersToAssign.isEmpty())					
 			for(int i = 0; i < customersToAssign.size(); i++)	
 				solution.getUnassignedItems().add(customersToAssign.get(i).getIDCustomer());
