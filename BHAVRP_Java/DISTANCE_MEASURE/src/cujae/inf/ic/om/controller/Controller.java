@@ -13,7 +13,7 @@ public class Controller {
 		this.factoryDistance = new FactoryDistance();
 	}
 
-	public Double calculateDistance(DistanceType distanceType, double axisXPointOne, double axisYPointOne, double axisXPointTwo, double axisYPointTwo) {
+	public Double calculateDistance(DistanceType distanceType, double axisXPointOne, double axisYPointOne, double axisXPointTwo, double axisYPointTwo) throws Exception {
 		IDistance distanceStrategy = factoryDistance.createDistance(distanceType);
         
         if (distanceStrategy == null) {

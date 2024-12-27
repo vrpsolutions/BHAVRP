@@ -1,5 +1,6 @@
 package cujae.inf.ic.om.problem.input;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.ArrayList;
@@ -14,13 +15,14 @@ import cujae.inf.ic.om.controller.utils.Tools;
 import cujae.inf.ic.om.distance.IDistance;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
+import cujae.inf.ic.om.service.OSRMService;
 
 public class Problem {
 
 	private ArrayList<Customer> customers;
 	private ArrayList<Depot> depots;
 	private NumericMatrix costMatrix; //revisar si existe diferencias entre fill y calculate con igual parametros
-
+	
 	private static Problem problem = null;
 
 	private Problem() {
@@ -728,7 +730,11 @@ public class Problem {
 					costMatrix.setItem(i, j, Double.POSITIVE_INFINITY);
 				else 
 				{
-					cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+					try {
+						cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					costMatrix.setItem(i, j, cost);
 					costMatrix.setItem(j, i, cost);
 				}
@@ -745,7 +751,7 @@ public class Problem {
 
 		NumericMatrix costMatrix = new NumericMatrix((totalCustomers + totalDepots), (totalCustomers + totalDepots));
 		
-		if(distanceType.equals("Real")){
+		if(distanceType.equals("OSRMService")){
 			
 		}
 		else{
@@ -793,7 +799,11 @@ public class Problem {
 						costMatrix.setItem(i, j, Double.POSITIVE_INFINITY);
 					else 
 					{
-						cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+						try {
+							cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 						costMatrix.setItem(i, j, cost);
 						costMatrix.setItem(j, i, cost);
 					}
@@ -852,9 +862,64 @@ public class Problem {
 					costMatrix.setItem(i, j, Double.NEGATIVE_INFINITY);
 				else 
 				{
-					cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+					try {
+						cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					costMatrix.setItem(i, j, cost);
 					costMatrix.setItem(j, i, cost);
+				}
+			}
+		}
+		return costMatrix;
+	}
+	
+	public NumericMatrix fillCostMatrixReal(ArrayList<Customer> customers, ArrayList<Depot> depots) throws IOException, InterruptedException, IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		int totalCustomers = customers.size();
+		int totalDepots = depots.size();
+		NumericMatrix costMatrix = new NumericMatrix(totalCustomers + totalDepots, totalCustomers + totalDepots);
+		double cost = 0.0;
+
+		// Llenar la matriz con distancias obtenidas de la API OSRM
+		for (int i = 0; i < (totalCustomers + totalDepots); i++) {
+			double axisXIni = 0.0;
+			double axisYIni = 0.0;
+
+			// Obtener las coordenadas del punto inicial (cliente o depósito)
+			if (i < totalCustomers) {
+				axisXIni = customers.get(i).getLocationCustomer().getAxisX();
+				axisYIni = customers.get(i).getLocationCustomer().getAxisY();
+			} else {
+				axisXIni = depots.get(i - totalCustomers).getLocationDepot().getAxisX();
+				axisYIni = depots.get(i - totalCustomers).getLocationDepot().getAxisY();
+			}
+
+			for (int j = 0; j < (totalCustomers + totalDepots); j++) {
+				double axisXEnd = 0.0;
+				double axisYEnd = 0.0;
+
+				// Obtener las coordenadas del punto final (cliente o depósito)
+				if (j < totalCustomers) {
+					axisXEnd = customers.get(j).getLocationCustomer().getAxisX();
+					axisYEnd = customers.get(j).getLocationCustomer().getAxisY();
+				} else {
+					axisXEnd = depots.get(j - totalCustomers).getLocationDepot().getAxisX();
+					axisYEnd = depots.get(j - totalCustomers).getLocationDepot().getAxisY();
+				}
+
+				// Evitar calcular la distancia de un punto consigo mismo
+				if (i == j) {
+					costMatrix.setItem(i, j, Double.POSITIVE_INFINITY);
+				} else {
+					// Llamar al servicio OSRM para obtener la distancia entre los puntos
+					try {
+						cost = OSRMService.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					costMatrix.setItem(i, j, cost);
+					costMatrix.setItem(j, i, cost); // Como la distancia es simétrica
 				}
 			}
 		}
@@ -911,7 +976,11 @@ public class Problem {
 					costMatrix.setItem(i, j, Double.POSITIVE_INFINITY);
 				else 
 				{
-					cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+					try {
+						cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					costMatrix.setItem(i, j, cost);
 					costMatrix.setItem(j, i, cost);
 				}
@@ -950,7 +1019,56 @@ public class Problem {
 				System.out.println("DEPOSITO" + j + " X: " + axisXPointTwo);
 				System.out.println("DEPOSITO" + j + " Y: " + axisYPointTwo);
 
-				cost = distance.calculateDistance(axisXPointOne, axisYPointOne, axisXPointTwo, axisYPointTwo);
+				try {
+					cost = distance.calculateDistance(axisXPointOne, axisYPointOne, axisXPointTwo, axisYPointTwo);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				System.out.println("COSTO: " + cost);
+
+				costMatrix.setItem(i, j, cost);
+			}
+			
+			System.out.println("----------------------------------------------------");
+		}
+		return costMatrix;
+	}
+	
+	public NumericMatrix calculateCostMatrixReal(ArrayList<Depot> centroids, ArrayList<Depot> depots) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		int totalDepots = depots.size();
+		NumericMatrix costMatrix = new NumericMatrix(totalDepots, totalDepots);
+
+		double axisXPointOne = 0.0;
+		double axisYPointOne = 0.0;
+		double axisXPointTwo = 0.0;
+		double axisYPointTwo = 0.0;
+		double cost = 0.0;
+
+		System.out.println("----------------------------------------------------");
+		
+		for(int i = 0; i < totalDepots; i++) 
+		{
+			axisXPointOne = centroids.get(i).getLocationDepot().getAxisX();
+			axisYPointOne = centroids.get(i).getLocationDepot().getAxisY();
+
+			System.out.println("CENTROIDE" + i + " X: " + axisXPointOne);
+			System.out.println("CENTROIDE" + i + " Y: " + axisYPointOne);
+			System.out.println("----------------------------------------------------");
+
+			for(int j = 0; j < totalDepots; j++) 
+			{
+				axisXPointTwo = depots.get(j).getLocationDepot().getAxisX();
+				axisYPointTwo = depots.get(j).getLocationDepot().getAxisY();
+				
+				System.out.println("DEPOSITO" + j + " X: " + axisXPointTwo);
+				System.out.println("DEPOSITO" + j + " Y: " + axisYPointTwo);
+
+				try {
+					cost = OSRMService.calculateDistance(axisXPointOne, axisYPointOne, axisXPointTwo, axisYPointTwo);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
 				System.out.println("COSTO: " + cost);
 
@@ -986,7 +1104,11 @@ public class Problem {
 				axisXEnd = customers.get(j).getLocationCustomer().getAxisX();
 				axisYEnd = customers.get(j).getLocationCustomer().getAxisY();
 
-				cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+				try {
+					cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
 				costMatrix.setItem(i, j, cost);
 			}

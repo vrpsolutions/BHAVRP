@@ -1,5 +1,6 @@
 package cujae.inf.ic.om.heuristic.assignment.clustering.partitional;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ import cujae.inf.ic.om.problem.output.solution.Cluster;
 
 public abstract class ByCentroids extends Partitional {
 	
-	protected ArrayList<Integer> generateElements(DistanceType distanceType){
+	protected ArrayList<Integer> generateElements(DistanceType distanceType) {
 		
 		ArrayList<Integer> idElements = new ArrayList<Integer>();
 		
@@ -34,7 +35,7 @@ public abstract class ByCentroids extends Partitional {
 		ArrayList<Depot> listDepot = new ArrayList<Depot>();
 		listDepot.add(depot);
 		
-		switch(distanceType.ordinal())
+		switch (distanceType.ordinal())
 		{
 			case 0: case 1: case 2: case 3:
 			{
@@ -47,11 +48,15 @@ public abstract class ByCentroids extends Partitional {
 	
 				break;
 			}
-			case 4:
-			{
-				//costMatrix = new NumericMatrix(InfoProblem.getProblem().getCostMatrix()); // NO FUNcIONA
-	
-				break;
+		}
+		if (distanceType == DistanceType.Real)
+		{
+			try {
+				costMatrix = Problem.getProblem().fillCostMatrixReal(Problem.getProblem().getCustomers(), listDepot);
+			} catch (IOException | InterruptedException | IllegalArgumentException | SecurityException
+					| ClassNotFoundException | InstantiationException | IllegalAccessException
+					| InvocationTargetException | NoSuchMethodException e) {
+				e.printStackTrace();
 			}
 		}
 		
@@ -80,7 +85,7 @@ public abstract class ByCentroids extends Partitional {
 		return sortedElements(idElements, distanceType);
 	}
 	
-	private ArrayList<Integer> sortedElements (ArrayList<Integer> idElements, DistanceType distanceType){
+	private ArrayList<Integer> sortedElements (ArrayList<Integer> idElements, DistanceType distanceType) {
 		
 		int totalDepots = Problem.getProblem().getTotalDepots();
 		int j = 0;
@@ -107,18 +112,20 @@ public abstract class ByCentroids extends Partitional {
 						| IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 					e.printStackTrace();
 				}
-	
-				break;
-			}
-			case 4:
-			{
-				//costMatrix = new NumericMatrix(InfoProblem.getProblem().getCostMatrix());
-
 				break;
 			}
 		}
+		if (distanceType == DistanceType.Real)
+		{
+			try {
+				costMatrix = Problem.getProblem().fillCostMatrixReal(customers, Problem.getProblem().getDepots());
+			} catch (IOException | InterruptedException | IllegalArgumentException | SecurityException | ClassNotFoundException
+					| InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+				e.printStackTrace();
+			}
+		}
 		
-//		System.out.println("----ORGANIZAR ELEMENTOS SELECCIONADOS-----------------------------------------------------");
+		//System.out.println("----ORGANIZAR ELEMENTOS SELECCIONADOS-----------------------------------------------------");
 		
 		while(j < idElements.size())
 		{
@@ -214,10 +221,146 @@ public abstract class ByCentroids extends Partitional {
 		return change;
 	}
 	
+	protected boolean verifyCentroids(ArrayList<Cluster> clusters, ArrayList<Depot> centroids) {
+		boolean change = false;
+		Location dummyDepot;
+
+		System.out.println("change: " + change);
+		
+		for(int i = 0; i < clusters.size(); i++) 
+		{
+			if(!clusters.get(i).getItemsOfCluster().isEmpty())
+				dummyDepot = recalculateCentroid(clusters.get(i));
+			else
+				dummyDepot = centroids.get(i).getLocationDepot(); 
+			
+			System.out.println("------------------------------------------------------------------");
+			System.out.println("DUMMY_DEPOT" + i + " X: " + dummyDepot.getAxisX());
+			System.out.println("DUMMY_DEPOT" + i + " Y: " + dummyDepot.getAxisY());
+	
+			System.out.println("CENTROIDE" + i + " X: " + centroids.get(i).getLocationDepot().getAxisX());
+			System.out.println("CENTROIDE" + i + " Y: " + centroids.get(i).getLocationDepot().getAxisY());
+			
+			if((centroids.get(i).getLocationDepot().getAxisX() != dummyDepot.getAxisX()) || (centroids.get(i).getLocationDepot().getAxisY() != dummyDepot.getAxisY())) 
+			{
+				change = true;
+				
+				centroids.get(i).setIDDepot(-1);
+				
+				Location location = new Location();
+				location.setAxisX(dummyDepot.getAxisX());
+				location.setAxisY(dummyDepot.getAxisY());
+				centroids.get(i).setLocationDepot(location);	
+				
+				System.out.println("change: " + change);
+				System.out.println("CENTROIDE" + i + " X: " + centroids.get(i).getLocationDepot().getAxisX());
+				System.out.println("CENTROIDE" + i + " Y: " + centroids.get(i).getLocationDepot().getAxisY());
+			}
+			else
+			{
+				System.out.println("CENTROIDE" + i + " X: " + centroids.get(i).getLocationDepot().getAxisX());
+				System.out.println("CENTROIDE" + i + " Y: " + centroids.get(i).getLocationDepot().getAxisY());
+			}
+		}	
+
+		if(change)
+			updateCentroids(clusters, centroids);
+
+		System.out.println("CAMBIO LOS CENTROIDES: " + change);
+		
+		return change;
+	}
+	
 	private void updateCentroids(ArrayList<Cluster> clusters, ArrayList<Depot> centroids, DistanceType distanceType) {		
 		NumericMatrix costMatrix = new NumericMatrix();
 		try {
 			costMatrix = Problem.getProblem().calculateCostMatrix(centroids, Problem.getProblem().getDepots(), distanceType);
+		} catch (IllegalArgumentException | SecurityException
+				| ClassNotFoundException | InstantiationException
+				| IllegalAccessException | InvocationTargetException
+				| NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		
+		ArrayList<Depot> tempCentroids = new ArrayList<Depot>(centroids);
+		
+		int totalCentroids = centroids.size();
+		RowCol rcBestAll = new RowCol();
+		int posCentroid = -1;
+		int posDepot = -1;
+
+		System.out.println("-------------------------------------" );
+		for(int i = 0; i < centroids.size(); i++)
+		{
+			System.out.println("CENTROIDE ID: " + centroids.get(i).getIDDepot());
+			System.out.println("CENTROIDE X: " + centroids.get(i).getLocationDepot().getAxisX());
+			System.out.println("CENTROIDE Y: " + centroids.get(i).getLocationDepot().getAxisY());		
+		}
+		
+		for(int i = 0; i < costMatrix.getRowCount(); i++)
+		{
+			for(int j = 0; j < costMatrix.getColCount(); j++){
+				System.out.println("Row: " + i + " Col: " + j + " VALUE: " + costMatrix.getItem(i, j));
+			}
+			System.out.println("---------------------------------------------");
+		}		
+		
+		while(!costMatrix.fullMatrix(0, 0, (totalCentroids  - 1), (totalCentroids - 1), Double.POSITIVE_INFINITY))
+		{
+			rcBestAll = costMatrix.indexLowerValue();
+
+			System.out.println("BestAllRow: " + rcBestAll.getRow());
+			System.out.println("BestAllCol: " + rcBestAll.getCol());
+			System.out.println("COSTO: " + costMatrix.getItem(rcBestAll.getRow(), rcBestAll.getCol()));
+			
+			posCentroid = rcBestAll.getRow();
+			posDepot = rcBestAll.getCol();
+			
+			System.out.println("POSICIÓN DEL CENTROIDE: " + posCentroid);
+			System.out.println("POSICIÓN DEL DEPOSITO: " + posDepot);
+
+			if(posCentroid != posDepot)
+			{
+				Depot depot = new Depot();
+
+				depot.setIDDepot(tempCentroids.get(posCentroid).getIDDepot());
+				System.out.println("ID CENTROIDE: " + tempCentroids.get(posCentroid).getIDDepot());
+				
+				double axisX = 0.0; 
+				double axisY = 0.0; 
+				axisX = tempCentroids.get(posCentroid).getLocationDepot().getAxisX();
+				axisY = tempCentroids.get(posCentroid).getLocationDepot().getAxisY();
+				
+				Location location = new Location();
+				location.setAxisX(axisX);
+				location.setAxisY(axisY);
+				depot.setLocationDepot(location);
+				
+				ArrayList<Fleet> fleet = new ArrayList<Fleet>();
+				fleet.addAll(tempCentroids.get(posCentroid).getFleetDepot());
+				depot.setFleetDepot(fleet);
+			
+				centroids.set(posDepot, depot);
+			}
+
+			costMatrix.fillValue(0, posDepot, (totalCentroids - 1), posDepot, Double.POSITIVE_INFINITY);
+			costMatrix.fillValue(posCentroid, 0, posCentroid, (totalCentroids - 1), Double.POSITIVE_INFINITY);
+			
+			for(int i = 0; i < costMatrix.getRowCount(); i++)
+			{
+				for(int j = 0; j < costMatrix.getColCount(); j++){
+					System.out.println("Row: " + i + " Col: " + j + " VALUE: " + costMatrix.getItem(i, j));
+				}
+				System.out.println("---------------------------------------------");
+			}		
+		}
+	}
+	
+	private void updateCentroids(ArrayList<Cluster> clusters, ArrayList<Depot> centroids) {		
+		NumericMatrix costMatrix = new NumericMatrix();
+		
+		try {
+			costMatrix = Problem.getProblem().calculateCostMatrixReal(centroids, Problem.getProblem().getDepots());
 		} catch (IllegalArgumentException | SecurityException
 				| ClassNotFoundException | InstantiationException
 				| IllegalAccessException | InvocationTargetException

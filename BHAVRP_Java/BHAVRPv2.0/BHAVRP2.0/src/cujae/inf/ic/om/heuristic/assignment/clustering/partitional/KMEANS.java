@@ -21,7 +21,7 @@ public class Kmeans extends ByCentroids {
 
 	public static DistanceType distanceType = DistanceType.Euclidean;
 	public static SeedType seedType = SeedType.Nearest_Depot;  
-	private final int countMaxIterations = 100; // UN VALOR APROPIADO COMFIGURABLE ?
+	private final int countMaxIterations = 1; // UN VALOR APROPIADO COMFIGURABLE ?
 	private int currentIteration = 0;
 	
 	private ArrayList<Integer> listIDElements;

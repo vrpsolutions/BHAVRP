@@ -1,5 +1,6 @@
 package cujae.inf.ic.om.heuristic.assignment.clustering.partitional;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.ArrayList;
@@ -12,13 +13,14 @@ import cujae.inf.ic.om.problem.input.Problem;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class Farthest_First extends ByCentroids {
 	
-	public static DistanceType distanceType = DistanceType.Euclidean;
-	private final int countMaxIterations = 10;
+	public static DistanceType distanceType = DistanceType.Real;
+	private final int countMaxIterations = 1;
 	private int currentIteration = 0;
 	
 	private ArrayList<Integer> listIDElements;
@@ -77,30 +79,50 @@ public class Farthest_First extends ByCentroids {
 			
 			NumericMatrix costMatrix = new NumericMatrix();
 			
-			try {
-				costMatrix = Problem.getProblem().fillCostMatrix(listCustomersToAssign, listCentroids, distanceType);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
+			switch (distanceType.ordinal())
+			{
+				case 0: case 1: case 2: case 3:
+				{
+					try {
+						costMatrix = Problem.getProblem().fillCostMatrix(listCustomersToAssign, listCentroids, distanceType);
+					} catch (IllegalArgumentException | SecurityException | ClassNotFoundException | InstantiationException
+							| IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						e.printStackTrace();
+					}
+					break;
+				}
 			}
-				
-			stepAssignment(listClusters, listCustomersToAssign, costMatrix);
-			change = verifyCentroids(listClusters, listCentroids, distanceType);
+			if (distanceType == DistanceType.Real)
+			{
+				try {
+					costMatrix = Problem.getProblem().fillCostMatrixReal(listCustomersToAssign, listCentroids);
+				} catch (IOException | InterruptedException | IllegalArgumentException | SecurityException
+						| ClassNotFoundException | InstantiationException | IllegalAccessException
+						| InvocationTargetException | NoSuchMethodException e) {
+					e.printStackTrace();
+				}
+			}
 
+			stepAssignment(listClusters, listCustomersToAssign, costMatrix);
+			
+			switch (distanceType.ordinal())
+			{
+				case 0: case 1: case 2: case 3:
+				{
+					change = verifyCentroids(listClusters, listCentroids, distanceType);
+					break;
+				}
+			}
+			if (distanceType == DistanceType.Real)
+			{
+				change = verifyCentroids(listClusters, listCentroids);
+			}
+			
 			currentIteration ++;
 
 			System.out.println("ITERACIÓN ACTUAL: " + currentIteration);
+			
+			OSRMService.clearDistanceCache();
 
 		} while((change) && (currentIteration < countMaxIterations));
 	}

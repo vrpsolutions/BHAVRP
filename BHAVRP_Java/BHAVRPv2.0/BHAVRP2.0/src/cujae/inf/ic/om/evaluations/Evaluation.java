@@ -174,7 +174,11 @@ public class Evaluation {
 					IFactoryDistance iFactoryDistance = new FactoryDistance();
 					IDistance distance = (IDistance) iFactoryDistance.createDistance(distanceType);
 					
-					dist = distance.calculateDistance(centroidOne.getAxisX(), centroidOne.getAxisY(), centroidTwo.getAxisX(), centroidTwo.getAxisY());
+					try {
+						dist = distance.calculateDistance(centroidOne.getAxisX(), centroidOne.getAxisY(), centroidTwo.getAxisX(), centroidTwo.getAxisY());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					
 					SSB += (totalItems/K) * (Math.pow(dist, 2));
 				}
@@ -200,7 +204,11 @@ public class Evaluation {
 			IFactoryDistance iFactoryDistance = new FactoryDistance();
 			IDistance distance = (IDistance) iFactoryDistance.createDistance(distanceType);
 			
-			dist = distance.calculateDistance(locationMean.getAxisX(), locationMean.getAxisY(), locationOverallMean.getAxisX(), locationOverallMean.getAxisY());
+			try {
+				dist = distance.calculateDistance(locationMean.getAxisX(), locationMean.getAxisY(), locationOverallMean.getAxisX(), locationOverallMean.getAxisY());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			totalItems = clusters.get(i).getItemsOfCluster().size();
 			
 			SSB += Math.pow(dist, 2) * totalItems;

@@ -24,15 +24,22 @@ public class MainDePrueba
 		SaveFile.getSaveFile().createResultFile(pathFileEnd);
 		
 		String pathFiles = "C-mdvrp//p"; 
-		int totalInstances = 1; // instancia 6, 10, 15 y 19
+		int totalInstances = 21; // instancia 6, 10, 15 y 19
 		LoadFile load = new LoadFile();
 
-		for(int i = 0; i < totalInstances; i++)
-		{
-			load.loadFile(pathFiles + (i + 1));
-
+		//for(int i = 0; i < totalInstances; i++)
+		//{
+			try {
+			    //load.loadFile(pathFiles + (i + 1));
+			    load.loadFile(pathFiles + totalInstances);
+			} catch (FileNotFoundException e) {
+			    //System.err.println("Archivo no encontrado: " + pathFiles + (i + 1));
+				System.err.println("Archivo no encontrado: " + pathFiles + totalInstances);
+			}
+			
 			System.out.println("-------------------------------------------------------------------------------");
-			System.out.println("INSTANCIA: P" + (i + 1));
+			//System.out.println("INSTANCIA: P" + (i + 1));
+			System.out.println("INSTANCIA: P" + totalInstances);
 			System.out.println("-------------------------------------------------------------------------------");
 			
 			ArrayList<Integer> idCustomers = new ArrayList<Integer>();
@@ -70,9 +77,9 @@ public class MainDePrueba
 				ArrayList<Double> listSSB = new ArrayList<Double>();
 				ArrayList<Double> listExTime = new ArrayList<Double>();
 				
-				int run = 100;
+				int run = 1;
 				
-				SaveFile.getSaveFile().createSheet(pathFileEnd, "p1", run, Problem.getProblem().getTotalRequest(), 0, 0);
+				//SaveFile.getSaveFile().createSheet(pathFileEnd, "p1", run, Problem.getProblem().getTotalRequest(), 0, 0);
 				//SaveFile.getSaveFile().writeData(idFile, countExecution, nameHeuristic, variant, pathFileEnd);
 
 				
@@ -272,6 +279,7 @@ public class MainDePrueba
 					System.out.println("SSB1 " + result4); */
 				}
 				System.out.println("-------------------------------------------------------------------------------");
+				System.out.println("Instancia ejecutada: " + "p" + totalInstances);
 				System.out.println("Resultados:");
 				System.out.println();
 				System.out.println("Número de Ejecuciones: " + run);
@@ -283,7 +291,6 @@ public class MainDePrueba
 				System.out.println("Tiempo de Ejecución Promedio: " + (avgTime/run)/1000 + " s");
 				System.out.println("-------------------------------------------------------------------------------");
 			}
-
 
 			/*Metric metric = new Metric();
 			double result1 = metric.SSE(Controller.getController().getSolution().getClusters().get(0));
@@ -300,5 +307,5 @@ public class MainDePrueba
 
 			Problem.getProblem().cleanInfoProblem();
 		}
-	}
+	//}
 }

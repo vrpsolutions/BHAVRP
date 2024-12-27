@@ -162,6 +162,7 @@ public class Controller {
 		return loaded;
 	}
 	
+	//es este
 	/* Método encargado de cargar los datos del problema (incluido las coordenadas) usando listas de distancias*/
 	public boolean loadProblem(ArrayList<Integer> idCustomers, ArrayList<Double> requestCustomers, ArrayList<Double> axisXCustomers, ArrayList<Double> axisYCustomers, ArrayList<Integer> idDepots, ArrayList<Double> axisXDepots, ArrayList<Double> axisYDepots, ArrayList<ArrayList<Integer>> countVehicles, ArrayList<ArrayList<Double>> capacityVehicles,
 			ArrayList<ArrayList<Double>> listDistances)throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException{
@@ -351,7 +352,7 @@ public class Controller {
 				{
 					loaded = true;
 					
-					//if(distanceType.equals("Real")) 
+					//if(distanceType.equals("OSRMService")) 
 						//service.createInitialCostMatrix(Problem.getProblem().getCustomers(), Problem.getProblem().getDepots(), url);
 					//else 
 						Problem.getProblem().fillCostMatrix(distanceType);
