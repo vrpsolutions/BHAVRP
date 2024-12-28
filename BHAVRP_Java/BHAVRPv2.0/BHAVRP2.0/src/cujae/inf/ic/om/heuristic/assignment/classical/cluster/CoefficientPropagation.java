@@ -8,7 +8,6 @@ import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
 import cujae.inf.ic.om.service.OSRMService;
 
-import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
@@ -16,8 +15,7 @@ import cujae.inf.ic.om.matrix.RowCol;
 public class CoefficientPropagation extends ByNotUrgency {
 
 	public static double degradationCoefficient = 0.5;
-	public static DistanceType distanceType = DistanceType.Real;
-	
+
 	private Solution solution = new Solution();	
 	
 	private ArrayList<Cluster> listClusters;

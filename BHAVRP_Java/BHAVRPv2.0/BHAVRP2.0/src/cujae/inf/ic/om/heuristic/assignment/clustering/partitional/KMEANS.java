@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import cujae.inf.ic.om.factory.DistanceType;
 
-import cujae.inf.ic.om.heuristic.assignment.clustering.SeedType;
-
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Depot;
 import cujae.inf.ic.om.problem.input.Problem;
@@ -16,13 +14,7 @@ import cujae.inf.ic.om.service.OSRMService;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
-public class Kmeans extends ByCentroids {
-
-	public static DistanceType distanceType = DistanceType.Real;
-	public static SeedType seedType = SeedType.Nearest_Depot;  
-	private final int countMaxIterations = 1; // UN VALOR APROPIADO COMFIGURABLE ?
-	private int currentIteration = 0;
-	
+public class Kmeans extends ByCentroids {	
 	private ArrayList<Integer> listIDElements;
 	private ArrayList<Cluster> listClusters;
 	private ArrayList<Customer> listCustomersToAssign;

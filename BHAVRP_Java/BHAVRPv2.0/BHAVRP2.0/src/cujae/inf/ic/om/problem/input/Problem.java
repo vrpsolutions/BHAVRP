@@ -10,7 +10,7 @@ import cujae.inf.ic.om.factory.interfaces.IFactoryDistance;
 
 import cujae.inf.ic.om.factory.methods.FactoryDistance;
 
-import cujae.inf.ic.om.controller.utils.Tools;
+import cujae.inf.ic.om.controller.tools.Tools;
 
 import cujae.inf.ic.om.distance.IDistance;
 

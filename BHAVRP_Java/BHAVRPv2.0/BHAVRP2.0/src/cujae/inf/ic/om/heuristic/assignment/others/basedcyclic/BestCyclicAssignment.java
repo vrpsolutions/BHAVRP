@@ -8,7 +8,6 @@ import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
 import cujae.inf.ic.om.service.OSRMService;
 
-import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
@@ -16,7 +15,6 @@ import cujae.inf.ic.om.matrix.RowCol;
 /*Clase que modela como asignar el mejor cliente al último cliente - depósito asignando en forma paralela */
 public class BestCyclicAssignment extends ByNotUrgency {
 
-	public static DistanceType distanceType = DistanceType.Euclidean;
 	private Solution solution = new Solution();
 	
 	private ArrayList<Cluster> clusters;

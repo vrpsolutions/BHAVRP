@@ -16,10 +16,6 @@ import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class Farthest_First extends ByCentroids {
 	
-	public static DistanceType distanceType = DistanceType.Real;
-	private final int countMaxIterations = 1;
-	private int currentIteration = 0;
-	
 	private ArrayList<Integer> listIDElements;
 	//private ArrayList<Integer> listIDElements1;
 	//private ArrayList<Integer> listIDElements2;

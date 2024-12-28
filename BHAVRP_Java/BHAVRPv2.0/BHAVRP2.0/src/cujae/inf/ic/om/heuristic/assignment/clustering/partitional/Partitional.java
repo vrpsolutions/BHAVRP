@@ -20,6 +20,11 @@ import cujae.inf.ic.om.matrix.RowCol;
 
 public abstract class Partitional extends Clustering {
 	
+	public static SeedType seedType = SeedType.Nearest_Depot;
+	
+	public static int countMaxIterations = 100; // UN VALOR APROPIADO CONFIGURABLE?
+	public static int currentIteration = 0;
+	
 	//todos
 	protected ArrayList<Depot> createCentroids(ArrayList<Integer> idElements){
 		ArrayList<Depot> centroids = new ArrayList<Depot>();

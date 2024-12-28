@@ -13,6 +13,8 @@ import cujae.inf.ic.om.problem.output.solution.Cluster;
 
 public abstract class Assignment extends AssignmentTemplate {
 	
+	public static DistanceType distanceType = DistanceType.Real;
+	
 	/**
 	 * @param  int identificador del cluster
 	 * @param  ArrayList<Cluster> listado de clusters 

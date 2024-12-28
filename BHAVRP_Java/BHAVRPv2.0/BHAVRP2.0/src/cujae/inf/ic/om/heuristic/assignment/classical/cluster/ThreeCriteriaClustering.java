@@ -8,13 +8,10 @@ import cujae.inf.ic.om.problem.input.Problem;
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
 
-import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class ThreeCriteriaClustering extends ByNotUrgency {
-	
-	public static DistanceType distanceType = DistanceType.Euclidean;
 	private Solution solution = new Solution();
 	
 	private ArrayList<Cluster> listClusters;

@@ -73,45 +73,4 @@ public abstract class ByUrgency extends Heuristic {
 
 		return listClosestDepotsByCustomer;
 	}
-
-	protected int getPosMaxValue(ArrayList<Double> list){
-		int posMaxValue = -1;
-
-		if((list != null) && (!list.isEmpty()))
-		{
-			posMaxValue = 0;
-			Double maxValue = list.get(0);
-
-			for(int i = 1; i < list.size(); i++)
-			{
-				if(list.get(i).doubleValue() > maxValue.doubleValue())
-				{
-					maxValue = list.get(i);
-					posMaxValue = i;
-				}
-			}	
-		}
-
-		return posMaxValue;
-	}
-
-	protected int getPosMinValue(ArrayList<Double> list){
-		int posMinValue = -1;
-
-		if((list != null) && (!list.isEmpty()))
-		{
-			posMinValue = 0;
-			Double minValue = list.get(0);
-
-			for(int i = 1; i < list.size(); i++)
-			{
-				if(list.get(i).doubleValue() < minValue.doubleValue())
-				{
-					minValue = list.get(i);
-					posMinValue = i;
-				}
-			}
-		}
-		return posMinValue;
-	}
 }

@@ -2,10 +2,6 @@ package cujae.inf.ic.om.heuristic.assignment.clustering.partitional;
 
 import java.util.ArrayList;
 
-import cujae.inf.ic.om.factory.DistanceType;
-
-import cujae.inf.ic.om.heuristic.assignment.clustering.SeedType;
-
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Depot;
 import cujae.inf.ic.om.problem.input.Location;
@@ -18,12 +14,6 @@ import cujae.inf.ic.om.service.OSRMService;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class PAM extends ByMedoids {
-	
-	public static DistanceType distanceType = DistanceType.Euclidean;
-	public static SeedType seedType = SeedType.Nearest_Depot;
-	private final int countMaxIterations = 100; // UN VALOR APROPIADO CONFIGURABLE?
-	private int currentIteration = 0;
-	
 	private ArrayList<Integer> listIDElements;
 	private ArrayList<Cluster> listClusters;
 	private ArrayList<Customer> listCustomersToAssign;

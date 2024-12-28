@@ -1,6 +1,7 @@
 package cujae.inf.ic.om.heuristic.assignment.classical.urgency;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Problem;
@@ -9,13 +10,10 @@ import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
 import cujae.inf.ic.om.service.OSRMService;
 
-import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
 
 public class Simplified extends ByUrgency implements IUrgency {
-	
-	public static DistanceType distanceType = DistanceType.Real;
 	private Solution solution = new Solution();	
 	
 	private ArrayList<Cluster> listClusters;
@@ -70,7 +68,7 @@ public class Simplified extends ByUrgency implements IUrgency {
 
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty())) 
 		{
-			posCustomer = getPosMaxValue(listUrgencies);
+			posCustomer = listUrgencies.indexOf(Collections.max(listUrgencies));
 			idCustomer = listCustomersToAssign.get(posCustomer).getIDCustomer();
 			requestCustomer = listCustomersToAssign.get(posCustomer).getRequestCustomer();
 

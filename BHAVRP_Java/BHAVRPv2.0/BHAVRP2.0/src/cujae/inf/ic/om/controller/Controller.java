@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.util.ArrayList;
 
-import cujae.inf.ic.om.controller.utils.OrderType;
-import cujae.inf.ic.om.controller.utils.Tools;
+import cujae.inf.ic.om.controller.tools.OrderType;
+import cujae.inf.ic.om.controller.tools.Tools;
 import cujae.inf.ic.om.factory.DistanceType;
 
 import cujae.inf.ic.om.factory.interfaces.AssignmentType;

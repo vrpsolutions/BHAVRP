@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import cujae.inf.ic.om.controller.utils.Tools;
+import cujae.inf.ic.om.controller.tools.Tools;
 
 public class LoadFile {
 

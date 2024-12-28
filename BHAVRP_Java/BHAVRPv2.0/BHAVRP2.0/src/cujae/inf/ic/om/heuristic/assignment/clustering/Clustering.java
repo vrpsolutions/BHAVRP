@@ -2,7 +2,7 @@ package cujae.inf.ic.om.heuristic.assignment.clustering;
 
 import java.util.ArrayList;
 
-import cujae.inf.ic.om.controller.utils.Tools;
+import cujae.inf.ic.om.controller.tools.Tools;
 import cujae.inf.ic.om.heuristic.assignment.Assignment;
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Location;

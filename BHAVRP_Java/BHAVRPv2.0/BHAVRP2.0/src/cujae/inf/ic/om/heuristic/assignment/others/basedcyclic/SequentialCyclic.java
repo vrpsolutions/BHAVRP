@@ -2,7 +2,6 @@ package cujae.inf.ic.om.heuristic.assignment.others.basedcyclic;
 
 import java.util.ArrayList;
 
-import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Problem;
@@ -16,7 +15,6 @@ import cujae.inf.ic.om.matrix.RowCol;
 /*Clase que modela como asignar elementos en forma secuencial por depósitos*/
 public class SequentialCyclic extends ByNotUrgency {
 
-	public static DistanceType distanceType = DistanceType.Real;
 	private Solution solution = new Solution();
 		
 	private ArrayList<Cluster> listClusters;

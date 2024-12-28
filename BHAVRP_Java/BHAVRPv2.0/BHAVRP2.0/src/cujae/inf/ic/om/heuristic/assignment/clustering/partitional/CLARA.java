@@ -2,10 +2,7 @@ package cujae.inf.ic.om.heuristic.assignment.clustering.partitional;
 
 import java.util.ArrayList;
 
-import cujae.inf.ic.om.factory.DistanceType;
-
 import cujae.inf.ic.om.heuristic.assignment.clustering.SamplingType;
-import cujae.inf.ic.om.heuristic.assignment.clustering.SeedType;
 
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Depot;
@@ -18,15 +15,10 @@ import cujae.inf.ic.om.service.OSRMService;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
-public class Clara extends ByMedoids {
-
-	public static DistanceType distanceType = DistanceType.Real;
-	public static SeedType seedType = SeedType.Nearest_Depot; 
-	public static int countMaxIterations = 2;
-	public static int sampsize = 10;
+public class Clara extends ByMedoids { 
 	public static SamplingType samplingType = SamplingType.Random_Sampling;
-	private int currentIteration = 0;
-
+	private static int sampsize = 10;
+	
 	private ArrayList<Customer> listCustomersToAssign;
 	private ArrayList<Cluster> bestCluster;
 	private ArrayList<Integer> listUnassignedCustomers;
