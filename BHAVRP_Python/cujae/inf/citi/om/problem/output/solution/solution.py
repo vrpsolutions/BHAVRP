@@ -2,12 +2,7 @@ from typing import List
 from cluster import Cluster
 
 class Solution:
-
-    """
-    Constructor para la clase Solution.
-    :param clusters: Lista de objetos Cluster.
-    :param unassigned_items: Lista de índices o identificadores de elementos no asignados.
-    """    
+    # Constructor para la clase Solution.
     def __init__(
         self, 
         clusters: List[Cluster] = None,

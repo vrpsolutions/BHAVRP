@@ -1,10 +1,5 @@
 class Location:
-    
-    """
-    Constructor para la clase Location.
-    :param axis_x: Coordenada en el eje X.
-    :param axis_y: Coordenada en el eje Y.
-    """
+    # Constructor para la clase Location.
     def __init__(self, axis_x: float = 0.0, axis_y: float = 0.0):
         self.axis_x = axis_x
         self.axis_y = axis_y

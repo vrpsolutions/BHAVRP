@@ -1,13 +1,7 @@
 from typing import List
 
 class Cluster:
-    
-    """
-    Constructor para la clase Cluster.
-    :param id_cluster: Identificador del cluster.
-    :param request_cluster: Valor de la solicitud del cluster.
-    :param items_of_cluster: Lista de elementos que pertenecen al cluster.
-    """
+    # Constructor para la clase Cluster.
     def __init__(
         self, 
         id_cluster: int = -1, 

@@ -1,5 +1,5 @@
 from scipy.spatial import distance
-from BHAVRP_Python.cujae.inf.citi.om.controller.utils.distance_type import DistanceType
+from distance_type import DistanceType
 import osrm
 import logging
 

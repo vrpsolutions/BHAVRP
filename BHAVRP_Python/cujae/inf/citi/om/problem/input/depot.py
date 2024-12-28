@@ -3,13 +3,7 @@ from fleet import Fleet
 from location import Location
 
 class Depot:
-    
-    """
-    Constructor para la clase Depot.
-    :param id_depot: ID del depósito.
-    :param location_depot: Ubicación del depósito (por defecto es None, se inicializa más tarde).
-    :param fleet_depot: Flota del depósito (por defecto es una lista vacía).
-    """
+    # Constructor para la clase Depot.
     def __init__(
         self, 
         id_depot: int, 

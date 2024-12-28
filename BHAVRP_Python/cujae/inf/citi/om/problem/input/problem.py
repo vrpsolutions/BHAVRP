@@ -1,12 +1,12 @@
+import numpy as np
 from typing import List
 from customer import Customer
 from depot import Depot
 from fleet import Fleet
 from location import Location
-from ...controller.utils.distance import Distance
-from ...controller.utils.distance_type import DistanceType
-from ...controller.utils.tools import Tools
-import numpy as np
+from ...service.distance import Distance
+from ...service.distance_type import DistanceType
+from ...controller.tools.tools import Tools
 
 class Problem:
     _problem = None   # Atributo para la instancia Singleton.

@@ -1,13 +1,7 @@
 from location import Location
 
 class Customer:
-    
-    """
-    Constructor para la clase Customer.
-    :param id_customer: ID del cliente.
-    :param request_customer: Solicitud del cliente (carga o demanda).
-    :param location_customer: Ubicación del cliente. 
-    """
+    # Constructor para la clase Customer.
     def __init__(
         self, 
         id_customer: int, 

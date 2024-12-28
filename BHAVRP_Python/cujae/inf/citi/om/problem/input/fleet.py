@@ -1,10 +1,5 @@
 class Fleet:
-    
-    """
-    Constructor para la clase Fleet.
-    :param count_vehicles: Cantidad de vehículos en la flota.
-    :param capacity_vehicle: Capacidad de cada vehículo en la flota.
-    """
+    # Constructor para la clase Fleet.
     def __init__(self, count_vehicles: int = 0, capacity_vehicle: float = 0.0):
         self.count_vehicles = count_vehicles
         self.capacity_vehicle = capacity_vehicle

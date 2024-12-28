@@ -41,13 +41,8 @@ public class OSRMService {
 	 * @throws IOException En caso de error en la comunicación con OSRM.
 	 */
 	public static double calculateDistance(double axisXIni, double axisYIni, double axisXEnd, double axisYEnd) throws Exception {
-
-		boolean tries = true;
-
-		// Verificar si hemos alcanzado el número máximo de errores para el servidor remoto
-		if (remoteErrorCount >= MAX_REMOTE_ERRORS)
-			tries = false;
-
+		double distance = 0.0;
+		
 		// Generar clave única para la caché
 		String key = axisXIni + "," + axisYIni + "->" + axisXEnd + "," + axisYEnd;
 
@@ -55,20 +50,20 @@ public class OSRMService {
 		if (distanceCache.containsKey(key)) 
 		{
 			//System.out.println("Cache hit for: " + key);
-			return distanceCache.get(key);
+			distance = distanceCache.get(key);
 		}
 
 		String remoteUrl = OSRM_URL + axisYIni + "," + axisXIni + ";" + axisYEnd + "," + axisXEnd + "?overview=false&alternatives=false";
 		String localUrl = OSRM_Local_URL + axisYIni + "," + axisXIni + ";" + axisYEnd + "," + axisXEnd + "?overview=false&alternatives=false";
 
-		if (tries) 
+		if (remoteErrorCount >= MAX_REMOTE_ERRORS) 
 		{
 			try 
 			{	
 				// Validar la url generada
 				//System.out.println("Request URL: " + remoteUrl);
 
-				return fetchDistanceFromServer(remoteUrl, key);
+				distance = fetchDistanceFromServer(remoteUrl, key);
 			} catch (Exception e) {
 				System.err.println("Remote server failed. Switching to local server. Reason: " + e.getMessage());
 
@@ -78,15 +73,19 @@ public class OSRMService {
 					System.err.println("Max error attempts reached. Switching to local server only.");
 			}
 		}
-		try 
+		else
 		{
-			// Validar la url generada
-			//System.out.println("Request URL: " + localUrl);
-
-			return fetchDistanceFromServer(localUrl, key);
-		} catch (Exception e) {
-			throw new DistanceCalculationException("Local servers failed to calculate distance. Reason: ", e);
+			try 
+			{
+				// Validar la url generada
+				//System.out.println("Request URL: " + localUrl);
+	
+				distance = fetchDistanceFromServer(localUrl, key);
+			} catch (Exception e) {
+				throw new DistanceCalculationException("Local servers failed to calculate distance. Reason: ", e);
+			}
 		}
+		return distance;
 	}
 		
 	/**
