@@ -2,11 +2,13 @@ package cujae.inf.ic.om.heuristic.assignment.others.basedcyclic;
 
 import java.util.ArrayList;
 
+import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Problem;
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
@@ -14,25 +16,13 @@ import cujae.inf.ic.om.matrix.RowCol;
 /*Clase que modela como asignar elementos en forma secuencial por depósitos*/
 public class SequentialCyclic extends ByNotUrgency {
 
+	public static DistanceType distanceType = DistanceType.Real;
 	private Solution solution = new Solution();
 		
 	private ArrayList<Cluster> listClusters;
 	private ArrayList<Customer> listCustomersToAssign;
 	private ArrayList<Integer> listIDDepots;
 	private NumericMatrix costMatrix;
-	
-	private int posElementMatrix = -1;
-	private double capacityDepot = 0.0;
-	private int idCustomer = -1;
-	private double requestCustomer = 0.0;
-	private int posCluster = -1;
-	private double requestCluster = 0.0;
-	
-	private int i = 0;
-	private int countTry = 0;
-	private boolean isFull = false;
-	
-	private RowCol rcBestElement = null;
 	
 	public SequentialCyclic() {
 		super();
@@ -50,11 +40,28 @@ public class SequentialCyclic extends ByNotUrgency {
 		listClusters = initializeClusters();
 		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
 		listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
-		costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		costMatrix = initializeCostMatrix(listCustomersToAssign, Problem.getProblem().getDepots(), distanceType);
 	}
 		
 	@Override
 	public void assign() {
+		int posElementMatrix = -1;
+		
+		double capacityDepot = 0.0;
+		
+		int idCustomer = -1;
+		double requestCustomer = 0.0;
+		
+		int posCluster = -1;
+		double requestCluster = 0.0;
+		
+		RowCol rcBestElement = null;
+		
+		int i = 0;
+		int countTry = 0;
+		
+		boolean isFull = false;
+		
 		int totalItems = listCustomersToAssign.size();
 		int totalClusters = listIDDepots.size();
 		
@@ -117,7 +124,6 @@ public class SequentialCyclic extends ByNotUrgency {
 						}
 					}
 				}
-				
 				isFull = false;
 				countTry = 0;	
 				i++;
@@ -135,6 +141,8 @@ public class SequentialCyclic extends ByNotUrgency {
 			for(int k = 0; k < listClusters.size(); k++)
 				if(!(listClusters.get(k).getItemsOfCluster().isEmpty()))
 					solution.getClusters().add(listClusters.get(k));
+		
+		OSRMService.clearDistanceCache();
 		
 		return solution;
 	}		

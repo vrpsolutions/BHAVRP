@@ -1,27 +1,25 @@
 package cujae.inf.ic.om.heuristic.assignment.classical.cluster;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Problem;
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
 
+import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class ThreeCriteriaClustering extends ByNotUrgency {
 	
+	public static DistanceType distanceType = DistanceType.Euclidean;
 	private Solution solution = new Solution();
 	
 	private ArrayList<Cluster> listClusters;
 	private ArrayList<Customer> listCustomersToAssign;
-	
-	private int idCustomer = -1;
-	private double requestCustomer = 0.0;
-	private double capacityDepot = 0;
-	private int posCluster = -1;
-	private double requestCluster = 0.0;
+	NumericMatrix costMatrix;
 
 	public ThreeCriteriaClustering() {
 		super();
@@ -38,12 +36,20 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 	public void initialize() {
 		listClusters = initializeClusters();
 		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		costMatrix = initializeCostMatrix(Problem.getProblem().getCustomers(), Problem.getProblem().getDepots(), distanceType);
 	}
 	
 	@Override
 	public void assign() {
-		// METODO DETERMINAR CANDIDATOS Y OTRO METODO ASIGNAR CANDIDATOS
+		int idCustomer = -1;
+		double requestCustomer = 0.0;
 		
+		double capacityDepot = 0;
+		
+		int posCluster = -1;
+		double requestCluster = 0.0;
+		
+		// METODO DETERMINAR CANDIDATOS Y OTRO METODO ASIGNAR CANDIDATOS
 		double difference = -1.0; 
 		double percent = -1.0;
 		int posMinValue = -1;
@@ -68,7 +74,7 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 				idCustomer = listCustomersToAssign.get(i).getIDCustomer();
 				listAverages = getListCriteriasByClusters(idCustomer, listClusters, 1);
 
-				posMinValue = getPosMinValue(listAverages);
+				posMinValue = listAverages.indexOf(Collections.min(listAverages));
 				difference = getDifference(listAverages, posMinValue);
 				percent = 0.1 * listAverages.get(posMinValue);
 
@@ -83,11 +89,11 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 			buclePhaseI:	
 			while((!listIDCandidates.isEmpty()))
 			{	
-				posCustomerRef = getPosMaxValue(listDifferences);
+				posCustomerRef = listDifferences.indexOf(Collections.max(listDifferences));
 				idCustomer = listIDCandidates.get(posCustomerRef);
 				requestCustomer = Problem.getProblem().getRequestByIDCustomer(idCustomer);
 
-				posCluster = getPosMinValue(listValuesCandidates.get(posCustomerRef));
+				posCluster = listValuesCandidates.get(posCustomerRef).indexOf(Collections.min(listValuesCandidates.get(posCustomerRef)));
 				requestCluster = listClusters.get(posCluster).getRequestCluster();
 				capacityDepot = Problem.getProblem().getTotalCapacityByDepot(Problem.getProblem().getDepotByIDDepot(listClusters.get(posCluster).getIDCluster()));
 
@@ -129,7 +135,7 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 					idCustomer = listCustomersToAssign.get(j).getIDCustomer();
 					listVariances = getListCriteriasByClusters(idCustomer, listClusters, 2);
 
-					posMinValue = getPosMinValue(listVariances);
+					posMinValue = listVariances.indexOf(Collections.min(listVariances));
 					difference = getDifference(listVariances, posMinValue);
 					percent = 0.4 * listVariances.get(posMinValue);
 
@@ -144,11 +150,11 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 				buclePhaseII:
 				while((!listIDCandidates.isEmpty()))
 				{
-					posCustomerRef = getPosMaxValue(listDifferences);
+					posCustomerRef = listDifferences.indexOf(Collections.max(listDifferences));
 					idCustomer = listIDCandidates.get(posCustomerRef);
 					requestCustomer = Problem.getProblem().getRequestByIDCustomer(idCustomer);
 	
-					posCluster = getPosMinValue(listValuesCandidates.get(posCustomerRef));
+					posCluster = listValuesCandidates.get(posCustomerRef).indexOf(Collections.min(listValuesCandidates.get(posCustomerRef)));
 					requestCluster = listClusters.get(posCluster).getRequestCluster();
 					capacityDepot = Problem.getProblem().getTotalCapacityByDepot(Problem.getProblem().getDepotByIDDepot(listClusters.get(posCluster).getIDCluster()));
 
@@ -193,20 +199,20 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 					listIDCandidates.add(idCustomer);
 					listValuesCandidates.add(listAverages);
 			
-					posCluster = getPosMinValue(listAverages);
+					posCluster = listAverages.indexOf(Collections.min(listAverages));
 					ArrayList<Double> listDistCC = getDistancesInCluster(idCustomer, listClusters.get(posCluster));
-					listNearestDist.add(listDistCC.get(getPosMinValue(listDistCC)));
+					listNearestDist.add(listDistCC.get(listDistCC.indexOf(Collections.min(listDistCC))));
 
 				}
 				
 				buclePhaseIII:
 				while(!listIDCandidates.isEmpty())
 				{	
-					posCustomerRef = getPosMinValue(listNearestDist);
+					posCustomerRef = listNearestDist.indexOf(Collections.min(listNearestDist));
 					idCustomer = listCustomersToAssign.get(posCustomerRef).getIDCustomer();
 					requestCustomer = Problem.getProblem().getRequestByIDCustomer(idCustomer);
 					
-					posCluster = getPosMinValue(listValuesCandidates.get(posCustomerRef));
+					posCluster = listValuesCandidates.get(posCustomerRef).indexOf(Collections.min(listValuesCandidates.get(posCustomerRef)));
 					requestCluster = listClusters.get(posCluster).getRequestCluster();
 					capacityDepot = Problem.getProblem().getTotalCapacityByDepot(Problem.getProblem().getDepotByIDDepot(listClusters.get(posCluster).getIDCluster()));
 
@@ -291,7 +297,6 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 	private ArrayList<Double> getListCriteriasByClusters(int idCustomer, ArrayList<Cluster> clusters, int criteria){
 		ArrayList<Double> listValues = new ArrayList<Double>();
 		
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
 		int posCustomer = Problem.getProblem().getPosElement(idCustomer);
 		
 		switch(criteria)
@@ -353,7 +358,6 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 		ArrayList<Double> listDistCluster = new ArrayList<Double>();
 		
 		int posCustomerRef = Problem.getProblem().getPosElement(idCustomerRef);
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
 		
 		int posCC = -1;
 		
@@ -371,45 +375,4 @@ public class ThreeCriteriaClustering extends ByNotUrgency {
 
 		return listDistCluster;	
 	}		
-	
-	protected int getPosMaxValue(ArrayList<Double> list){
-		int posMaxValue = -1;
-
-		if((list != null) && (!list.isEmpty()))
-		{
-			posMaxValue = 0;
-			Double maxValue = list.get(0);
-
-			for(int i = 1; i < list.size(); i++)
-			{
-				if(list.get(i).doubleValue() > maxValue.doubleValue())
-				{
-					maxValue = list.get(i);
-					posMaxValue = i;
-				}
-			}	
-		}
-
-		return posMaxValue;
-	}
-
-	protected int getPosMinValue(ArrayList<Double> list){
-		int posMinValue = -1;
-
-		if((list != null) && (!list.isEmpty()))
-		{
-			posMinValue = 0;
-			Double minValue = list.get(0);
-
-			for(int i = 1; i < list.size(); i++)
-			{
-				if(list.get(i).doubleValue() < minValue.doubleValue())
-				{
-					minValue = list.get(i);
-					posMinValue = i;
-				}
-			}
-		}
-		return posMinValue;
-	}
 }

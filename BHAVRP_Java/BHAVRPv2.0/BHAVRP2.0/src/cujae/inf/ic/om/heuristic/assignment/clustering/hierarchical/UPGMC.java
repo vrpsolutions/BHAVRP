@@ -1,6 +1,5 @@
 package cujae.inf.ic.om.heuristic.assignment.clustering.hierarchical;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import cujae.inf.ic.om.factory.DistanceType;
@@ -12,30 +11,43 @@ import cujae.inf.ic.om.problem.input.Problem;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
 
 public class UPGMC extends Hierarchical {
 
-	public static DistanceType distanceType = DistanceType.Euclidean;
-
+	public static DistanceType distanceType = DistanceType.Manhattan;
+	private static Solution solution = new Solution();
+	
+	private ArrayList<Integer> listIDElements;
+	private ArrayList<Cluster> listClusters;
+	private ArrayList<Customer> listCustomersToAssign;
+	private ArrayList<Depot> listDepots;
+	private NumericMatrix costMatrix;
+	
 	public UPGMC() {
 		super();
 	}
 
 	@Override
 	public Solution toClustering() {
-		Solution solution = new Solution();	
-
-		ArrayList<Integer> listIDElements = Problem.getProblem().getListIDElements();
-		ArrayList<Cluster> listClusters = initializeClusters(listIDElements);
-
-		NumericMatrix costMatrix = new NumericMatrix();
-
-		ArrayList<Customer> listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-		ArrayList<Depot> listDepots = new ArrayList<Depot>(Problem.getProblem().getDepots());
-		
+		initialize();
+		assign();
+		return finish();
+	}
+			
+	@Override
+	public void initialize() {
+		listIDElements = Problem.getProblem().getListIDElements();
+		listClusters = initializeClusters(listIDElements);
+		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+		listDepots = new ArrayList<Depot>(Problem.getProblem().getDepots());
+	}
+	
+	@Override
+	public void assign() {
 		int totalDepots = listDepots.size();
 		
 		int currentDepots =  -1;
@@ -68,26 +80,21 @@ public class UPGMC extends Hierarchical {
 		RowCol rcBestAll = new RowCol();
 		Location newLocation = new Location();
 		
-		boolean change = true; 
-
+		boolean change = true;
+		
 		while(!(listCustomersToAssign.isEmpty()) && (totalDepots > 0))
 		{
 			currentDepots = listDepots.size();
 			currentCustomers = listCustomersToAssign.size();
-			
-			System.out.println("currentDepots" + currentDepots);
-			System.out.println("currentCustomers" + currentCustomers);
-			
-			//System.out.println("currentCustomers" + InfoProblem.getProblem().getCustomers().size());
 
+			System.out.println("Current Depots: " + currentDepots);
+			System.out.println("Current Customers: " + currentCustomers);
+			
 			if(change)
 			{
 				try {
-					costMatrix = Problem.getProblem().fillCostMatrix(listCustomersToAssign, listDepots, distanceType);
-				} catch (IllegalArgumentException | SecurityException
-						| ClassNotFoundException | InstantiationException
-						| IllegalAccessException | InvocationTargetException
-						| NoSuchMethodException e) {
+					costMatrix = initializeCostMatrix(listCustomersToAssign, listDepots, distanceType);
+				} catch (IllegalArgumentException | SecurityException e) {
 					e.printStackTrace();
 				}
 			}
@@ -106,7 +113,8 @@ public class UPGMC extends Hierarchical {
 				posCustomerOne = posCol;
 				idCustomerOne = listCustomersToAssign.get(posCustomerOne).getIDCustomer();
 
-				System.out.println("idCustomerOne" + idCustomerOne);
+				System.out.println("--------------------------------------");
+				System.out.println("ID Customer One: " + idCustomerOne);
 				
 				posCustomerTwo = posRow;
 				idCustomerTwo = listCustomersToAssign.get(posCustomerTwo).getIDCustomer();				
@@ -116,18 +124,20 @@ public class UPGMC extends Hierarchical {
 				posClusterOne = findCluster(idCustomerOne, listClusters);	
 				posClusterTwo = findCluster(idCustomerTwo, listClusters);
 				
-				System.out.println("posClusterOne" + posClusterOne);
-				System.out.println("posClusterTwo" + posClusterTwo);
-
+				System.out.println("--------------------------------------");
+				System.out.println("Position Cluster One: " + posClusterOne);
+				System.out.println("Position Cluster Two: " + posClusterTwo);
+				
 				if((posClusterOne != -1) && (posClusterTwo != -1)) 
 				{
 					requestClusterOne = listClusters.get(posClusterOne).getRequestCluster();
 					requestClusterTwo = listClusters.get(posClusterTwo).getRequestCluster();
 					totalRequest = requestClusterOne + requestClusterTwo;
 					
-					System.out.println("requestClusterOne" + requestClusterOne);
-					System.out.println("requestClusterTwo" + requestClusterTwo);
-					System.out.println("totalRequest" + totalRequest);
+					System.out.println("--------------------------------------");
+					System.out.println("Request Cluster One: " + requestClusterOne);
+					System.out.println("Request Cluster Two: " + requestClusterTwo);
+					System.out.println("Total Request: " + totalRequest);
 					
 					idDepotWithMU = getIDClusterWithMU(listDepots, listClusters);
 					posDepot = Problem.getProblem().findPosDepot(listDepots, idDepotWithMU);
@@ -135,11 +145,12 @@ public class UPGMC extends Hierarchical {
 					posCluster = findCluster(idDepotWithMU, listClusters);
 					requestCluster = listClusters.get(posCluster).getRequestCluster();
 
-					System.out.println("idDepotWithMU" + idDepotWithMU);
-					System.out.println("posDepot" + posDepot);
-					System.out.println("capacityDepotWithMU" + capacityDepotWithMU);
-					System.out.println("posCluster" + posCluster);
-					System.out.println("requestCluster" + requestCluster);
+					System.out.println("--------------------------------------");
+					System.out.println("ID Depot With MU: " + idDepotWithMU);
+					System.out.println("Position Depot: " + posDepot);
+					System.out.println("Capacity Depot With MU: " + capacityDepotWithMU);
+					System.out.println("Position Cluster: " + posCluster);
+					System.out.println("Request Cluster: " + requestCluster);
 					
 					if(capacityDepotWithMU >= (requestCluster + totalRequest)) 
 					{
@@ -149,44 +160,36 @@ public class UPGMC extends Hierarchical {
 							listClusters.get(posClusterOne).getItemsOfCluster().add(listClusters.get(posClusterTwo).getItemsOfCluster().get(i));			
 
 						newLocation = recalculateCentroid(listClusters.get(posClusterOne));
-						System.out.println("newLocationX" + newLocation.getAxisX());
-						System.out.println("newLocationY" + newLocation.getAxisY());
-						/*newLocation = recalculatePonderado(listClusters.get(posClusterOne), listClusters.get(posClusterTwo), listCustomersToAssign);
-						System.out.println("newLocationX" + newLocation.getAxisX());
-						System.out.println("newLocationY" + newLocation.getAxisY());*/
-						/*newLocation = recalculateTest(listClusters.get(posClusterOne), listClusters.get(posClusterTwo), listCustomersToAssign);
-						System.out.println("newLocationX" + newLocation.getAxisX());
-						System.out.println("newLocationY" + newLocation.getAxisY());*/
+						
+						System.out.println("--------------------------------------");
+						System.out.println("New Location:");
+						System.out.println("Axis X: " + newLocation.getAxisX());
+						System.out.println("Axis Y: " + newLocation.getAxisY());
+						
 						posCustomerOne = Problem.getProblem().findPosCustomer(listCustomersToAssign, idCustomerOne);
 						listCustomersToAssign.get(posCustomerOne).setLocationCustomer(newLocation);
 						
-						System.out.println("newLocationX" + newLocation.getAxisX());
-						System.out.println("newLocationY" + newLocation.getAxisY());
-						System.out.println("posCustomerOne" + posCustomerOne);
+						System.out.println("--------------------------------------");
+						System.out.println("New Location:");
+						System.out.println("Axis X: " + newLocation.getAxisX());
+						System.out.println("Axis Y:" + newLocation.getAxisY());
+						System.out.println("Position Customer One: " + posCustomerOne);
 						
 						listClusters.remove(posClusterTwo);
 						posCustomerTwo = Problem.getProblem().findPosCustomer(listCustomersToAssign, idCustomerTwo);
 						listCustomersToAssign.remove(posCustomerTwo);
 						
-						System.out.println("listClusters" + listClusters.size());
-						System.out.println("posCustomerTwo" + posCustomerTwo);
-						System.out.println("listCustomersToAssign" + listCustomersToAssign.size());
-	
+						System.out.println("--------------------------------------");
+						System.out.println("List Clusters: " + listClusters.size());
+						System.out.println("Position Customer Two: " + posCustomerTwo);
+						System.out.println("List Customers To Assign: " + listCustomersToAssign.size());
+						
 						change = true;
 					}
 					else
 					{
 						costMatrix.setItem(rcBestAll.getRow(), rcBestAll.getCol(), Double.POSITIVE_INFINITY);
 						change = false;
-						
-						/*System.out.println();
-						System.out.println("IDClusterOne" + listClusters.get(posClusterOne).getIDCluster());
-						System.out.println("ElementClusterOne" + listClusters.get(posClusterOne).getItemsOfCluster().toString());
-						System.out.println("requestClusterOne" + listClusters.get(posClusterTwo).getRequestCluster());
-						System.out.println("IDClusterTwo" + listClusters.get(posClusterTwo).getIDCluster());
-						System.out.println("ElementClusterTwo" + listClusters.get(posClusterOne).getItemsOfCluster().toString());
-						System.out.println("requestClusterTwo" + listClusters.get(posClusterTwo).getRequestCluster());
-						*/
 					}
 				}	
 			}
@@ -205,32 +208,36 @@ public class UPGMC extends Hierarchical {
 						posDepotMatrix = rcBestAll.getCol();
 					}
 					
-					System.out.println("posCustomerOne" + posCustomerOne);
-					System.out.println("posDepotMatrix" + posDepotMatrix);
+					System.out.println("--------------------------------------");
+					System.out.println("Position Customer One: " + posCustomerOne);
+					System.out.println("Position Depot Matrix: " + posDepotMatrix);
 
 					idCustomerOne = listCustomersToAssign.get(posCustomerOne).getIDCustomer();			
 					posClusterOne = findCluster(idCustomerOne, listClusters);
 					
-					System.out.println("idCustomerOne" + idCustomerOne);
-					System.out.println("posClusterOne" + posClusterOne);
+					System.out.println("--------------------------------------");
+					System.out.println("ID Customer One: " + idCustomerOne);
+					System.out.println("Position Cluster One: " + posClusterOne);
 
 					posDepot = (posDepotMatrix - currentCustomers); 
 					idDepot = listDepots.get(posDepot).getIDDepot();
 					capacityDepot = Problem.getProblem().getTotalCapacityByDepot(listDepots.get(posDepot));
 					posCluster = findCluster(idDepot, listClusters);
 
-					System.out.println("posDepot" + posDepot);
-					System.out.println("idDepot" + idDepot);
-					System.out.println("capacityDepot" + capacityDepot);
-					System.out.println("posCluster" + posCluster);
+					System.out.println("--------------------------------------");
+					System.out.println("Position Depot: " + posDepot);
+					System.out.println("ID Depot: " + idDepot);
+					System.out.println("Capacity Depot: " + capacityDepot);
+					System.out.println("Position Cluster: " + posCluster);
 					
 					if((posClusterOne != -1) && (posCluster != -1))
 					{
 						requestClusterOne = listClusters.get(posClusterOne).getRequestCluster();
 						requestCluster = listClusters.get(posCluster).getRequestCluster();
 
-						System.out.println("requestClusterOne" + requestClusterOne);
-						System.out.println("requestCluster" + requestCluster);
+						System.out.println("--------------------------------------");
+						System.out.println("Request Cluster One: " + requestClusterOne);
+						System.out.println("Request Cluster: " + requestCluster);
 						
 						if(capacityDepot >= (requestCluster + requestClusterOne)) 
 						{
@@ -248,19 +255,16 @@ public class UPGMC extends Hierarchical {
 						else
 						{
 							costMatrix.setItem(rcBestAll.getRow(), rcBestAll.getCol(), Double.POSITIVE_INFINITY);
-							change = false;	
-							
-						/*	System.out.println();
-							System.out.println("IDClusterOne" + listClusters.get(posClusterOne).getIDCluster());
-							System.out.println("ElementClusterOne" + listClusters.get(posClusterOne).getItemsOfCluster().toString());
-							System.out.println("requestClusterOne" + listClusters.get(posClusterTwo).getRequestCluster());*/
+							change = false;		
 						}
 						
-						//PENDIENTE ENTRADA CON LISTCUSTOMER VACIA EN EL ISFULLDEPOT TRADICIONA
+						//PENDIENTE ENTRADA CON LISTCUSTOMER VACIA EN EL ISFULLDEPOT TRADICIONAL
 						if(isFullDepot(listClusters, requestCluster, capacityDepot, listCustomersToAssign.size()))
 						{
 							posCluster = findCluster(idDepot, listClusters);
-							System.out.println("posCluster" + posCluster);
+							
+							System.out.println("--------------------------------------");
+							System.out.println("Position Cluster: " + posCluster);
 							
 							if(!(listClusters.get(posCluster).getItemsOfCluster().isEmpty()))
 								solution.getClusters().add(listClusters.remove(posCluster));
@@ -275,7 +279,10 @@ public class UPGMC extends Hierarchical {
 				}
 			}
 		}
-		
+	}
+	
+	@Override
+	public Solution finish() {	
 		finish(listClusters, solution);
 		
 		if(!listClusters.isEmpty())
@@ -283,11 +290,13 @@ public class UPGMC extends Hierarchical {
 				if(!(listClusters.get(k).getItemsOfCluster().isEmpty()))
 					solution.getClusters().add(listClusters.get(k));
 
+		OSRMService.clearDistanceCache();
+		
 		return solution;
 	}
 	
 	/*Método encargado de obtener el id del deposito con mayor capacidad de la lista*/
-	private int getIDClusterWithMU(ArrayList<Depot> depots, ArrayList<Cluster> clusters){
+	private int getIDClusterWithMU(ArrayList<Depot> depots, ArrayList<Cluster> clusters) {
 		int idDepotMU = depots.get(0).getIDDepot();
 		int posCluster = findCluster(idDepotMU, clusters);
 		double requestCluster = clusters.get(posCluster).getRequestCluster();
@@ -310,7 +319,6 @@ public class UPGMC extends Hierarchical {
 				idDepotMU = depots.get(i).getIDDepot(); 
 			}
 		}
-
 		return idDepotMU;
 	}
 	
@@ -320,9 +328,10 @@ public class UPGMC extends Hierarchical {
 		for(int i = 0; i < clusters.size(); i++)
 		{
 			System.out.println();
-			System.out.println("IDCluster" + clusters.get(i).getIDCluster());
-			System.out.println("posCluster" + clusters.get(i).getItemsOfCluster().toString());
-			System.out.println("requestCluster" + clusters.get(i).getRequestCluster());
+			System.out.println("--------------------------------------");
+			System.out.println("ID Cluster: " + clusters.get(i).getIDCluster());
+			System.out.println("Position Cluster: " + clusters.get(i).getItemsOfCluster().toString());
+			System.out.println("Request Cluster: " + clusters.get(i).getRequestCluster());
 			
 			posElement = Problem.getProblem().findPosCustomer(Problem.getProblem().getCustomers(), clusters.get(i).getIDCluster());
 

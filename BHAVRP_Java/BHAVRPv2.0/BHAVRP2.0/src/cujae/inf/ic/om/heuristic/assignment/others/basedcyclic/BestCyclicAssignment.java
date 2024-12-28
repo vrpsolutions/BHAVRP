@@ -6,7 +6,9 @@ import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Problem;
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
+import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
@@ -14,20 +16,13 @@ import cujae.inf.ic.om.matrix.RowCol;
 /*Clase que modela como asignar el mejor cliente al último cliente - depósito asignando en forma paralela */
 public class BestCyclicAssignment extends ByNotUrgency {
 
+	public static DistanceType distanceType = DistanceType.Euclidean;
 	private Solution solution = new Solution();
 	
 	private ArrayList<Cluster> clusters;
 	private ArrayList<Customer> customersToAssign;
 	private NumericMatrix costMatrix;
-    
-	private int posElementMatrix = -1;
-    private double capacityDepot = 0.0;   
-    private double requestCustomer = 0.0;    
-    private double requestCluster = 0.0; 
-    private int posCluster = -1;
-    
-    private RowCol rcBestAllSelected = null;
-	
+    	
 	public BestCyclicAssignment() {
 		super();
 	}
@@ -43,11 +38,22 @@ public class BestCyclicAssignment extends ByNotUrgency {
 	public void initialize() {
     	clusters = initializeClusters();
 		customersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-		costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		costMatrix = initializeCostMatrix(customersToAssign, Problem.getProblem().getDepots(), distanceType);
 	}
 	
 	@Override
     public void assign() {
+		int posElementMatrix = -1;
+	    
+		double capacityDepot = 0.0;   
+	    
+	    double requestCustomer = 0.0;    
+	    
+	    double requestCluster = 0.0; 
+	    int posCluster = -1;
+	    
+	    RowCol rcBestAllSelected = null;
+		
 		int totalItems = customersToAssign.size();
 		int totalClusters = Problem.getProblem().getDepots().size();
 		
@@ -94,11 +100,6 @@ public class BestCyclicAssignment extends ByNotUrgency {
 				
 				if(isFullDepot(customersToAssign, requestCluster, capacityDepot))
 				{
-					/*if(!(clusters.get(posCluster).getItemsOfCluster().isEmpty()))
-						solution.getClusters().add(clusters.remove(posCluster));
-					else
-						clusters.remove(posCluster);*/
-				
 					if(!(clusters.get(posCluster).getItemsOfCluster().isEmpty()))
 						solution.getClusters().add(clusters.get(posCluster));
 
@@ -114,7 +115,7 @@ public class BestCyclicAssignment extends ByNotUrgency {
 	}
 	
     @Override
-    public Solution finish() {
+    public Solution finish() {   	
 		if(!customersToAssign.isEmpty())					
 			for(int i = 0; i < customersToAssign.size(); i++)	
 				solution.getUnassignedItems().add(customersToAssign.get(i).getIDCustomer());
@@ -123,6 +124,8 @@ public class BestCyclicAssignment extends ByNotUrgency {
 			for(int k = 0; k < clusters.size(); k++)
 				if((clusters.get(k) != null) && (!clusters.get(k).getItemsOfCluster().isEmpty()))
 					solution.getClusters().add(clusters.get(k));
+		
+		OSRMService.clearDistanceCache();
 		
         return solution;
     }    
@@ -157,7 +160,6 @@ public class BestCyclicAssignment extends ByNotUrgency {
 				}			
 			}
 		}
-		
 		return rcBestAll;
 	}
 	
@@ -177,7 +179,6 @@ public class BestCyclicAssignment extends ByNotUrgency {
 			else
 				i++;
 		}
-			
 		return posCluster;
 	}
 }

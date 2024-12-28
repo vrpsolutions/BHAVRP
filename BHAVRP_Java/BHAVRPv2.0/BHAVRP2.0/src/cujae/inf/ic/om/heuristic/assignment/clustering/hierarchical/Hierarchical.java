@@ -27,7 +27,6 @@ public abstract class Hierarchical extends Clustering {
 			
 			i++;
 		}
-		
 		return found;
 	}
 	
@@ -48,7 +47,6 @@ public abstract class Hierarchical extends Clustering {
 					i++;
 			}
 		}	
-
 		return isFull;
 	}
 }

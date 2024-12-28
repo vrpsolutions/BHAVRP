@@ -8,11 +8,11 @@ import java.util.ArrayList;
 
 import cujae.inf.ic.om.factory.interfaces.AssignmentType;
 
-import cujae.inf.ic.om.controller.Controller;
+//import cujae.inf.ic.om.controller.Controller;
 
 import cujae.inf.ic.om.problem.input.Problem;
 
-import cujae.inf.ic.om.evaluations.Evaluation;
+//import cujae.inf.ic.om.evaluations.Evaluation;
 
 public class MainDePrueba
 {
@@ -64,17 +64,20 @@ public class MainDePrueba
 
 			//cujae.inf.citi.om.heuristic.controller.Controller.getController().loadProblem(idCustomers, requestCustomers, idDepots, countVehicles, capacityVehicles, listDistances)
 			//cujae.inf.citi.om.heuristic.controller.Controller.getController().loadProblem(idCustomers, requestCustomers, axisXCustomers, axisYCustomers, idDepots, axisXDepots, axisYDepots, countVehicles, capacityVehicles, listDistances)
+			//cujae.inf.ic.om.controller.Controller.getController().loadProblem(idCustomers, requestCustomers, axisXCustomers, axisYCustomers, idDepots, axisXDepots, axisYDepots, countVehicles, capacityVehicles, listDistances)
 			
-			if(cujae.inf.ic.om.controller.Controller.getController().loadProblem(idCustomers, requestCustomers, axisXCustomers, axisYCustomers, idDepots, axisXDepots, axisYDepots, countVehicles, capacityVehicles, listDistances))
+			if(cujae.inf.ic.om.controller.Controller.getController().loadProblem(idCustomers, requestCustomers, axisXCustomers, axisYCustomers, idDepots, axisXDepots, axisYDepots, countVehicles, capacityVehicles))
 			{
 				double avgTime = 0.0;
 				double runTime = 0.0;
 				
+				/*
 				Evaluation metric = new Evaluation();
 				ArrayList<Double> listDI = new ArrayList<Double>();
 				ArrayList<Double> listSSE = new ArrayList<Double>(); 
 				ArrayList<Double> listSSW = new ArrayList<Double>();
 				ArrayList<Double> listSSB = new ArrayList<Double>();
+				*/
 				ArrayList<Double> listExTime = new ArrayList<Double>();
 				
 				int run = 1;
@@ -87,7 +90,7 @@ public class MainDePrueba
 				{
 					double start = System.currentTimeMillis();
 					
-					int j = 6;  // 0 y 7 23
+					int j = 10;
 					
 					//for(int j = 1; j < AssignmentType.values().length; j++)
 					//{
@@ -232,8 +235,9 @@ public class MainDePrueba
 					System.out.println("Tiempo de Ejecución " + (k + 1) + ": " + listExTime.get(k) + " ms");
 					System.out.println();
 					
-					int totalClusters = Controller.getController().getSolution().getClusters().size(); 
+					//int totalClusters = Controller.getController().getSolution().getClusters().size(); 
 					
+					/*
 					double SSE = 0.0;
 					double SSW = 0.0;
 					double SSB = 0.0;
@@ -244,8 +248,8 @@ public class MainDePrueba
 						SSE += metric.SSE(Controller.getController().getSolution().getClusters().get(l));
 						SSW += metric.SSW(Controller.getController().getSolution().getClusters().get(l));
 						
-					/*	listSSE.add(metric.SSE(Controller.getController().getSolution().getClusters().get(l)));
-						listSSW.add(metric.SSW(Controller.getController().getSolution().getClusters().get(l)));*/
+						listSSE.add(metric.SSE(Controller.getController().getSolution().getClusters().get(l)));
+						listSSW.add(metric.SSW(Controller.getController().getSolution().getClusters().get(l)));
 					}
 					
 					listSSE.add(SSE/totalClusters);
@@ -265,6 +269,7 @@ public class MainDePrueba
 					listDI.add(DI);
 					
 					System.out.println("DI: " + listDI.get(listDI.size() - 1));
+					
 					
 /*					double result1 = metric.SSE(Controller.getController().getSolution().getClusters().get(0));
 					double result2 = metric.SSW(Controller.getController().getSolution().getClusters().get(0));

@@ -1,8 +1,5 @@
 package cujae.inf.ic.om.heuristic.assignment.clustering.partitional;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
 import java.util.ArrayList;
 
 import cujae.inf.ic.om.factory.DistanceType;
@@ -30,8 +27,6 @@ public class Farthest_First extends ByCentroids {
 	private ArrayList<Cluster> listClusters;
 	private ArrayList<Customer> listCustomersToAssign;
 	private ArrayList<Depot> listCentroids;
-
-	private boolean first;
 	
 	public Farthest_First() {
 		super();
@@ -59,12 +54,13 @@ public class Farthest_First extends ByCentroids {
 		listCentroids = new ArrayList<Depot>();
 		
 		currentIteration = 0;
-		first = true;
 	}
 	
 	@Override
 	public void assign() {
+		boolean first = true;
 		boolean change = false;
+		
 		do 
 		{
 			if(first)
@@ -77,52 +73,18 @@ public class Farthest_First extends ByCentroids {
 			else
 				cleanClusters(listClusters);
 			
-			NumericMatrix costMatrix = new NumericMatrix();
-			
-			switch (distanceType.ordinal())
-			{
-				case 0: case 1: case 2: case 3:
-				{
-					try {
-						costMatrix = Problem.getProblem().fillCostMatrix(listCustomersToAssign, listCentroids, distanceType);
-					} catch (IllegalArgumentException | SecurityException | ClassNotFoundException | InstantiationException
-							| IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-						e.printStackTrace();
-					}
-					break;
-				}
-			}
-			if (distanceType == DistanceType.Real)
-			{
-				try {
-					costMatrix = Problem.getProblem().fillCostMatrixReal(listCustomersToAssign, listCentroids);
-				} catch (IOException | InterruptedException | IllegalArgumentException | SecurityException
-						| ClassNotFoundException | InstantiationException | IllegalAccessException
-						| InvocationTargetException | NoSuchMethodException e) {
-					e.printStackTrace();
-				}
-			}
+			NumericMatrix costMatrix = initializeCostMatrix(listCustomersToAssign, listCentroids, distanceType);
 
 			stepAssignment(listClusters, listCustomersToAssign, costMatrix);
 			
-			switch (distanceType.ordinal())
-			{
-				case 0: case 1: case 2: case 3:
-				{
-					change = verifyCentroids(listClusters, listCentroids, distanceType);
-					break;
-				}
-			}
 			if (distanceType == DistanceType.Real)
-			{
 				change = verifyCentroids(listClusters, listCentroids);
-			}
+			else 
+				change = verifyCentroids(listClusters, listCentroids, distanceType);
 			
 			currentIteration ++;
 
 			System.out.println("ITERACIÓN ACTUAL: " + currentIteration);
-			
-			OSRMService.clearDistanceCache();
 
 		} while((change) && (currentIteration < countMaxIterations));
 	}
@@ -140,6 +102,8 @@ public class Farthest_First extends ByCentroids {
 				if(!listClusters.get(k).getItemsOfCluster().isEmpty())
 					solution.getClusters().add(listClusters.get(k));
 
+		OSRMService.clearDistanceCache();
+		
 		return solution;
 	}
 }

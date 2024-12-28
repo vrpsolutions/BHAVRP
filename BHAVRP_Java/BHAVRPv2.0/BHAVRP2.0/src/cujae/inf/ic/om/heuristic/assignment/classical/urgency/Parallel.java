@@ -7,11 +7,14 @@ import cujae.inf.ic.om.problem.input.Problem;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
+import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class Parallel extends ByUrgency implements IUrgency {
 
+	public static DistanceType distanceType = DistanceType.Real;
 	private Solution solution = new Solution();	
 	
 	private ArrayList<Cluster> listClusters;	
@@ -23,14 +26,6 @@ public class Parallel extends ByUrgency implements IUrgency {
 	
 	private ArrayList<ArrayList<Integer>> listDepotsOrdered;
 	private ArrayList<Double> listUrgencies;
-
-	private int posCustomer = -1;
-	private int idCustomer = -1;
-	private double requestCustomer = 0.0;	
-	private int idClosestDepot = -1;
-	private double capacityDepot = 0.0;
-	private int posCluster = -1;
-	private double requestCluster = 0.0;
 	
 	public Parallel() {
 		super();
@@ -49,8 +44,8 @@ public class Parallel extends ByUrgency implements IUrgency {
 		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
 		listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
 		
-		urgencyMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
-		closestMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		urgencyMatrix = initializeCostMatrix(listCustomersToAssign, Problem.getProblem().getDepots(), distanceType);
+		closestMatrix = urgencyMatrix;
 		
 		listDepotsOrdered = getDepotsOrdered(listCustomersToAssign, listIDDepots, closestMatrix);
 		listUrgencies = getListUrgencies(listCustomersToAssign, listDepotsOrdered, urgencyMatrix);
@@ -58,7 +53,17 @@ public class Parallel extends ByUrgency implements IUrgency {
 		
 	@Override
 	public void assign() {
-		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty())) 
+		int posCustomer = -1;
+		int idCustomer = -1;
+		double requestCustomer = 0.0;	
+		
+		int idClosestDepot = -1;
+		double capacityDepot = 0.0;
+		
+		int posCluster = -1;
+		double requestCluster = 0.0;
+		
+		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty())) 	
 		{
 			posCustomer = getPosMaxValue(listUrgencies);
 			idCustomer = listCustomersToAssign.get(posCustomer).getIDCustomer();
@@ -150,6 +155,8 @@ public class Parallel extends ByUrgency implements IUrgency {
 				if(!(listClusters.get(k).getItemsOfCluster().isEmpty()))
 					solution.getClusters().add(listClusters.get(k));
 
+		OSRMService.clearDistanceCache();
+		
 		return solution;
 	}
 	

@@ -17,6 +17,7 @@ import com.google.gson.JsonParser;
 public class OSRMService {
 
 	private static final CloseableHttpClient httpClient = HttpClients.createDefault();
+	//private static final String OSRM_URL = "https://router.project-osrm.org/";
 	private static final String OSRM_Local_URL = "http://localhost:5000/route/v1/driving/";
 	private static final Map<String, Double> distanceCache = new HashMap<>();
 
@@ -128,7 +129,8 @@ public class OSRMService {
      * Método para limpiar la caché de distancias.
      */
     public static void clearDistanceCache() {
-    	System.out.println("Clearing distance cache with " + distanceCache.size() + " entries.");
+    	System.out.println("---------------------------------------------");
+    	System.out.println("CLEARING DISTANCE CACHE WITH: " + distanceCache.size() + " ENTRIES");
         distanceCache.clear();
     }
 }

@@ -1,6 +1,5 @@
 package cujae.inf.ic.om.heuristic.assignment.clustering.partitional;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import cujae.inf.ic.om.factory.DistanceType;
@@ -15,12 +14,13 @@ import cujae.inf.ic.om.problem.input.Problem;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class Clara extends ByMedoids {
 
-	public static DistanceType distanceType = DistanceType.Euclidean;
+	public static DistanceType distanceType = DistanceType.Real;
 	public static SeedType seedType = SeedType.Nearest_Depot; 
 	public static int countMaxIterations = 2;
 	public static int sampsize = 10;
@@ -32,9 +32,11 @@ public class Clara extends ByMedoids {
 	private ArrayList<Integer> listUnassignedCustomers;
 	private ArrayList<Integer> unassignedItemsInPartition;
 	private ArrayList<ArrayList<Customer>> listPartitions;
+	private NumericMatrix costMatrix;
 
 	public Clara() {
 		super();
+		this.listUnassignedCustomers = new ArrayList<>();
 	}
 
 	public int getCurrentIteration(){
@@ -56,6 +58,9 @@ public class Clara extends ByMedoids {
 
 	@Override
 	public void assign() {
+		if (unassignedItemsInPartition == null) {
+		    unassignedItemsInPartition = new ArrayList<>();
+		}
 		for(int i = 0; i < listPartitions.size(); i++)
 		{
 			currentIteration = 0;
@@ -81,26 +86,16 @@ public class Clara extends ByMedoids {
 				else
 					updateClusters(listClusters, listIDElements);
 
-				NumericMatrix costMatrix = new NumericMatrix();
-				NumericMatrix costMatrixCopy = null; 
+				costMatrix = initializeCostMatrix(listCustomersToAssign, listMedoids, distanceType);
+				NumericMatrix costMatrixCopy = new NumericMatrix(costMatrix); 
+				NumericMatrix costMatrixCopy2 = new NumericMatrix(costMatrix);
 
-				try { 
-					//costMatrix1 = InfoProblem.getProblem().calculateCostMatrix(distanceType, listMedoids, listCustomersToAssign);
-					costMatrix = Problem.getProblem().fillCostMatrix(listCustomersToAssign, listMedoids, distanceType);
-					costMatrixCopy = new NumericMatrix(costMatrix);
-
-				} catch (IllegalArgumentException | SecurityException | ClassNotFoundException | InstantiationException
-						| IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				stepAssignment(listClusters, listCustomersToAssign, costMatrix);
+				stepAssignment(listClusters, listCustomersToAssign, costMatrixCopy);
 				ArrayList<Depot> oldMedoids = replicateDepots(listMedoids);
 
-				double bestCost = calculateCost(listClusters, costMatrixCopy, listMedoids, listPartitions.get(i));
+				double bestCost = calculateCost(listClusters, costMatrixCopy2, listMedoids, listPartitions.get(i));
 
-				stepSearchMedoids(listClusters, listMedoids, costMatrixCopy, bestCost, listPartitions.get(i));
+				stepSearchMedoids(listClusters, listMedoids, costMatrixCopy2, bestCost, listPartitions.get(i));
 				change = verifyMedoids(oldMedoids, listMedoids); 
 
 				if((change) && (currentIteration + 1 != countMaxIterations))
@@ -116,6 +111,7 @@ public class Clara extends ByMedoids {
 			}
 
 			System.out.println("POR SI HAY NO ASIGNADOS");
+			
 			if(!listCustomersToAssign.isEmpty())					
 				for(int j = 0; j < listCustomersToAssign.size(); j++)	
 					unassignedItemsInPartition.add(listCustomersToAssign.get(j).getIDCustomer());
@@ -125,19 +121,9 @@ public class Clara extends ByMedoids {
 			listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
 			updateCustomerToAssign(listCustomersToAssign, elementsInPartition);
 
-			NumericMatrix costMatrix = new NumericMatrix(); 
+			NumericMatrix costMatrixCopy3 = initializeCostMatrix(listCustomersToAssign, listMedoids, distanceType);
 
-			try { 
-				//costMatrix1 = InfoProblem.getProblem().calculateCostMatrix(distanceType, listMedoids, listCustomersToAssign);
-				costMatrix = Problem.getProblem().fillCostMatrix(listCustomersToAssign, listMedoids, distanceType);
-
-			} catch (IllegalArgumentException | SecurityException | ClassNotFoundException | InstantiationException
-					| IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			stepAssignment(listClusters, listCustomersToAssign, costMatrix);
+			stepAssignment(listClusters, listCustomersToAssign, costMatrixCopy3);
 
 			double bestDissimilarity = 0.0;
 			double currentDissimilarity = calculateDissimilarity(distanceType, listClusters);
@@ -146,8 +132,8 @@ public class Clara extends ByMedoids {
 			{
 				bestDissimilarity = currentDissimilarity;
 				bestCluster = listClusters;
-
-				if(!unassignedItemsInPartition.isEmpty())
+				
+				if(unassignedItemsInPartition != null && !unassignedItemsInPartition.isEmpty())
 					listUnassignedCustomers = unassignedItemsInPartition; // chequear que asigna bien
 			}
 			else 
@@ -161,7 +147,6 @@ public class Clara extends ByMedoids {
 						listUnassignedCustomers = unassignedItemsInPartition;
 				}
 			}
-
 			unassignedItemsInPartition.clear();
 		}
 	}
@@ -169,16 +154,18 @@ public class Clara extends ByMedoids {
 	@Override
 	public Solution finish() {
 		Solution solution = new Solution();
-
-		if(!listUnassignedCustomers.isEmpty())					
+		
+		if(listUnassignedCustomers != null && !listUnassignedCustomers.isEmpty())					
 			for(int j = 0; j < listUnassignedCustomers.size(); j++)	
 				solution.getUnassignedItems().add(listUnassignedCustomers.get(j));
 
-		if(!bestCluster.isEmpty())
+		if(bestCluster != null && !bestCluster.isEmpty())
 			for(int k = 0; k < bestCluster.size(); k++)
 				if(!(bestCluster.get(k).getItemsOfCluster().isEmpty()))
 					solution.getClusters().add(bestCluster.get(k));
 
+		OSRMService.clearDistanceCache();
+		
 		return solution;
 	}
 
@@ -259,7 +246,6 @@ public class Clara extends ByMedoids {
 					medoids.get(i).getLocationDepot().setAxisX(oldMedoids.get(i).getLocationDepot().getAxisX());					
 					medoids.get(i).getLocationDepot().setAxisY(oldMedoids.get(i).getLocationDepot().getAxisY());	
 				}
-
 				System.out.println("ID MEDOIDE: " + medoids.get(i).getIDDepot());
 				System.out.println("LISTA DE MEDOIDES X: " + medoids.get(i).getLocationDepot().getAxisX());
 				System.out.println("LISTA DE MEDOIDES Y: " + medoids.get(i).getLocationDepot().getAxisY());
@@ -310,7 +296,6 @@ public class Clara extends ByMedoids {
 				System.out.println("-------------------------------------------------------------------------------");
 			}
 		}
-
 		System.out.println("MEJOR COSTO TOTAL: " + cost);	
 		System.out.println("-------------------------------------------------------------------------------");
 

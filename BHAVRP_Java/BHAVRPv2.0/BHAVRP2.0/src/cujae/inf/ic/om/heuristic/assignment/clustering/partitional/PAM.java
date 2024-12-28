@@ -1,7 +1,5 @@
 package cujae.inf.ic.om.heuristic.assignment.clustering.partitional;
 
-import java.lang.reflect.InvocationTargetException;
-
 import java.util.ArrayList;
 
 import cujae.inf.ic.om.factory.DistanceType;
@@ -15,6 +13,7 @@ import cujae.inf.ic.om.problem.input.Problem;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
@@ -67,21 +66,9 @@ public class PAM extends ByMedoids {
 			else
 				updateClusters(listClusters, listIDElements);
 			
-			NumericMatrix costMatrix = new NumericMatrix();
-			NumericMatrix costMatrixCopy = null; 
-			
-			try { 
-				//costMatrix1 = InfoProblem.getProblem().calculateCostMatrix(distanceType, listMedoids, listCustomersToAssign);
-				costMatrix = Problem.getProblem().fillCostMatrix(listCustomersToAssign, listMedoids, distanceType);
-				costMatrixCopy = new NumericMatrix(costMatrix);
-	
-			} catch (IllegalArgumentException | SecurityException
-					| ClassNotFoundException | InstantiationException
-					| IllegalAccessException | InvocationTargetException
-					| NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-			
+			NumericMatrix costMatrix = initializeCostMatrix(listCustomersToAssign, listMedoids, distanceType);
+			NumericMatrix costMatrixCopy = new NumericMatrix(costMatrix); 
+				
 			stepAssignment(listClusters, listCustomersToAssign, costMatrix);
 			ArrayList<Depot> oldMedoids = replicateDepots(listMedoids);
 			
@@ -115,6 +102,8 @@ public class PAM extends ByMedoids {
 			for(int k = 0; k < listClusters.size(); k++)
 				if(!(listClusters.get(k).getItemsOfCluster().isEmpty()))
 					solution.getClusters().add(listClusters.get(k));
+		
+		OSRMService.clearDistanceCache();
 		
 		return solution;
 	}
@@ -247,7 +236,6 @@ public class PAM extends ByMedoids {
 				System.out.println("-------------------------------------------------------------------------------");
 			}
 		}
-
 		System.out.println("MEJOR COSTO TOTAL: " + cost);	
 		System.out.println("-------------------------------------------------------------------------------");
 		

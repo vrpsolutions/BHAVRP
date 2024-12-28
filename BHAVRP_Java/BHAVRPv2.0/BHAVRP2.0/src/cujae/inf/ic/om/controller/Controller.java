@@ -162,7 +162,6 @@ public class Controller {
 		return loaded;
 	}
 	
-	//es este
 	/* Método encargado de cargar los datos del problema (incluido las coordenadas) usando listas de distancias*/
 	public boolean loadProblem(ArrayList<Integer> idCustomers, ArrayList<Double> requestCustomers, ArrayList<Double> axisXCustomers, ArrayList<Double> axisYCustomers, ArrayList<Integer> idDepots, ArrayList<Double> axisXDepots, ArrayList<Double> axisYDepots, ArrayList<ArrayList<Integer>> countVehicles, ArrayList<ArrayList<Double>> capacityVehicles,
 			ArrayList<ArrayList<Double>> listDistances)throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException{
@@ -220,6 +219,70 @@ public class Controller {
 				loaded = true;
 				Problem.getProblem().fillCostMatrix(listDistances);
 			}
+		}
+
+		System.out.println("-------------------------------------------------------------------------------");
+		System.out.println("DEMANDA TOTAL DE LOS CLIENTES: " + Problem.getProblem().getTotalRequest());
+		System.out.println("CAPACIDAD TOTAL DE LOS DEPÓSITOS: " + Problem.getProblem().getTotalCapacity());
+		System.out.println("-------------------------------------------------------------------------------");
+		System.out.println("CARGA EXITOSA: " + loaded);
+		System.out.println("FIN DE LA CARGA DE DATOS");
+		System.out.println("-------------------------------------------------------------------------------");
+		
+		return loaded;
+	}
+	
+	/* Método encargado de cargar los datos del problema (incluido las coordenadas)*/
+	public boolean loadProblem(ArrayList<Integer> idCustomers, ArrayList<Double> requestCustomers, ArrayList<Double> axisXCustomers, ArrayList<Double> axisYCustomers, ArrayList<Integer> idDepots, ArrayList<Double> axisXDepots, ArrayList<Double> axisYDepots, ArrayList<ArrayList<Integer>> countVehicles, ArrayList<ArrayList<Double>> capacityVehicles)throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException{
+	boolean loaded = false;
+
+	System.out.println("ENTRADA A LA CARGA DE DATOS");
+	System.out.println("-------------------------------------------------------------------------------");
+	System.out.println("CANTIDAD DE CLIENTES: " + idCustomers.size());
+	System.out.println("-------------------------------------------------------------------------------");
+	for(int i = 0; i < idCustomers.size(); i++)
+	{
+		System.out.println("ID CLIENTE: " + idCustomers.get(i));
+		System.out.println("DEMANDA : " + requestCustomers.get(i));
+		System.out.println("X : " + axisXCustomers.get(i));
+		System.out.println("Y : " + axisYCustomers.get(i));
+	}
+	System.out.println("CANTIDAD DE DEPÓSITOS: " + idDepots.size());
+	System.out.println("-------------------------------------------------------------------------------");
+	
+	int totalVehicles = 0;
+	double capacityVehicle = 0.0;
+	
+	for(int i = 0; i < idDepots.size(); i++)
+	{
+		System.out.println("ID DEPÓSITO: " + idDepots.get(i));
+		System.out.println("X : " + axisXDepots.get(i));
+		System.out.println("Y : " + axisYDepots.get(i));
+		
+		System.out.println("CANTIDAD DE FLOTAS DEL DEPÓSITO: " + countVehicles.get(i).size());
+		for(int j = 0; j < countVehicles.get(i).size(); j++)
+		{
+			totalVehicles = countVehicles.get(i).get(j);
+			capacityVehicle = capacityVehicles.get(i).get(j);
+			
+			System.out.println("CANTIDAD DE VEHÍCULOS: " + countVehicles.get(i).get(j));
+			System.out.println("CAPACIDAD DE LOS VEHÍCULOS: " + capacityVehicles.get(i).get(j));
+		}
+		
+	//	System.out.println("CAPACIDAD TOTAL DEL DEPÓSITO: " + InfoProblem.getProblem().getTotalCapacityByDepot(idDepots.get(i)));
+		System.out.println("CAPACIDAD TOTAL DEL DEPÓSITO: " + (totalVehicles * capacityVehicle));
+		
+		System.out.println("-------------------------------------------------------------------------------");
+	}		
+		
+		if((idCustomers != null && !idCustomers.isEmpty()) && (requestCustomers != null && !requestCustomers.isEmpty()) && (axisXCustomers != null && !axisXCustomers.isEmpty()) && (axisYCustomers != null && !axisYCustomers.isEmpty()) && 
+				(idDepots != null && !idDepots.isEmpty()) && (axisXDepots != null && !axisXDepots.isEmpty()) && (axisYDepots!= null && !axisYDepots.isEmpty()) && (countVehicles != null && !countVehicles.isEmpty()) && 
+				(capacityVehicles != null && !capacityVehicles.isEmpty()))
+		
+		{
+			Problem.getProblem().loadCustomer(idCustomers, requestCustomers, axisXCustomers, axisYCustomers);
+			Problem.getProblem().loadDepot(idDepots, axisXDepots, axisYDepots, countVehicles, capacityVehicles);
+			loaded = true;
 		}
 
 		System.out.println("-------------------------------------------------------------------------------");

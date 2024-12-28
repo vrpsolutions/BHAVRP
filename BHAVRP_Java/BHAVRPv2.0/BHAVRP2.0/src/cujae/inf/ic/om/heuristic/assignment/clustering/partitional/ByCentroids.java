@@ -24,7 +24,6 @@ public abstract class ByCentroids extends Partitional {
 		int totalDepots = Problem.getProblem().getTotalDepots();
 		int counter = totalDepots;
 
-		NumericMatrix costMatrix = null;
 		RowCol rcBestAll = new RowCol();
 		int idElement = -1 ;
 			
@@ -35,30 +34,7 @@ public abstract class ByCentroids extends Partitional {
 		ArrayList<Depot> listDepot = new ArrayList<Depot>();
 		listDepot.add(depot);
 		
-		switch (distanceType.ordinal())
-		{
-			case 0: case 1: case 2: case 3:
-			{
-				try {
-					costMatrix = Problem.getProblem().fillCostMatrix(Problem.getProblem().getCustomers(), listDepot, distanceType);
-				} catch (IllegalArgumentException | SecurityException | ClassNotFoundException | InstantiationException
-						| IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-					e.printStackTrace();
-				}
-	
-				break;
-			}
-		}
-		if (distanceType == DistanceType.Real)
-		{
-			try {
-				costMatrix = Problem.getProblem().fillCostMatrixReal(Problem.getProblem().getCustomers(), listDepot);
-			} catch (IOException | InterruptedException | IllegalArgumentException | SecurityException
-					| ClassNotFoundException | InstantiationException | IllegalAccessException
-					| InvocationTargetException | NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-		}
+		NumericMatrix costMatrix = initializeCostMatrix(Problem.getProblem().getCustomers(), listDepot, distanceType);;
 		
 		System.out.println("LISTADO DE ELEMENTOS SELECCIONADOS:" + idElements);
 

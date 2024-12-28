@@ -50,7 +50,6 @@ public class Evaluation {
 						| ClassNotFoundException | InstantiationException
 						| IllegalAccessException | InvocationTargetException
 						| NoSuchMethodException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				break;
@@ -58,7 +57,6 @@ public class Evaluation {
 			case 4:
 			{// no funciona con la distancia real
 				//costMatrix = new NumericMatrix(InfoProblem.getProblem().getCostMatrix());
-	
 				break;
 			}
 		}

@@ -1,6 +1,5 @@
 package cujae.inf.ic.om.heuristic.assignment.clustering.partitional;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -100,7 +99,7 @@ public abstract class ByMedoids extends Partitional {
 		int totalDepots = Problem.getProblem().getTotalDepots();
 		int counter = totalDepots;
 		
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		NumericMatrix costMatrix = initializeCostMatrix(customers, Problem.getProblem().getDepots(), distanceType);
 		RowCol rcBestAll = new RowCol();
 		int idElement = -1 ;
 		
@@ -225,32 +224,9 @@ public abstract class ByMedoids extends Partitional {
 		return newDepots;
 	}
 
-	//clara
-	protected double calculateDissimilarity(DistanceType distanceType, ArrayList<Cluster> clusters)
-	{
+	protected double calculateDissimilarity(DistanceType distanceType, ArrayList<Cluster> clusters) {
 		double currentDissimilarity = 0.0;
-		NumericMatrix dissimilarityMatrix = null;
-			
-		switch(distanceType.ordinal())
-		{
-			case 0: case 1: case 2: case 3:
-			{
-				try {
-					dissimilarityMatrix = Problem.getProblem().fillCostMatrix(Problem.getProblem().getCustomers(), Problem.getProblem().getDepots(), distanceType);
-				} catch (IllegalArgumentException | SecurityException
-						| ClassNotFoundException | InstantiationException
-						| IllegalAccessException | InvocationTargetException
-						| NoSuchMethodException e) {
-					e.printStackTrace();
-				}
-				break;
-			}
-			case 4:
-			{
-				//costMatrix = new NumericMatrix(InfoProblem.getProblem().getCostMatrix());
-				break;
-			}
-		}
+		NumericMatrix dissimilarityMatrix = initializeCostMatrix(Problem.getProblem().getCustomers(), Problem.getProblem().getDepots(), distanceType);
 		
 		int posFirstItem = -1;
 		int posSecondItem = -1;
@@ -276,7 +252,6 @@ public abstract class ByMedoids extends Partitional {
 		currentDissimilarity /= totalClusters;
 		
 		System.out.println("COEFICIENTE DE DISIMILITUD ACTUAL: " + currentDissimilarity);	
-		System.out.println("-------------------------------------------------------------------------------");
 		
 		return currentDissimilarity;
 	}

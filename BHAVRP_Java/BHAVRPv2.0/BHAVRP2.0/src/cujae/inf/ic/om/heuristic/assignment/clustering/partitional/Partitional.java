@@ -194,7 +194,7 @@ public abstract class Partitional extends Clustering {
 		int totalDepots = Problem.getProblem().getTotalDepots();
 		int counter = totalDepots;
 		
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		NumericMatrix costMatrix = initializeCostMatrix(Problem.getProblem().getCustomers(), Problem.getProblem().getDepots(), distanceType);
 		
 		RowCol rcBestAll = new RowCol();
 		int idElement = -1 ;

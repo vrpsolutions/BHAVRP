@@ -1,7 +1,5 @@
 package cujae.inf.ic.om.heuristic.assignment.clustering.partitional;
 
-import java.lang.reflect.InvocationTargetException;
-
 import java.util.ArrayList;
 
 import cujae.inf.ic.om.factory.DistanceType;
@@ -14,12 +12,13 @@ import cujae.inf.ic.om.problem.input.Problem;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class Kmeans extends ByCentroids {
 
-	public static DistanceType distanceType = DistanceType.Euclidean;
+	public static DistanceType distanceType = DistanceType.Real;
 	public static SeedType seedType = SeedType.Nearest_Depot;  
 	private final int countMaxIterations = 1; // UN VALOR APROPIADO COMFIGURABLE ?
 	private int currentIteration = 0;
@@ -46,7 +45,7 @@ public class Kmeans extends ByCentroids {
 	
 	@Override		
 	public void initialize() {
-		listIDElements = generateElements(seedType, distanceType); // no volver a construir la matriz de costo
+		listIDElements = generateElements(seedType, distanceType);
 		listClusters = initializeClusters(listIDElements);
 		listCustomersToAssign = new ArrayList<Customer>();
 		listCentroids = new ArrayList<Depot>();
@@ -72,22 +71,19 @@ public class Kmeans extends ByCentroids {
 			else
 				cleanClusters(listClusters);
 
-			NumericMatrix costMatrix = new NumericMatrix();
-			try 
-			{ 
-				//cambiar el metodo
-				costMatrix = Problem.getProblem().fillCostMatrix(listCustomersToAssign, listCentroids, distanceType);
-			} 
-			catch (IllegalArgumentException | SecurityException
-					| ClassNotFoundException | InstantiationException
-					| IllegalAccessException | InvocationTargetException
-					| NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-
+			NumericMatrix costMatrix = initializeCostMatrix(listCustomersToAssign, listCentroids, distanceType);
+			
 			stepAssignment(listClusters, listCustomersToAssign, costMatrix);
-			change = verifyCentroids(listClusters, listCentroids, distanceType);
-
+			
+			if (distanceType == DistanceType.Real)
+			{
+				change = verifyCentroids(listClusters, listCentroids);
+			}
+			else
+			{
+				change = verifyCentroids(listClusters, listCentroids, distanceType);
+			}
+			
 			currentIteration ++;
 
 			System.out.println("ITERACIÓN ACTUAL: " + currentIteration);
@@ -97,7 +93,7 @@ public class Kmeans extends ByCentroids {
 		
 	@Override
 	public Solution finish() {
-		Solution solution = new Solution();	
+		Solution solution = new Solution();
 		
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
@@ -107,7 +103,9 @@ public class Kmeans extends ByCentroids {
 			for(int k = 0; k < listClusters.size(); k++)
 				if(!listClusters.get(k).getItemsOfCluster().isEmpty())
 					solution.getClusters().add(listClusters.get(k));
-
+	
+		OSRMService.clearDistanceCache();
+	
 		return solution;
 	}
 }

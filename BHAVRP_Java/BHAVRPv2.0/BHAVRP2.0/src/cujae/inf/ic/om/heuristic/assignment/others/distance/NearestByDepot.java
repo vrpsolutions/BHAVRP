@@ -7,7 +7,9 @@ import cujae.inf.ic.om.problem.input.Problem;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
+import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
@@ -15,27 +17,14 @@ import cujae.inf.ic.om.matrix.RowCol;
 /*Clase que modela como asignar los clientes a los depósitos en el orden de la lista de depósitos partiendo del criterio de cercanía a los clientes*/
 public class NearestByDepot extends ByNotUrgency {
 	
+	public static DistanceType distanceType = DistanceType.Real;
 	private Solution solution = new Solution();	
 
 	private ArrayList<Cluster> listClusters;
 	private ArrayList<Customer> listCustomersToAssign;
 	private ArrayList<Integer> listIDDepots;
 	private NumericMatrix costMatrix;
-	
-	private RowCol rcBestCustomer = null;  
-	private int idDepot = -1;
-	private int posDepot = 0;
-	private double capacityDepot = 0.0;	
-	private int posDepotMatrix = -1;
-	private int idCustomer = -1;
-	private int posCustomer = -1;
-	private double requestCustomer = 0.0;
-	
-	public int posCluster = -1;
-	public double requestCluster = 0.0;
-	
-	private boolean isNext = true;
-	
+		
 	public NearestByDepot() {
 		super();
 	}
@@ -52,11 +41,26 @@ public class NearestByDepot extends ByNotUrgency {
 		listClusters = initializeClusters();
 		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
 		listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
-		costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		costMatrix = initializeCostMatrix(listCustomersToAssign, Problem.getProblem().getDepots(), distanceType);
 	}
 	
 	@Override
-	public void assign() {		
+	public void assign() {		 
+		int idDepot = -1;
+		int posDepot = 0;
+		double capacityDepot = 0.0;	
+		int posDepotMatrix = -1;
+		
+		int idCustomer = -1;
+		int posCustomer = -1;
+		double requestCustomer = 0.0;
+		
+		int posCluster = -1;
+		double requestCluster = 0.0;
+		
+		RowCol rcBestCustomer = null; 
+
+		boolean isNext = true;
 		
 		int totalCustomers = listCustomersToAssign.size();
 		int totalDepots = listIDDepots.size();
@@ -78,11 +82,11 @@ public class NearestByDepot extends ByNotUrgency {
 
 			costMatrix.setItem(posDepotMatrix, posCustomer, Double.POSITIVE_INFINITY);
 			
-			int posCluster = findCluster(idDepot, listClusters);
+			posCluster = findCluster(idDepot, listClusters);
 
 			if(posCluster != -1) 
 			{
-				double requestCluster = listClusters.get(posCluster).getRequestCluster();
+				requestCluster = listClusters.get(posCluster).getRequestCluster();
 				
 				if(capacityDepot >= (requestCluster + requestCustomer)) 
 				{
@@ -141,7 +145,6 @@ public class NearestByDepot extends ByNotUrgency {
 	
 	@Override
 	public Solution finish() {
-		
 		if(!listCustomersToAssign.isEmpty())					
 			for(int j = 0; j < listCustomersToAssign.size(); j++)	
 				solution.getUnassignedItems().add(listCustomersToAssign.get(j).getIDCustomer());
@@ -150,7 +153,9 @@ public class NearestByDepot extends ByNotUrgency {
 			for(int k = 0; k < listClusters.size(); k++)
 				if(!listClusters.get(k).getItemsOfCluster().isEmpty())
 					solution.getClusters().add(listClusters.get(k));
-
+		
+		OSRMService.clearDistanceCache();
+		
 		return solution;
 	}
 }

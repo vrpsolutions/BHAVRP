@@ -6,7 +6,9 @@ import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Problem;
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
+import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.heuristic.assignment.classical.ByNotUrgency;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
@@ -14,27 +16,16 @@ import cujae.inf.ic.om.matrix.RowCol;
 public class CoefficientPropagation extends ByNotUrgency {
 
 	public static double degradationCoefficient = 0.5;
+	public static DistanceType distanceType = DistanceType.Real;
 	
 	private Solution solution = new Solution();	
 	
 	private ArrayList<Cluster> listClusters;
 	private ArrayList<Customer> listCustomersToAssign;
-	
+	private NumericMatrix costMatrix;
 	private ArrayList<Double> listCoefficients;
 	private ArrayList<ArrayList<Double>> listScaledDistances;
 	private NumericMatrix scaledMatrix; 
-
-	private int posCustomer = -1;
-	private int idCustomer = -1;
-	private double requestCustomer = 0.0;
-	private int posDepot = -1;
-	private int idDepot = -1;
-	private double capacityDepot = 0.0;
-	private int posCluster = -1;
-	private double requestCluster = 0.0;
-	
-	private int posElement = -1;
-	private RowCol rcBestAll = new RowCol();
 
 	public CoefficientPropagation() {
 		super();
@@ -55,7 +46,7 @@ public class CoefficientPropagation extends ByNotUrgency {
 	public void initialize() {
 		listClusters = initializeClusters();
 		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
-		
+		costMatrix = initializeCostMatrix(Problem.getProblem().getCustomers(), Problem.getProblem().getDepots(), distanceType);
 		listCoefficients = initializeCoefficients();
 		listScaledDistances = new ArrayList<ArrayList<Double>>(fillListScaledDistances());
 		scaledMatrix = initializeScaledMatrix(listScaledDistances); 
@@ -63,6 +54,20 @@ public class CoefficientPropagation extends ByNotUrgency {
 
 	@Override
 	public void assign() {
+		int posCustomer = -1;
+		int idCustomer = -1;
+		double requestCustomer = 0.0;
+		
+		int posDepot = -1;
+		int idDepot = -1;
+		double capacityDepot = 0.0;
+		
+		int posCluster = -1;
+		double requestCluster = 0.0;
+		
+		int posElement = -1;
+		RowCol rcBestAll = new RowCol();
+		
 		int totalItems = listCustomersToAssign.size();
 		int totalClusters = Problem.getProblem().getDepots().size();
 		
@@ -149,9 +154,10 @@ public class CoefficientPropagation extends ByNotUrgency {
 				if(!(listClusters.get(k).getItemsOfCluster().isEmpty()))
 					solution.getClusters().add(listClusters.get(k));
 		
+		OSRMService.clearDistanceCache();
+		
 		return solution;
 	}
-
 
 	/*Este método calcula el coeficiente de atracción dados, el identificador del cliente asignado, y el cliente por el que se asignó*/
 	private void calculateAttractionCoefficient(int posCustomer, int posElement, ArrayList<Double> coefficients){
@@ -185,7 +191,6 @@ public class CoefficientPropagation extends ByNotUrgency {
 	private ArrayList<ArrayList<Double>> fillListScaledDistances(){
 		ArrayList<ArrayList<Double>> scaledDistances = new ArrayList<ArrayList<Double>>();
 
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
 		ArrayList<Integer> listIDCustomers = new ArrayList<Integer>(Problem.getProblem().getListIDCustomers());
 		ArrayList<Integer> listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
 
@@ -201,7 +206,6 @@ public class CoefficientPropagation extends ByNotUrgency {
 
 			scaledDistances.add(listDistances);
 		}
-
 		int posCustomerMatrix;
 		int posDepotMatrix;
 
@@ -215,7 +219,6 @@ public class CoefficientPropagation extends ByNotUrgency {
 				posCustomerMatrix = Problem.getProblem().getPosElement(listIDCustomers.get(j));
 				listDistances.add(costMatrix.getItem(posCustomerMatrix, posDepotMatrix));//ahora viendolo de nuevo, no estoy segura si es asi o fila posDepotMatrix, y la columna la del cliente
 			}
-
 			for(int k = totalItems; k < (totalItems + totalClusters); k++)
 				listDistances.add(Double.POSITIVE_INFINITY);
 
@@ -252,8 +255,7 @@ public class CoefficientPropagation extends ByNotUrgency {
 	private void updateScaledMatrix(ArrayList<Customer> customersToAssign, int posCustomer, NumericMatrix scaledMatrix, ArrayList<Double> coefficients) {
 		int posNewCustomer = -1;
 		double scaledDistance = 0.0;
-		double distance = 0.0;
-		NumericMatrix costMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());	
+		double distance = 0.0;	
 
 		for(int i = 0; i < customersToAssign.size(); i++)
 		{
@@ -276,7 +278,6 @@ public class CoefficientPropagation extends ByNotUrgency {
 		while((i < clusters.size()) && (!found))
 		{
 			j = 0;
-
 			if(!clusters.get(i).getItemsOfCluster().isEmpty())
 			{
 				while((j < clusters.get(i).getItemsOfCluster().size()) && (!found))
@@ -286,15 +287,12 @@ public class CoefficientPropagation extends ByNotUrgency {
 						posCluster = i;
 						found = true;
 					}
-
 					else
 						j++;
 				}
 			}
-
 			i++;
 		}
-
 		return posCluster;
 	}
 }

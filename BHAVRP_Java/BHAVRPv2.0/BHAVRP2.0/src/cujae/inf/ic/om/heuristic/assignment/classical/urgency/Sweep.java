@@ -7,11 +7,14 @@ import cujae.inf.ic.om.problem.input.Problem;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
+import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 
 public class Sweep extends ByUrgency implements IUrgencyWithMU {
 	
+	public static DistanceType distanceType = DistanceType.Real;
 	private Solution solution = new Solution();
 	
 	private ArrayList<Cluster> listClusters;	
@@ -23,15 +26,7 @@ public class Sweep extends ByUrgency implements IUrgencyWithMU {
 	
 	private ArrayList<ArrayList<Integer>> listDepotsOrdered;
 	private int muIDDepot;
-	private ArrayList<Double> listUrgencies;	
-
-	private int posCustomer = -1;
-	private int idCustomer = -1;
-	private double requestCustomer = 0.0;
-	private int idClosestDepot = -1;
-	private double capacityDepot = 0.0;
-	private int posCluster = -1;
-	private double requestCluster = 0.0;
+	private ArrayList<Double> listUrgencies;
 
 	public Sweep() {
 		super();
@@ -51,8 +46,8 @@ public class Sweep extends ByUrgency implements IUrgencyWithMU {
 		
 		listIDDepots = new ArrayList<Integer>(Problem.getProblem().getListIDDepots());
 		
-		urgencyMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
-		closestMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		urgencyMatrix = initializeCostMatrix(listCustomersToAssign, Problem.getProblem().getDepots(), distanceType);
+		closestMatrix = new NumericMatrix(urgencyMatrix);
 		
 		listDepotsOrdered = getDepotsOrdered(listCustomersToAssign, listIDDepots, closestMatrix);
 		muIDDepot = findClusterWithMU(listClusters);
@@ -61,6 +56,16 @@ public class Sweep extends ByUrgency implements IUrgencyWithMU {
 	
 	@Override
 	public void assign() {
+		int posCustomer = -1;
+		int idCustomer = -1;
+		double requestCustomer = 0.0;
+		
+		int idClosestDepot = -1;
+		double capacityDepot = 0.0;
+		
+		int posCluster = -1;
+		double requestCluster = 0.0;
+		
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty())) 
 		{
 			posCustomer = getPosMaxValue(listUrgencies);
@@ -93,7 +98,7 @@ public class Sweep extends ByUrgency implements IUrgencyWithMU {
 
 						if(idClosestDepot != muIDDepot)
 						{
-							urgencyMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+							urgencyMatrix = initializeCostMatrix(Problem.getProblem().getCustomers(), Problem.getProblem().getDepots(), distanceType);
 							listUrgencies = getListUrgencies(listCustomersToAssign, listDepotsOrdered, urgencyMatrix, muIDDepot);
 						}
 					}
@@ -145,8 +150,7 @@ public class Sweep extends ByUrgency implements IUrgencyWithMU {
 									listDepotsOrdered.get(i).remove(currentPosDepot);
 								}	
 							}
-						}
-						
+						}		
 						listIDDepots.remove(posDepot);
 						
 						if(!(listClusters.get(posCluster).getItemsOfCluster().isEmpty()))
@@ -170,6 +174,8 @@ public class Sweep extends ByUrgency implements IUrgencyWithMU {
 				if(!(listClusters.get(k).getItemsOfCluster().isEmpty()))
 					solution.getClusters().add(listClusters.get(k));
 
+		OSRMService.clearDistanceCache();
+		
 		return solution;
 	}
 	
@@ -194,7 +200,6 @@ public class Sweep extends ByUrgency implements IUrgencyWithMU {
 				idDepot = clusters.get(i).getIDCluster();
 			}						
 		}
-
 		return idDepot;
 	}
 	

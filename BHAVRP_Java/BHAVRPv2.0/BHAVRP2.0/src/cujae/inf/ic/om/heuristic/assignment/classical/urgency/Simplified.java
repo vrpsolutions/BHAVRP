@@ -7,12 +7,15 @@ import cujae.inf.ic.om.problem.input.Problem;
 
 import cujae.inf.ic.om.problem.output.solution.Cluster;
 import cujae.inf.ic.om.problem.output.solution.Solution;
+import cujae.inf.ic.om.service.OSRMService;
 
+import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.matrix.NumericMatrix;
 import cujae.inf.ic.om.matrix.RowCol;
 
 public class Simplified extends ByUrgency implements IUrgency {
 	
+	public static DistanceType distanceType = DistanceType.Real;
 	private Solution solution = new Solution();	
 	
 	private ArrayList<Cluster> listClusters;
@@ -25,14 +28,6 @@ public class Simplified extends ByUrgency implements IUrgency {
 	private ArrayList<ArrayList<Integer>> listDepotsOrdered;
 	private ArrayList<Double> listUrgencies;
 	
-	private int posCustomer = -1;
-	private int idCustomer = -1;
-	private double requestCustomer = 0.0;
-	private int idClosestDepot = -1;
-	private double capacityDepot = 0.0;
-	private int posCluster = -1;
-	private double requestCluster = 0.0;
-
 	public Simplified() {
 		super();
 	}
@@ -49,8 +44,8 @@ public class Simplified extends ByUrgency implements IUrgency {
 		listClusters = initializeClusters();
 		listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
 		
-		urgencyMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
-		closestMatrix = new NumericMatrix(Problem.getProblem().getCostMatrix());
+		urgencyMatrix = initializeCostMatrix(listCustomersToAssign, Problem.getProblem().getDepots(), distanceType);
+		closestMatrix = new NumericMatrix(urgencyMatrix);
 		
 		listIDDepots = new ArrayList<ArrayList<Integer>>();
 		listIDDepots.add(Problem.getProblem().getListIDDepots());
@@ -61,6 +56,16 @@ public class Simplified extends ByUrgency implements IUrgency {
 	
 	@Override
 	public void assign() {
+		int posCustomer = -1;
+		int idCustomer = -1;
+		double requestCustomer = 0.0;
+		
+		int idClosestDepot = -1;
+		double capacityDepot = 0.0;
+		
+		int posCluster = -1;
+		double requestCluster = 0.0;
+		
 		int totalItems = listCustomersToAssign.size();
 
 		while((!listCustomersToAssign.isEmpty()) && (!listClusters.isEmpty())) 
@@ -152,12 +157,10 @@ public class Simplified extends ByUrgency implements IUrgency {
 											listUrgencies.set(i, currentUrgency);
 										}
 									}
-									
 									listDepotsOrdered.get(i).remove(currentPosDepot);
 								}									
 							}
 						}
-						
 						listIDDepots.get(0).remove(posDepot);	
 						
 						if(!(listClusters.get(posCluster).getItemsOfCluster().isEmpty()))
@@ -180,7 +183,9 @@ public class Simplified extends ByUrgency implements IUrgency {
 			for(int k = 0; k < listClusters.size(); k++)
 				if(!(listClusters.get(k).getItemsOfCluster().isEmpty()))
 					solution.getClusters().add(listClusters.get(k));
-
+		
+		OSRMService.clearDistanceCache();
+		
 		return solution;
 	}
 	
@@ -214,7 +219,6 @@ public class Simplified extends ByUrgency implements IUrgency {
      * @return double urgencia del cliente
      * Retorna la urgencia del cliente 
      **/
-	
 	@Override
 	public double getUrgency(int idCustomer, ArrayList<Integer> listIDDepots, NumericMatrix urgencyMatrix){
 		double urgency = 0.0;
