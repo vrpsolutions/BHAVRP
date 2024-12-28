@@ -1,5 +1,6 @@
 import importlib
 
+# Clase que construye una instancia de un objeto.
 class FactoryLoader:
 
     @staticmethod

@@ -1,8 +1,8 @@
+import random
+import numpy as np
 from typing import List
 from ...problem.input.problem import Problem
 from ...problem.input.customer import Customer
-import random
-import numpy
 
 class Tools:
     
@@ -15,22 +15,22 @@ class Tools:
         total_customers = Problem.get_problem().get_total_customers()
         
         for _ in range(total_depots):
-            copy_cost_matrix = numpy.delete(copy_cost_matrix, total_customers, axis=1)
+            copy_cost_matrix = np.delete(copy_cost_matrix, total_customers, axis=1)
         
         copy_depots = Problem.get_problem().depots.copy()
         
         for j in range(len(copy_depots)):
             pos_depot = Problem.get_problem().find_pos_depot(copy_depots, Problem.get_problem().depots[j].id_depot)
             new_col = Problem.get_problem().cost_matrix[:, total_customers + pos_depot].reshape(-1, 1)
-            copy_cost_matrix = numpy.hstack((copy_cost_matrix, new_col))
+            copy_cost_matrix = np.hstack((copy_cost_matrix, new_col))
         
         for _ in range(total_depots):
-            copy_cost_matrix = numpy.delete(copy_cost_matrix, total_customers, axis=0)
+            copy_cost_matrix = np.delete(copy_cost_matrix, total_customers, axis=0)
         
         for k in range(len(copy_depots)):
             pos_depot = Problem.get_problem().find_pos_depot(copy_depots, Problem.get_problem().depots[k].id_depot)
             new_row = Problem.get_problem().cost_matrix[total_customers + pos_depot, :].reshape(1, -1)
-            copy_cost_matrix = numpy.vstack((copy_cost_matrix, new_row))
+            copy_cost_matrix = np.vstack((copy_cost_matrix, new_row))
         
         Problem.get_problem().set_cost_matrix(copy_cost_matrix)
         
@@ -48,20 +48,20 @@ class Tools:
         total_customers = Problem.get_problem().get_total_customers()
             
         for _ in range(total_depots):
-            copy_cost_matrix = numpy.delete(copy_cost_matrix, total_customers, axis=1)
+            copy_cost_matrix = np.delete(copy_cost_matrix, total_customers, axis=1)
             
         for j in range(len(copy_depots)):
             pos_depot = Problem.get_problem().find_pos_depot(copy_depots, Problem.get_problem().depots[j].id_depot)
             new_col = Problem.get_problem().cost_matrix[:, total_customers + pos_depot].reshape(-1, 1)
-            copy_cost_matrix = numpy.hstack((copy_cost_matrix, new_col))
+            copy_cost_matrix = np.hstack((copy_cost_matrix, new_col))
                 
         for _ in range(total_depots):
-            copy_cost_matrix = numpy.delete(copy_cost_matrix, total_customers, axis=0)
+            copy_cost_matrix = np.delete(copy_cost_matrix, total_customers, axis=0)
             
         for k in range(len(copy_depots)):
             pos_depot = Problem.get_problem().find_pos_depot(copy_depots, Problem.get_problem().depots[k].id_depot)
             new_row = Problem.get_problem().cost_matrix[total_customers + pos_depot, :].reshape(1, -1)
-            copy_cost_matrix = numpy.vstack((copy_cost_matrix, new_row))
+            copy_cost_matrix = np.vstack((copy_cost_matrix, new_row))
             
         Problem.get_problem().set_cost_matrix(copy_cost_matrix)
 
@@ -79,33 +79,33 @@ class Tools:
         total_customers = Problem.get_problem().get_total_customers()
             
         for _ in range(total_depots):
-            copy_cost_matrix = numpy.delete(copy_cost_matrix, total_customers, axis=1)
+            copy_cost_matrix = np.delete(copy_cost_matrix, total_customers, axis=1)
             
         for j in range(len(copy_depots)):
             pos_depot = Problem.get_problem().find_pos_depot(copy_depots, Problem.get_problem().depots[j].id_depot)
             new_col = Problem.get_problem().cost_matrix[:, total_customers + pos_depot].reshape(-1, 1)
-            copy_cost_matrix = numpy.hstack((copy_cost_matrix, new_col))
+            copy_cost_matrix = np.hstack((copy_cost_matrix, new_col))
                 
         for _ in range(total_depots):
-            copy_cost_matrix = numpy.delete(copy_cost_matrix, total_customers, axis=0)
+            copy_cost_matrix = np.delete(copy_cost_matrix, total_customers, axis=0)
             
         for k in range(len(copy_depots)):
             pos_depot = Problem.get_problem().find_pos_depot(copy_depots, Problem.get_problem().depots[k].id_depot)
             new_row = Problem.get_problem().cost_matrix[total_customers + pos_depot, :].reshape(1, -1)
-            copy_cost_matrix = numpy.vstack((copy_cost_matrix, new_row))
+            copy_cost_matrix = np.vstack((copy_cost_matrix, new_row))
             
         Problem.get_problem().set_cost_matrix(copy_cost_matrix)
 
     @staticmethod
-    def random_ordenate_customers(customers: List['Customer']):
+    def random_ordenate_customers(customers: List[Customer]):
         random.shuffle(customers)
 
     @staticmethod
-    def descendent_ordenate_customers(customers: List['Customer']):
+    def descendent_ordenate_customers(customers: List[Customer]):
         customers.sort(key=lambda c: Problem.get_problem().get_request_by_id_customer(c.id_customer), reverse=True)
 
     @staticmethod
-    def ascendent_ordenate_customers(customers: List['Customer']):
+    def ascendent_ordenate_customers(customers: List[Customer]):
         customers.sort(key=lambda c: Problem.get_problem().get_request_by_id_customer(c.id_customer))
 
     @staticmethod

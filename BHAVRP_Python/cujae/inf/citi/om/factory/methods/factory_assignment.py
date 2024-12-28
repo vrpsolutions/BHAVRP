@@ -1,22 +1,29 @@
+import importlib
 from abc import ABC, abstractmethod
 from interfaces.assignment_type import AssignmentType
+from ..interfaces.ifactory_assignment import IFactoryAssignment
 from ...heuristic.assignment.assignment import Assignment
 
-class FactoryAssignment:
+# Clase que implementa el Patrón Factory Method para la carga dinámica de un determinado 
+# método de asignación.
+class FactoryAssignment(IFactoryAssignment):
     
     def create_assignment(self, assignment_type: AssignmentType) -> Assignment:
         assignment: Assignment = None
         
         try:
-            class_name = assignment_type.name
-            assignment_class = globals().get(class_name)
+            class_path = str(assignment_type)
             
-            if assignment_class:
-                assignment = assignment_class()
-            else:
-                raise ValueError(f"Class for {class_name} not found.")
+            module_name, class_name = class_path.rsplit(".", 1)
+           
+            module = importlib.import_module(module_name)
+            assignment_class = getattr(module, class_name)
             
+            assignment = assignment_class()
+    
+        except (ModuleNotFoundError, AttributeError) as e:
+            print(f"Error: Class '{assignment_type}' not found: {e}")
         except Exception as e:
-            print(f"Error ocurred: {e}")
+            print(f"Unexpected error: {e}")
             
         return assignment
