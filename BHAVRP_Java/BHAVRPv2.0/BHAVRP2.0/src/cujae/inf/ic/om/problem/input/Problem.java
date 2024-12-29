@@ -1080,42 +1080,6 @@ public class Problem {
 		return costMatrix;
 	}
 	
-	public NumericMatrix calculateCostMatrix(DistanceType typeDistance, ArrayList<Depot> medoids, ArrayList<Customer> customers) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		int totalDepots = medoids.size();
-		int totalCustomers = customers.size();
-		
-		NumericMatrix costMatrix = new NumericMatrix((totalCustomers + totalDepots), (totalCustomers + totalDepots));
-		IDistance distance = newDistance(typeDistance);
-
-		double axisXIni = 0.0;
-		double axisYIni = 0.0;
-		double axisXEnd = 0.0;
-		double axisYEnd = 0.0;
-		double cost = 0.0;
-
-		// PORCION DE LOS DEPOSITOS O MEDOIDES A LOS CLIENTES NO TENGO DISTANCIAS DE CLIENTES A CLIENTES COMO EN EL FILL
-		for(int i = 0; i < totalDepots; i++) 
-		{
-			axisXIni = medoids.get(i).getLocationDepot().getAxisX();
-			axisYIni = medoids.get(i).getLocationDepot().getAxisY();
-
-			for (int j = 0; j < totalCustomers; j++) 
-			{
-				axisXEnd = customers.get(j).getLocationCustomer().getAxisX();
-				axisYEnd = customers.get(j).getLocationCustomer().getAxisY();
-
-				try {
-					cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				costMatrix.setItem(i, j, cost);
-			}
-		}
-		return costMatrix;
-	}
-
 	/* Método encargado de crear una distancia*/
 	private IDistance newDistance(DistanceType distanceType) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		IFactoryDistance iFactoryDistance = new FactoryDistance();

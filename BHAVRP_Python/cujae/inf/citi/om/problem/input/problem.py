@@ -4,6 +4,7 @@ from customer import Customer
 from depot import Depot
 from fleet import Fleet
 from location import Location
+from ...service.osrm_service import OSRMService
 from ...service.distance import Distance
 from ...service.distance_type import DistanceType
 from ...controller.tools.tools import Tools
@@ -330,17 +331,7 @@ class Problem:
 
             depot.set_fleet_depot(fleets)
             depots.append(depot)
-            
-    # Método encargado de llenar la matriz de costo usando listas de distancias.
-    def fill_cost_matrix(distances: List[List[float]]):
-        total_distances = len(distances)
-        cost_matrix = np.zeros((total_distances, total_distances))
-
-        for i in range(total_distances):
-            for j in range(len(distances[i])):
-                cost_in_distance = distances[i][j]
-                cost_matrix[i, j] = cost_in_distance
-            
+                     
     # Método encargado de llenar la matriz de costo usando la distancia deseada.
     def fill_cost_matrix(
         self, customers: List[Customer], 
@@ -429,55 +420,53 @@ class Problem:
 
         return cost_matrix
     
-    # Método para llenar la matriz de costos usando el tipo de distancia proporcionado.
-    def fill_cost_matrix_xxx(
-        self, 
-        customers: List[Customer], 
-        depots: List[Depot], 
-        distance_type: DistanceType
+    # Método para llenar la matriz de costos usando distancias reales entre clientes y depósitos.
+    def fill_cost_matrix_real(
+        self,
+        customers: List[Customer],
+        depots: List[Depot]    
     ) -> np.ndarray:
         total_customers = len(customers)
         total_depots = len(depots)
-
-        # Crear una matriz de costos (matriz cuadrada)
-        cost_matrix = np.full((total_customers + total_depots, total_customers + total_depots))
-        distance = self.new_distance(distance_type)
-
-        axis_x_ini = 0.0
-        axis_y_ini = 0.0
-        axis_x_end = 0.0
-        axis_y_end = 0.0
-        last_point_one = 0
-        last_point_two = 0
-        cost = 0.0
-
-        for i in range(total_customers + total_depots):
-            if i <= total_customers - 1:
-                axis_x_ini = customers[i].get_location_customer().get_axis_x()
-                axis_y_ini = customers[i].get_location_customer().get_axis_y()
+        total_points = total_customers + total_depots
+        cost_matrix = np.full((total_points, total_points), np.inf)
+        
+        # Llenar la matriz con distancias obtenidas de la API OSRM
+        for i in range(total_points):
+            
+            # Obtener las coordenadas del punto inicial (cliente o depósito)
+            if i < total_customers:
+                axis_x_ini = customers[i].get_location_customer().axis_x
+                axis_y_ini = customers[i].get_location_customer().axis_y
             else:
-                axis_x_ini = depots[last_point_one].get_location_depot().get_axis_x()
-                axis_y_ini = depots[last_point_one].get_location_depot().get_axis_y()
-                last_point_one += 1
+                axis_x_ini = depots[i - total_customers].get_location_depot().axis_x
+                axis_y_ini = depots[i - total_customers].get_location_depot().axis_y
 
-            last_point_two = 0
-
-            for j in range(total_customers + total_depots):
-                if j <= total_customers - 1:
-                    axis_x_end = customers[j].get_location_customer().get_axis_x()
-                    axis_y_end = customers[j].get_location_customer().get_axis_y()
+            for j in range(total_points):
+                
+                # Obtener las coordenadas del punto final (cliente o depósito)
+                if j < total_customers:
+                    axis_x_end = customers[j].get_location_customer().axis_x
+                    axis_y_end = customers[j].get_location_customer().axis_y
                 else:
-                    axis_x_end = depots[last_point_two].get_location_depot().get_axis_x()
-                    axis_y_end = depots[last_point_two].get_location_depot().get_axis_y()
-                    last_point_two += 1
+                    axis_x_end = depots[j - total_customers].get_location_depot().axis_x
+                    axis_y_end = depots[j - total_customers].get_location_depot().axis_y
 
+                # Evitar calcular la distancia de un punto consigo mismo
                 if i == j:
-                    cost_matrix[i, j] = float('-inf')
-                else:
-                    cost = distance.calculate_distance(axis_x_ini, axis_y_ini, axis_x_end, axis_y_end)
-                    cost_matrix[i, j] = cost
-                    cost_matrix[j, i] = cost
-
+                    continue
+                
+                # Llamar al servicio OSRM para obtener la distancia entre los puntos
+                try:
+                    cost = OSRMService.calculate_distance(axis_x_ini, axis_y_ini, axis_x_end, axis_y_end)
+                except Exception as e:
+                    print(f"Error al calcular la distancia entre el punto {i} y el punto {j}: {e}")
+                    cost = np.inf  # Si hay error, asignar infinito
+                    
+                # Asignar la distancia en ambas direcciones, ya que la distancia es simétrica
+                cost_matrix[i, j] = cost
+                cost_matrix[j, i] = cost  # Distancia simétrica
+        
         return cost_matrix
     
     # Método encargado de llenar la matriz de costo usando la distancia deseada.
@@ -574,38 +563,44 @@ class Problem:
 
         return cost_matrix
     
-    # Método para calcular la matriz de costos entre medoids y clientes.
-    def calculate_cost_matrix(
+    # Calcula una matriz de costos basada en distancias reales entre centroids y depots usando datos reales.
+    def calculate_cost_matrix_real(
         self, 
-        medoids: List[Depot], 
-        customers: List[Customer], 
-        distance_type: DistanceType
+        centroids: List[Depot], 
+        depots: List[Depot]
     ) -> np.ndarray:
-        total_depots = len(medoids)
-        total_customers = len(customers)
-
-        cost_matrix = np.full((total_customers + total_depots, total_customers + total_depots))
-        distance = self.new_distance(distance_type)
-
-        axis_x_ini = 0.0
-        axis_y_ini = 0.0
-        axis_x_end = 0.0
-        axis_y_end = 0.0
-        cost = 0.0
-
-        # Se calculan las distancias solo de los depósitos o medoids a los clientes
+        total_depots = len(depots)
+        cost_matrix = np.zeros((total_depots, total_depots))
+        
+        print("----------------------------------------------------")
         for i in range(total_depots):
-            axis_x_ini = medoids[i].get_location_depot().get_axis_x()
-            axis_y_ini = medoids[i].get_location_depot().get_axis_y()
+            axis_x_point_one = centroids[i].get_location_depot().axis_x
+            axis_y_point_one = centroids[i].get_location_depot().axis_y
+        
+            print(f"CENTROIDE {i} X: {axis_x_point_one}")
+            print(f"CENTROIDE {i} Y: {axis_y_point_one}")
+            print("----------------------------------------------------")
+            
+            for j in range(total_depots):
+                axis_x_point_two = depots[j].get_location_depot().axis_x
+                axis_y_point_two = depots[j].get_location_depot().axis_y
 
-            for j in range(total_customers):
-                axis_x_end = customers[j].get_location_customer().get_axis_x()
-                axis_y_end = customers[j].get_location_customer().get_axis_y()
-
-                cost = distance.calculate_distance(axis_x_ini, axis_y_ini, axis_x_end, axis_y_end)
-
+                print(f"DEPOSITO {j} X: {axis_x_point_two}")
+                print(f"DEPOSITO {j} Y: {axis_y_point_two}")
+                
+                try:
+                    cost = OSRMService.calculate_distance(
+                        axis_x_point_one, axis_y_point_one, 
+                        axis_x_point_two, axis_y_point_two
+                    )
+                except Exception as e:
+                    print(f"Error calculando la distancia: {e}")
+                    cost = float('inf')
+                
+                print(f"COSTO: {cost}")
                 cost_matrix[i, j] = cost
-
+            print("----------------------------------------------------")
+            
         return cost_matrix
     
     # Método para limpiar la información del problema.
