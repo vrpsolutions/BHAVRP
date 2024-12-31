@@ -2,7 +2,7 @@ package cujae.inf.ic.om.factory.methods;
 
 import java.lang.reflect.InvocationTargetException;
 
-/* Clase que construye una instancia de un objeto */
+/* Clase que construye una instancia de un objeto.*/
 public class FactoryLoader {
 
 	public static Object getInstance(String className) throws ClassNotFoundException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException{

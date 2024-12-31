@@ -1,9 +1,9 @@
 package cujae.inf.ic.om.factory.methods;
 
+import cujae.inf.ic.om.assignment.Assignment;
 import cujae.inf.ic.om.factory.interfaces.AssignmentType;
 import cujae.inf.ic.om.factory.interfaces.IFactoryAssignment;
 
-import cujae.inf.ic.om.heuristic.assignment.Assignment;
 
 /* Clase que implementa el Patrón Factory para la carga dinámica de un determinado método de asignación*/
 public class FactoryAssignment implements IFactoryAssignment {

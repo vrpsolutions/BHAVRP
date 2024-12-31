@@ -7,21 +7,20 @@ import java.util.ArrayList;
 
 import cujae.inf.ic.om.factory.DistanceType;
 import cujae.inf.ic.om.factory.interfaces.IFactoryDistance;
-
 import cujae.inf.ic.om.factory.methods.FactoryDistance;
 
 import cujae.inf.ic.om.controller.tools.Tools;
 
+import cujae.inf.ic.om.service.OSRMService;
+
 import cujae.inf.ic.om.distance.IDistance;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;
-import cujae.inf.ic.om.service.OSRMService;
 
 public class Problem {
-
 	private ArrayList<Customer> customers;
 	private ArrayList<Depot> depots;
-	private NumericMatrix costMatrix; //revisar si existe diferencias entre fill y calculate con igual parametros
+	private NumericMatrix costMatrix;
 	
 	private static Problem problem = null;
 
@@ -164,70 +163,6 @@ public class Problem {
 		}
 		return depot;
 	}
-
-	/*Método encargado de buscar las coordenadas de un depósito dado su identificador*/
-	public Location getLocationByIDDepot(int idDepot){
-		Location location = null;
-		int i = 0;
-		boolean found = false;
-		int totalDepots = depots.size();
-
-		while((i < totalDepots) && (!found))
-		{
-			if(depots.get(i).getIDDepot() == idDepot)
-			{
-				location = depots.get(i).getLocationDepot();
-				found = true;
-			}
-			else
-				i++;
-		}
-		return location;
-	}
-	
-	/*public int getPosElement(int idElement) {
-		int posElement = -1;
-
-		Iterator<Integer> iterator = depots.iterator();
-		int totalElements = getTotalCustomers() + getTotalDepots();
-
-		boolean found = false;
-		int i = 0;
-		
-		while ((iterator.hasNext()) && (!found)) 
-		{
-			if (iterator.next().intValue() == idElement) 
-			{
-				posElement = i + totalElements;
-				found = true;
-			} 
-			else
-				i++;
-		}
-
-		i = 0;
-		int j = 0;
-
-		while ((j < listIDElementsForDepots.size()) && (!found)) 
-		{
-			iterator = listIDElementsForDepots.get(j).iterator();
-
-			while ((iterator.hasNext()) && (!found)) 
-			{
-				if (iterator.next().intValue() == idElement) 
-				{
-					found = true;
-					posElement = i;
-				} 
-				else
-					i++;
-			}
-			
-			j++;
-		}
-
-		return posElement;
-	}*/
 	
 	/*Método encargado de devolver la posición que ocupa un depósito en la lista de depósitos pasada por parámetro*/
 	public int findPosElement(ArrayList<Integer> listID, int idElement){
@@ -250,8 +185,7 @@ public class Problem {
 		return posElement;	
 	}
 
-
-	/*Método encargado de devolver la posición que ocupa un cliente en la lista pasada por parámetro*/
+	/*Método encargado de devolver la posición que ocupa un cliente en la lista pasada por parámetro.*/
 	public int findPosCustomer(ArrayList<Customer> customers, int idCustomer){
 		int posCustomer = -1;
 
@@ -273,7 +207,7 @@ public class Problem {
 		return posCustomer;	
 	}
 
-	/*Método encargado de devolver la posición que ocupa un depósito en la lista pasada por parámetro*/
+	/*Método encargado de devolver la posición que ocupa un depósito en la lista pasada por parámetro.*/
 	public int findPosDepot(ArrayList<Depot> depots, int idElement){
 		int posElement = -1;
 
@@ -294,7 +228,7 @@ public class Problem {
 		return posElement;	
 	}
 
-	/*Método encargado de devolver la demanda de un cliente dado su identificador*/
+	/*Método encargado de devolver la demanda de un cliente dado su identificador.*/
 	public double getRequestByIDCustomer(int idCustomer){
 		double requestCustomer = 0.0;
 
@@ -318,7 +252,7 @@ public class Problem {
 	 /**
      * @param  int identificador del elemento
      * @return int posición en la matriz de costo del elemento
-     * Retorna la posición del elemento en la matriz de costo
+     * Retorna la posición del elemento en la matriz de costo.
      */
 	public int getPosElement(int idElement){
 		int posElement = -1;
@@ -357,6 +291,7 @@ public class Problem {
 		return posElement;
 	}
 	
+	/* Retorna la posición del elemento en la matriz de costo.*/
 	public int getPosElement(int idElement, ArrayList<Customer> listCustomers){
 		int posElement = -1;
 		
@@ -394,7 +329,7 @@ public class Problem {
 		return posElement;
 	}
 	
-	/*Método encargado de devolver la capacidad total de los depósitos*/
+	/*Método encargado de devolver la capacidad total de los depósitos.*/
 	public double getTotalCapacity(){
 		double totalCapacity = 0.0; 
 		int totalDepots = depots.size();
@@ -405,7 +340,7 @@ public class Problem {
 		return totalCapacity;
 	}
 
-	/*Método encargado de devolver la capacidad total de un depósito dado el depósito*/
+	/*Método encargado de devolver la capacidad total de un depósito dado el depósito.*/
 	public double getTotalCapacityByDepot(Depot depot){
 		double totalCapacity = 0.0;
 
@@ -424,7 +359,7 @@ public class Problem {
 		return totalCapacity;
 	}
 	
-	/*Método encargado de devolver la capacidad total de un depósito dado su identificador*/
+	/*Método encargado de devolver la capacidad total de un depósito dado su identificador.*/
 	public double getTotalCapacityByDepot(int idDepot){
 		double totalCapacity = 0.0;
 		double capacityVehicle = 0.0;
@@ -445,81 +380,7 @@ public class Problem {
 		return totalCapacity;
 	}
 
-	/*Método encargado de obtener la lista de las capcidades de los depositos*/
-	public ArrayList<Double> getCapacitiesDepot(){
-		ArrayList<Double> capacities = new ArrayList<Double>();
-		double capacityDepot = 0.0; 
-		int totalDepots = depots.size();
-
-		for(int i = 0; i < totalDepots; i++)
-		{
-			capacityDepot = getTotalCapacityByDepot(depots.get(i));
-			capacities.add(capacityDepot);
-		}
-
-		return capacities;
-	}
-
-	/*Método encargado de obtener el id del deposito con mayor capacidad*/
-	public int getDepotWithMU(){
-		int idDepotMU = depots.get(0).getIDDepot();
-		double maxCapacityDepot = getTotalCapacityByDepot(depots.get(0)); 
-		int totalDepots = depots.size();
-
-		double currentCapacityDepot; 
-
-		for(int i = 1; i < totalDepots; i++)
-		{
-			currentCapacityDepot = getTotalCapacityByDepot(depots.get(i));
-			
-			if(maxCapacityDepot < currentCapacityDepot)
-			{
-				maxCapacityDepot = currentCapacityDepot;
-				idDepotMU = depots.get(i).getIDDepot(); 
-			}
-		}
-		return idDepotMU;
-	}
-	
-	/*Método encargado de obtener el id del deposito con mayor capacidad de la lista*/
-	public int getDepotWithMU(ArrayList<Depot> depots){
-		int idDepotMU = depots.get(0).getIDDepot();
-		double maxCapacityDepot = getTotalCapacityByDepot(depots.get(0)); 
-		int totalDepots = depots.size();
-
-		double currentCapacityDepot; 
-
-		for(int i = 1; i < totalDepots; i++)
-		{
-			currentCapacityDepot = getTotalCapacityByDepot(depots.get(i));
-			
-			if(maxCapacityDepot < currentCapacityDepot)
-			{
-				maxCapacityDepot = currentCapacityDepot;
-				idDepotMU = depots.get(i).getIDDepot(); 
-			}
-		}
-		return idDepotMU;
-	}
-	
-	/*Método encargado de obtener la capacidad del deposito con mayor capacidad de la lista*/
-	public double getCapacityDepotWithMU(ArrayList<Depot> depots){
-		double maxCapacityDepot = getTotalCapacityByDepot(depots.get(0)); 
-		int totalDepots = depots.size();
-
-		double currentCapacityDepot; 
-
-		for(int i = 1; i < totalDepots; i++)
-		{
-			currentCapacityDepot = getTotalCapacityByDepot(depots.get(i));
-			
-			if(maxCapacityDepot < currentCapacityDepot)
-				maxCapacityDepot = currentCapacityDepot;
-		}
-		return maxCapacityDepot;
-	}
-
-	/*Método encargado de obtener la lista de los id de los clientes y los depositos*/
+	/*Método encargado de obtener la lista de los id de los clientes y los depositos.*/
 	public ArrayList<Integer> getListIDElements(){
 		int totalCustomers = customers.size();
 		int totalDepots = depots.size();
@@ -534,7 +395,7 @@ public class Problem {
 		return listIDElements;	
 	}
 	
-	/*Método encargado de obtener la lista de los id de los depositos*/
+	/*Método encargado de obtener la lista de los id de los depositos.*/
 	public ArrayList<Integer> getListIDDepots(){
 		int totalDepots = depots.size();
 		ArrayList<Integer> listIDDepots = new ArrayList<Integer>();
@@ -545,7 +406,7 @@ public class Problem {
 		return listIDDepots;
 	}
 
-	/*Método encargado de obtener los identificadores de los elementos en la lista pasada por parámetros*/
+	/*Método encargado de obtener los identificadores de los elementos en la lista pasada por parámetros.*/
 	public ArrayList<Integer> getListID(ArrayList<Customer> customers){
 		ArrayList<Integer> listID = new ArrayList<Integer>();
 
@@ -555,22 +416,7 @@ public class Problem {
 		return listID;
 	}
 	
-	/* Método encargado de cargar los datos de los clientes sin coordenadas*/
-	public void loadCustomer(ArrayList<Integer> idCustomers, ArrayList<Double> requestCustomers){
-		Customer customer;
-		int totalCustomers = idCustomers.size();
-		
-		for (int i = 0; i < totalCustomers; i++) 
-		{	
-			customer = new Customer();
-			customer.setIDCustomer(idCustomers.get(i));
-			customer.setRequestCustomer(requestCustomers.get(i));
-
-			customers.add(customer);
-		}
-	}
-
-	/* Método encargado de cargar los datos de los clientes con coordenadas*/
+	/* Método encargado de cargar los datos de los clientes con coordenadas.*/
 	public void loadCustomer(ArrayList<Integer> idCustomers, ArrayList<Double> requestCustomers, ArrayList<Double> axisXCustomers, ArrayList<Double> axisYCustomers){
 		Customer customer;
 		Location location;
@@ -590,7 +436,7 @@ public class Problem {
 		}
 	}
 	
-	/* Método encargado de cargar los datos de los depósitos (con coordenadas) y las flotas*/
+	/* Método encargado de cargar los datos de los depósitos (con coordenadas) y las flotas.*/
 	public void loadDepot(ArrayList<Integer> idDepots, ArrayList<Double> axisXDepots, ArrayList<Double> axisYDepots, ArrayList<ArrayList<Integer>> countVehicles, ArrayList<ArrayList<Double>> capacityVehicles){
 		Depot depot;
 		Location location;
@@ -625,38 +471,7 @@ public class Problem {
 		}
 	}
 
-	/* Método encargado de cargar los datos de los depósitos (sin coordenadas) y las flotas*/
-	public void loadDepot(ArrayList<Integer> idDepots, ArrayList<ArrayList<Integer>> countVehicles, ArrayList<ArrayList<Double>> capacityVehicles){
-		Depot depot;
-		Fleet fleet;
-		ArrayList<Fleet> fleets;
-		
-		int totalFleets;
-		int totalDepots = idDepots.size(); 
-		
-		for(int i = 0; i < totalDepots; i++)
-		{
-			depot = new Depot();
-			depot.setIDDepot(idDepots.get(i));
-
-			fleets = new ArrayList<Fleet>();
-			totalFleets = countVehicles.get(i).size(); 
-			
-			for(int j = 0; j < totalFleets; j++)
-			{
-				fleet = new Fleet();
-				fleet.setCountVehicles(countVehicles.get(i).get(j));
-				fleet.setCapacityVehicle(capacityVehicles.get(i).get(j));
-
-				fleets.add(fleet);
-			}
-
-			depot.setFleetDepot(fleets);
-			depots.add(depot);
-		}
-	}
-
-	/* Método encargado de llenar la matriz de costo usando listas de distancias !!LOAD del Controller!!*/
+	/* Método encargado de llenar la matriz de costo usando listas de distancias.*/
 	public void fillCostMatrix(ArrayList<ArrayList<Double>> distances) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException{
 		int totalDistances = distances.size(); 
 		int totalElements;
@@ -680,7 +495,7 @@ public class Problem {
 		}
 	}
 
-	/* Método encargado de llenar la matriz de costo usando la distancia deseada !!Algoritmos!!*/
+	/* Método encargado de llenar la matriz de costo usando la distancia aproximada deseada.*/
 	public NumericMatrix fillCostMatrix(ArrayList<Customer> customers, ArrayList<Depot> depots, DistanceType distanceType) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		int totalCustomers = customers.size();
 		int totalDepots = depots.size();
@@ -743,138 +558,7 @@ public class Problem {
 		return costMatrix;
 	}
 	
-	/*Método encargado de llenar la matriz de costo usando el tipo de distancia deseada*/
-	public NumericMatrix fillCostMatrix(DistanceType distanceType) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		
-		int totalCustomers = customers.size();
-		int totalDepots = depots.size();
-
-		NumericMatrix costMatrix = new NumericMatrix((totalCustomers + totalDepots), (totalCustomers + totalDepots));
-		
-		if(distanceType.equals("OSRMService")){
-			
-		}
-		else{
-			IDistance distance = newDistance(distanceType);
-
-			double axisXIni = 0.0;
-			double axisYIni = 0.0;
-			double axisXEnd = 0.0;
-			double axisYEnd = 0.0;
-			int lastPointOne = 0;
-			int lastPointTwo = 0;
-			double cost = 0.0;
-
-			for (int i = 0; i < (totalCustomers + totalDepots); i++)  
-			{
-				if (i <= (totalCustomers - 1)) 
-				{
-					axisXIni = customers.get(i).getLocationCustomer().getAxisX();
-					axisYIni = customers.get(i).getLocationCustomer().getAxisY();
-				} 
-				else 
-				{
-					axisXIni = depots.get(lastPointOne).getLocationDepot().getAxisX();
-					axisYIni = depots.get(lastPointOne).getLocationDepot().getAxisY();
-					lastPointOne++;
-				}
-
-				lastPointTwo = 0;
-
-				for (int j = 0; j < (totalCustomers + totalDepots); j++)  // eficiencia
-				{
-					if (j <= (totalCustomers - 1)) 
-					{
-						axisXEnd = customers.get(j).getLocationCustomer().getAxisX();
-						axisYEnd = customers.get(j).getLocationCustomer().getAxisY();
-					} 
-					else 
-					{
-						axisXEnd = depots.get(lastPointTwo).getLocationDepot().getAxisX();
-						axisYEnd = depots.get(lastPointTwo).getLocationDepot().getAxisY();
-						lastPointTwo++;
-					}
-
-					if (i == j)
-						costMatrix.setItem(i, j, Double.POSITIVE_INFINITY);
-					else 
-					{
-						try {
-							cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						costMatrix.setItem(i, j, cost);
-						costMatrix.setItem(j, i, cost);
-					}
-				}
-			}
-		}
-		return costMatrix;
-	}
-	
-	public NumericMatrix fillCostMatrixXXX(ArrayList<Customer> customers, ArrayList<Depot> depots, DistanceType distanceType) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		int totalCustomers = customers.size();
-		int totalDepots = depots.size();
-
-		NumericMatrix costMatrix = new NumericMatrix((totalCustomers + totalDepots), (totalCustomers + totalDepots));
-		IDistance distance = newDistance(distanceType);
-
-		double axisXIni = 0.0;
-		double axisYIni = 0.0;
-		double axisXEnd = 0.0;
-		double axisYEnd = 0.0;
-		int lastPointOne = 0;
-		int lastPointTwo = 0;
-		double cost = 0.0;
-
-		for (int i = 0; i < (totalCustomers + totalDepots); i++)  
-		{
-			if (i <= (totalCustomers - 1)) 
-			{
-				axisXIni = customers.get(i).getLocationCustomer().getAxisX();
-				axisYIni = customers.get(i).getLocationCustomer().getAxisY();
-			} 
-			else 
-			{
-				axisXIni = depots.get(lastPointOne).getLocationDepot().getAxisX();
-				axisYIni = depots.get(lastPointOne).getLocationDepot().getAxisY();
-				lastPointOne++;
-			}
-
-			lastPointTwo = 0;
-
-			for (int j = 0; j < (totalCustomers + totalDepots); j++)  // eficiencia
-			{
-				if (j <= (totalCustomers - 1)) 
-				{
-					axisXEnd = customers.get(j).getLocationCustomer().getAxisX();
-					axisYEnd = customers.get(j).getLocationCustomer().getAxisY();
-				} 
-				else 
-				{
-					axisXEnd = depots.get(lastPointTwo).getLocationDepot().getAxisX();
-					axisYEnd = depots.get(lastPointTwo).getLocationDepot().getAxisY();
-					lastPointTwo++;
-				}
-
-				if (i == j)
-					costMatrix.setItem(i, j, Double.NEGATIVE_INFINITY);
-				else 
-				{
-					try {
-						cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					costMatrix.setItem(i, j, cost);
-					costMatrix.setItem(j, i, cost);
-				}
-			}
-		}
-		return costMatrix;
-	}
-	
+	/* Método encargado de llenar la matriz de costo usando datos reales.*/
 	public NumericMatrix fillCostMatrixReal(ArrayList<Customer> customers, ArrayList<Depot> depots) throws IOException, InterruptedException, IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		int totalCustomers = customers.size();
 		int totalDepots = depots.size();
@@ -926,69 +610,7 @@ public class Problem {
 		return costMatrix;
 	}
 	
-	/* Método encargado de llenar la matriz de costo usando la distancia deseada*/
-	public NumericMatrix createCostMatrix(ArrayList<Customer> customers, ArrayList<Customer> depots, DistanceType distanceType) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		int totalCustomers = customers.size();
-		int totalDepots = depots.size();
-
-		NumericMatrix costMatrix = new NumericMatrix((totalCustomers + totalDepots), (totalCustomers + totalDepots));
-		IDistance distance = newDistance(distanceType);
-
-		double axisXIni = 0.0;
-		double axisYIni = 0.0;
-		double axisXEnd = 0.0;
-		double axisYEnd = 0.0;
-		int lastPointOne = 0;
-		int lastPointTwo = 0;
-		double cost = 0.0;
-
-		for (int i = 0; i < (totalCustomers + totalDepots); i++)  
-		{
-			if (i <= (totalCustomers - 1)) 
-			{
-				axisXIni = customers.get(i).getLocationCustomer().getAxisX();
-				axisYIni = customers.get(i).getLocationCustomer().getAxisY();
-			} 
-			else 
-			{
-				axisXIni = depots.get(lastPointOne).getLocationCustomer().getAxisX();
-				axisYIni = depots.get(lastPointOne).getLocationCustomer().getAxisY();
-				lastPointOne++;
-			}
-
-			lastPointTwo = 0;
-
-			for (int j = 0; j < (totalCustomers + totalDepots); j++)  // eficiencia
-			{
-				if (j <= (totalCustomers - 1)) 
-				{
-					axisXEnd = customers.get(j).getLocationCustomer().getAxisX();
-					axisYEnd = customers.get(j).getLocationCustomer().getAxisY();
-				} 
-				else 
-				{
-					axisXEnd = depots.get(lastPointTwo).getLocationCustomer().getAxisX();
-					axisYEnd = depots.get(lastPointTwo).getLocationCustomer().getAxisY();
-					lastPointTwo++;
-				}
-
-				if (i == j)
-					costMatrix.setItem(i, j, Double.POSITIVE_INFINITY);
-				else 
-				{
-					try {
-						cost = distance.calculateDistance(axisXIni, axisYIni, axisXEnd, axisYEnd);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					costMatrix.setItem(i, j, cost);
-					costMatrix.setItem(j, i, cost);
-				}
-			}
-		}
-		return costMatrix;
-	}
-	
+	/* Método encargado de crear la matriz de costo usando la distancia aproximada deseada.*/
 	public NumericMatrix calculateCostMatrix(ArrayList<Depot> centroids, ArrayList<Depot> depots, DistanceType typeDistance) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		int totalDepots = depots.size();
 		NumericMatrix costMatrix = new NumericMatrix(totalDepots, totalDepots);
@@ -1035,6 +657,7 @@ public class Problem {
 		return costMatrix;
 	}
 	
+	/* Método encargado de crear la matriz de costo usando datos reales.*/
 	public NumericMatrix calculateCostMatrixReal(ArrayList<Depot> centroids, ArrayList<Depot> depots) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		int totalDepots = depots.size();
 		NumericMatrix costMatrix = new NumericMatrix(totalDepots, totalDepots);
@@ -1080,13 +703,14 @@ public class Problem {
 		return costMatrix;
 	}
 	
-	/* Método encargado de crear una distancia*/
+	/* Método encargado de crear una distancia.*/
 	private IDistance newDistance(DistanceType distanceType) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		IFactoryDistance iFactoryDistance = new FactoryDistance();
 		IDistance distance = (IDistance) iFactoryDistance.createDistance(distanceType);
 		return distance;
 	}
 
+	/* Método encargado de eliminar la informacion del problema.*/
 	public void cleanInfoProblem() {
 		customers.clear();
 		depots.clear();

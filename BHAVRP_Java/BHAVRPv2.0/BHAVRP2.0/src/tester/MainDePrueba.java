@@ -8,11 +8,7 @@ import java.util.ArrayList;
 
 import cujae.inf.ic.om.factory.interfaces.AssignmentType;
 
-//import cujae.inf.ic.om.controller.Controller;
-
 import cujae.inf.ic.om.problem.input.Problem;
-
-//import cujae.inf.ic.om.evaluations.Evaluation;
 
 public class MainDePrueba
 {
