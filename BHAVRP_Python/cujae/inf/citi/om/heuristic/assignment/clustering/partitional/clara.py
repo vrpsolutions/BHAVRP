@@ -1,30 +1,25 @@
 import numpy as np
 from typing import List
-from partitional import Partitional
-from ..seed_type import SeedType
+from by_medoids import ByMedoids
 from ..sampling_type import SamplingType
-from .....controller.utils.distance_type import DistanceType
 from .....problem.input.problem import Problem
 from .....problem.input.customer import Customer
 from .....problem.input.depot import Depot
+from .....problem.input.location import Location
 from .....problem.output.solution.solution import Solution
 from .....problem.output.solution.cluster import Cluster
 
-class CLARA(Partitional):
+class CLARA(ByMedoids):
     
     def __init__(self):
-        self.distance_type = DistanceType.Euclidean
-        self.seed_type = SeedType.NEAREST_DEPOT
-        self.sampling_type = SamplingType.RANDOM_SAMPLING
-        self.count_max_iterations = 2                      # Configurable
+        self.sampling_type = SamplingType.RANDOM_SAMPLING                   # Configurable
         self.sampsize = 10
-        self.current_iteration = 0
         
     def get_current_iteration(self) -> int:
         return self.current_iteration
         
     def to_clustering(self) -> Solution:
-        solution = Solution()
+        
         
         # Listas para manejar los clientes, clusters y elementos no asignados.
         list_customers_to_assign: List[Customer] = []
@@ -143,12 +138,140 @@ class CLARA(Partitional):
         # Si hay clientes no asignados, agregarlos a la solución.
         if list_unassigned_customers:
             for customer_id in list_unassigned_customers:
-                solution.get_unassigned_items().add(customer_id)
+                self.solution.get_unassigned_items().add(customer_id)
 
         # Si se encontró el mejor clúster, agregarlo a la solución.
         if best_cluster:
             for cluster in best_cluster:
                 if cluster.get_items_of_cluster():
-                    solution.get_clusters().add(cluster)
+                    self.solution.get_clusters().add(cluster)
         
-        return solution
+        return self.solution
+    
+    # Método que realiza la búsqueda de mejores medoides en cada clúster evaluando diferentes candidatos.    
+    def step_search_medoids(
+        self, 
+        clusters: List[Cluster], 
+        medoids: List[Depot], 
+        cost_matrix: np.ndarray, 
+        best_cost: float, 
+        list_partition: List[Customer]
+    ):
+        current_cost: float = 0.0
+        
+        old_medoids: List[Depot] = self.replicate_depots(medoids)
+        
+        print("--------------------------------------------------------------------")
+        print(f"PROCESO DE BÚSQUEDA")
+        
+        for i in range(len(clusters)):
+            best_loc_medoid = Location(medoids[i].location_depot.get_axis_x(), medoids[i].location_depot.get_axis_y())
+
+            print("--------------------------------------------------")
+            print(f"MEJOR MEDOIDE ID: {medoids[i].id_depot}")
+            print(f"MEJOR MEDOIDE LOCATION X: {best_loc_medoid.get_axis_x()}")
+            print(f"MEJOR MEDOIDE LOCATION Y: {best_loc_medoid.get_axis_y()}")
+            print("--------------------------------------------------")
+            
+            for j in range(1, len(clusters[i].items_of_cluster)):
+                new_id_medoid = clusters[i].items_of_cluster[j]
+                new_medoid = Customer()
+                
+                new_medoid.set_id_customer(Problem.get_problem().get_customer_by_id_customer(new_id_medoid).get_id_customer())
+                new_medoid.set_request_customer(Problem.get_problem().get_customer_by_id_customer(new_id_medoid).get_request_customer())
+                
+                location = Location()
+                location.set_axis_x(Problem.get_problem().get_customer_by_id_customer(new_id_medoid).get_location_customer().get_axis_x())
+                location.set_axis_y(Problem.get_problem().get_customer_by_id_customer(new_id_medoid).get_location_customer().get_axis_y())
+                new_medoid.set_location_customer(location)
+                
+                medoids[i].set_id_depot(new_id_medoid)
+                medoids[i].set_location_depot(new_medoid.get_location_customer())
+                
+                print(f"ID DEL NUEVO MEDOIDE: {new_id_medoid}")
+                print(f"X DEL NUEVO MEDOIDE: {new_medoid.get_location_customer().get_axis_x()}")
+                print(f"Y DEL NUEVO MEDOIDE: {new_medoid.get_location_customer().get_axis_y()}")
+                
+                print("--------------------------------------------------")
+                print("LISTA DE MEDOIDES")
+                print(f"ID: {medoids[i].id_depot}")
+                print(f"X: {medoids[i].location_depot.x}")
+                print(f"Y: {medoids[i].location_depot.y}")                    
+
+                print("LISTA DE ANTERIORES MEDOIDES")
+                print(f"ID: {old_medoids[i].get_id_depot()}")
+                print(f"X: {old_medoids[i].get_location_depot().get_axis_x()}")
+                print(f"Y: {old_medoids[i].get_location_depot().get_axis_y()}")
+                print("--------------------------------------------------")
+                
+                current_cost = self.calculate_cost(clusters, cost_matrix, medoids, list_partition)
+
+                print("---------------------------------------------")
+                print(f"ACTUAL COSTO TOTAL: {current_cost}")
+                print("---------------------------------------------")
+                
+                if current_cost < best_cost:
+                    best_cost = current_cost
+                    best_loc_medoid = medoids[i].get_location_depot()
+                    
+                    print(f"NUEVO MEJOR COSTO TOTAL: {best_cost}")
+                    print(f"NUEVO MEDOIDE ID: {medoids[i].get_id_depot()}")
+                    print(f"NUEVO MEDOIDE LOCATION X: {best_loc_medoid.get_axis_x()}")
+                    print(f"NUEVO MEDOIDE LOCATION Y: {best_loc_medoid.get_axis_y()}")
+                    print("---------------------------------------------")
+                    
+                    old_medoids[i].set_id_depot(medoids[i].get_id_depot())
+                    old_medoids[i].get_location_depot().set_axis_x(medoids[i].get_location_depot().get_axis_x())
+                    old_medoids[i].get_location_depot().set_axis_y(medoids[i].get_location_depot().get_axis_y())
+                    
+                    medoids[i].set_id_depot(old_medoids[i].get_id_depot())
+                    medoids[i].get_location_depot().set_axis_x(old_medoids[i].get_location_depot().get_axis_x())
+                    medoids[i].get_location_depot().set_axis_y(old_medoids[i].get_location_depot().get_axis_y())
+                
+                print(f"ID MEDOIDE: {medoids[i].get_id_depot()}")
+                print(f"LISTA DE MEDOIDES X: {medoids[i].get_location_depot().get_axis_x()}")
+                print(f"LISTA DE MEDOIDES Y: {medoids[i].get_location_depot().get_axis_y()}")
+                print("---------------------------------------------")
+            
+            medoids[i].set_location_depot(best_loc_medoid)
+    
+    # Método que calcula el costo total de los clústeres considerando los depósitos como medoides.
+    def calculate_cost(
+        self, 
+        clusters: List[Cluster], 
+        cost_matrix: np.ndarray, 
+        medoids: List[Depot], 
+        list_partition: List[Customer]
+    ) -> float:
+        cost = 0.0
+
+        print("-------------------------------------------------------------------------------")
+        print("CÁLCULO DEL MEJOR COSTO")
+        
+        for i, cluster in enumerate(clusters):
+            pos_depot = Problem.get_problem().get_pos_element(medoids[i].get_id_depot(), list_partition)
+            list_id_customers = cluster.get_items_of_cluster()
+
+            print("-------------------------------------------------------------------------------")
+            print(f"ID MEDOIDE: {medoids[i].get_id_depot()}")
+            print(f"POSICIÓN DEL MEDOIDE: {pos_depot}")
+            print(f"CLIENTES ASIGNADOS AL MEDOIDE: {list_id_customers}")
+            print("-------------------------------------------------------------------------------")
+
+            for customer_id in list_id_customers:
+                pos_customer = Problem.get_problem().get_pos_element(customer_id, list_partition)
+
+                if pos_depot != pos_customer:
+                    cost += cost_matrix[pos_depot, pos_customer]
+                
+                print(f"ID CLIENTE: {customer_id}")
+                print(f"POSICIÓN DEL CLIENTE: {pos_customer}")
+                print(f"COSTO: {cost_matrix[pos_depot, pos_customer] if pos_depot != pos_customer else 0.0}")
+                print("-------------------------------------------------------------------------------")
+                print(f"COSTO ACUMULADO: {cost}")
+                print("-------------------------------------------------------------------------------")
+        
+        print(f"MEJOR COSTO TOTAL: {cost}")
+        print("-------------------------------------------------------------------------------")
+        
+        return cost

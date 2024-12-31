@@ -27,7 +27,7 @@ class Simplified(ByUrgency):
             list_customers_to_assign, list_id_depots, closest_matrix
         )
         list_urgencies: List[float] = self.get_list_urgencies(
-            list_customers_to_assign, list_depots_ordered, urgency_matrix, -1
+            list_customers_to_assign, list_depots_ordered, urgency_matrix
         )
         
         while list_customers_to_assign and list_clusters:
@@ -101,32 +101,63 @@ class Simplified(ByUrgency):
                     solution.get_clusters().append(cluster)
         
         return solution
+        
+        # Método que retorna un listado con las urgencias de los clientes del listado entrado por parámetro.
+    def get_list_urgencies(
+        self, 
+        list_customers_to_assign: List[Customer], 
+        list_id_depots: List[List[int]], 
+        urgency_matrix: np.ndarray
+    ) -> List[float]:
+        urgencies: List[float] = []
+
+        if len(list_id_depots) > 1:
+            for i, customer in enumerate(list_customers_to_assign):
+                urgencies.append(
+                    self.get_urgency(
+                        customer.get_id_customer(),
+                        list_id_depots[i],
+                        urgency_matrix
+                    )
+                )
+        else:
+            for i, customer in enumerate(list_customers_to_assign):
+                urgencies.append(
+                    self.get_urgency(
+                        customer.get_id_customer(),
+                        list_id_depots[0],
+                        urgency_matrix
+                    )
+                )
+        return urgencies
     
     # Implementacion del método encargado de obtener la urgencia.
     def get_urgency(
         self, 
         id_customer: int, 
         list_id_depots: List[int], 
-        urgency_matrix: np.ndarray, 
+        urgency_matrix: np.ndarray
     ) -> float:
-        total_customers: int = len(Problem.get_problem().get_customers())
+        urgency: float = 0.0
+        closest_dist: float = 0.0
+        other_dist: float = 0.0
+        
+        total_customers = len(Problem.get_problem().get_customers())
         pos_matrix_customer = Problem.get_problem().get_pos_element(id_customer)
-                
-        closest_dist = urgency_matrix[
-            pos_matrix_customer, 
-            np.argmin(urgency_matrix[pos_matrix_customer, total_customers:total_customers + len(list_id_depots) - 1])
-        ]
-        urgency_matrix[
-            pos_matrix_customer, np.argmin(urgency_matrix[pos_matrix_customer, total_customers:total_customers + len(list_id_depots) - 1])
-        ] = np.inf
         
-        other_dist = urgency_matrix[
-            pos_matrix_customer, np.argmin(urgency_matrix[pos_matrix_customer, total_customers:total_customers + len(list_id_depots) - 1])
-        ]
+        depot_indices = [total_customers + depot_id for depot_id in list_id_depots]
         
-        if other_dist == np.inf:
+        closest_index = np.argmin(urgency_matrix[depot_indices, pos_matrix_customer])
+        closest_dist = urgency_matrix[depot_indices[closest_index], pos_matrix_customer]
+        
+        urgency_matrix[depot_indices[closest_index], pos_matrix_customer] = float('inf')
+        
+        other_index = np.argmin(urgency_matrix[depot_indices, pos_matrix_customer])
+        other_dist = urgency_matrix[depot_indices[other_index], pos_matrix_customer]
+        
+        if other_dist == float('inf'):
             urgency = closest_dist
         else:
             urgency = self.calculate_urgency(closest_dist, other_dist)
-            
+
         return urgency

@@ -1,7 +1,6 @@
 import numpy as np
 from typing import List
 from hierarchical import Hierarchical
-from .....controller.utils.distance_type import DistanceType
 from .....problem.input.problem import Problem
 from .....problem.input.customer import Customer
 from .....problem.input.depot import Depot
@@ -13,8 +12,6 @@ class UPGMC(Hierarchical):
     
     def __init__(self):
         super().__init__()
-        
-    distance_type = DistanceType.Euclidean;
     
     def to_clustering(self) -> Solution:
         solution = Solution()
@@ -218,30 +215,7 @@ class UPGMC(Hierarchical):
                 id_depot_mu = depots[i].get_id_depot()
 
         return id_depot_mu
-    
-    # Verifica si el depósito está lleno.
-    def is_full_depot(
-        self, 
-        clusters: List[Cluster], 
-        request_cluster: float, 
-        capacity_depot: float, 
-        current_customer: int
-    ) -> bool:
-        is_full = True
 
-        current_request = capacity_depot - request_cluster
-
-        if current_request > 0:
-            i = 0
-
-            while i < len(clusters) and i < current_customer and is_full:
-                if clusters[i].get_request_cluster() <= current_request:
-                    is_full = False
-                else:
-                    i += 1
-
-        return is_full
-    
     # Finaliza el proceso y agrega elementos no asignados.
     def finish(self, clusters: List[Cluster], solution: Solution):
         pos_element = -1

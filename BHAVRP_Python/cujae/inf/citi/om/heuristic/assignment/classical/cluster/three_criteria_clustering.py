@@ -1,12 +1,12 @@
 import numpy as np
 from typing import List
-from by_cluster import ByCluster
+from ..by_not_urgency import ByNotUrgency
 from .....problem.input.problem import Problem
 from .....problem.input.customer import Customer
 from .....problem.output.solution.solution import Solution
 from .....problem.output.solution.cluster import Cluster
 
-class ThreeCriteriaClustering(ByCluster):
+class ThreeCriteriaClustering(ByNotUrgency):
     
     def __init__(self):
         super().__init__()

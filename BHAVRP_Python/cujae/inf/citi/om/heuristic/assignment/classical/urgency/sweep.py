@@ -1,12 +1,13 @@
 import numpy as np
 from typing import List
 from by_urgency import ByUrgency
+from i_urgency_with_mu import IUrgencyWithMU
 from .....problem.input.problem import Problem
 from .....problem.input.customer import Customer
 from .....problem.output.solution.solution import Solution
 from .....problem.output.solution.cluster import Cluster
 
-class Sweep(ByUrgency):
+class Sweep(ByUrgency, IUrgencyWithMU):
     
     def __init__(self):
         super().__init__()
@@ -125,6 +126,38 @@ class Sweep(ByUrgency):
                 mu_request = cu_request
                 id_depot = cluster.get_id_cluster()
         return id_depot
+    
+    # Método que retorna un listado con las urgencias de los clientes del listado entrado por parámetro.
+    def get_list_urgencies(
+        self, 
+        list_customers_to_assign: List[Customer], 
+        list_id_depots: List[List[int]], 
+        urgency_matrix: np.ndarray, 
+        mu_id_depot: int
+    ) -> List[float]:
+        urgencies: List[float] = []
+
+        if len(list_id_depots) > 1:
+            for i, customer in enumerate(list_customers_to_assign):
+                urgencies.append(
+                    self.get_urgency(
+                        customer.get_id_customer(),
+                        list_id_depots[i],
+                        urgency_matrix,
+                        mu_id_depot
+                    )
+                )
+        else:
+            for i, customer in enumerate(list_customers_to_assign):
+                urgencies.append(
+                    self.get_urgency(
+                        customer.get_id_customer(),
+                        list_id_depots[0],
+                        urgency_matrix,
+                        mu_id_depot
+                    )
+                )
+        return urgencies
     
     # Implementacion del método encargado de obtener la urgencia.
     def get_urgency(

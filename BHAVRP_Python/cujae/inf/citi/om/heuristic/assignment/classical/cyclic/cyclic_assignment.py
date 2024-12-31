@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List
-from cyclic import Cyclic
+from ..by_not_urgency import ByNotUrgency
 from .....problem.input.problem import Problem
 from .....problem.input.customer import Customer
 from .....problem.output.solution.solution import Solution
@@ -10,7 +10,7 @@ from .....problem.output.solution.cluster import Cluster
 Clase que modela como asignar el mejor cliente al último cliente - depósito 
 asignado en forma paralela por depósitos.
 """
-class CyclicAssignment(Cyclic):
+class CyclicAssignment(ByNotUrgency):
     
     def __init__(self):
         super().__init__()

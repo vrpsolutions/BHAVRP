@@ -1,10 +1,10 @@
 import random
 from typing import List
+from ...classical.by_not_urgency import ByNotUrgency
 from .....problem.input.problem import Problem
 from .....problem.output.solution.solution import Solution
-from other import Other
 
-class RandomByElement(Other):
+class RandomByElement(ByNotUrgency):
     
     def __init__(self):
         super().__init__()

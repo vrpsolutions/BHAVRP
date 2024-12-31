@@ -1,12 +1,13 @@
 import numpy as np
 from typing import List
 from by_urgency import ByUrgency
+from i_urgency import IUrgency
 from .....problem.input.problem import Problem
 from .....problem.input.customer import Customer
 from .....problem.output.solution.solution import Solution
 from .....problem.output.solution.cluster import Cluster
 
-class Parallel(ByUrgency):
+class Parallel(ByUrgency, IUrgency):
     
     def __init__(self):
         super().__init__()
@@ -18,8 +19,8 @@ class Parallel(ByUrgency):
         list_customers_to_assign: List[Customer] = list(Problem.get_problem().get_customers().copy())
         list_id_depots: List[int] = list(Problem.get_problem().get_list_id_depots())
         
-        urgency_matrix: np.ndarray = np.array(Problem.get_problem().get_cost_matrix())
-        closest_matrix: np.ndarray = np.array(Problem.get_problem().get_cost_matrix())
+        urgency_matrix: np.ndarray = Problem.get_problem().get_cost_matrix()
+        closest_matrix: np.ndarray = Problem.get_problem().get_cost_matrix()
         
         list_depots_ordered: List[List[int]] = self.get_depots_ordered(
             list_customers_to_assign, list_id_depots, closest_matrix
@@ -106,13 +107,41 @@ class Parallel(ByUrgency):
                 
         return solution
     
+    # Método que retorna un listado con las urgencias de los clientes del listado entrado por parámetro.
+    def get_list_urgencies(
+        self, 
+        list_customers_to_assign: List[Customer], 
+        list_id_depots: List[List[int]], 
+        urgency_matrix: np.ndarray
+    ) -> List[float]:
+        urgencies: List[float] = []
+
+        if len(list_id_depots) > 1:
+            for i, customer in enumerate(list_customers_to_assign):
+                urgencies.append(
+                    self.get_urgency(
+                        customer.get_id_customer(),
+                        list_id_depots[i],
+                        urgency_matrix
+                    )
+                )
+        else:
+            for i, customer in enumerate(list_customers_to_assign):
+                urgencies.append(
+                    self.get_urgency(
+                        customer.get_id_customer(),
+                        list_id_depots[0],
+                        urgency_matrix
+                    )
+                )
+        return urgencies
+    
     # Implementacion del método encargado de obtener la urgencia.
     def get_urgency(
         self, 
         id_customer: int, 
         list_id_depots: List[int], 
-        urgency_matrix: np.ndarray, 
-        mu_id_depot: int
+        urgency_matrix: np.ndarray
     ) -> float:
         urgency: float = 0.0
         closest_dist: float = 0.0

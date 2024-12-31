@@ -1,7 +1,6 @@
 import numpy as np
-from abc import ABC, abstractmethod
 from typing import List
-from ...assignment import Assignment
+from ..heuristic import Heuristic
 from .....problem.input.problem import Problem
 from .....problem.input.customer import Customer
 
@@ -9,7 +8,7 @@ from .....problem.input.customer import Customer
 Clase abstracta que define los métodos necesarios para calcular urgencias
 y ordenar depósitos por cercanía para cada cliente.
 """
-class ByUrgency(Assignment, ABC):
+class ByUrgency(Heuristic):
     
     # Método para calcular la urgencia.
     def calculate_urgency(self, first_distance: float, other_distance: float) -> float:
@@ -64,46 +63,3 @@ class ByUrgency(Assignment, ABC):
             
             counter += 1
         return list_closest_depots_by_customer
-    
-    # Método que retorna un listado con las urgencias de los clientes del listado entrado por parámetro.
-    def get_list_urgencies(
-        self, 
-        list_customers_to_assign: List[Customer], 
-        list_id_depots: List[List[int]], 
-        urgency_matrix: np.ndarray, 
-        mu_id_depot: int
-    ) -> List[float]:
-        urgencies: List[float] = []
-
-        if len(list_id_depots) > 1:
-            for i, customer in enumerate(list_customers_to_assign):
-                urgencies.append(
-                    self.get_urgency(
-                        customer.get_id_customer(),
-                        list_id_depots[i],
-                        urgency_matrix,
-                        mu_id_depot
-                    )
-                )
-        else:
-            for i, customer in enumerate(list_customers_to_assign):
-                urgencies.append(
-                    self.get_urgency(
-                        customer.get_id_customer(),
-                        list_id_depots[0],
-                        urgency_matrix,
-                        mu_id_depot
-                    )
-                )
-        return urgencies
-
-    # Método abstracto encargado de obtener la urgencia.
-    @abstractmethod
-    def get_urgency(
-        self, 
-        id_customer: int, 
-        list_id_depots: List[int], 
-        urgency_matrix: np.ndarray, 
-        mu_id_depot: int
-    ) -> float:
-        pass

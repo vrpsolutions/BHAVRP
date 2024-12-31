@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List, Optional, Tuple
-from cyclic import Cyclic
+from ...classical.by_not_urgency import ByNotUrgency
 from .....problem.input.problem import Problem
 from .....problem.input.customer import Customer
 from .....problem.output.solution.solution import Solution
@@ -10,7 +10,7 @@ from .....problem.output.solution.cluster import Cluster
 Clase que modela como asignar el mejor cliente al último cliente - depósito 
 asignando en forma paralela.
 """
-class BestCyclicAssignment(Cyclic):
+class BestCyclicAssignment(ByNotUrgency):
     
     def __init__(self):
         super().__init__()
@@ -23,7 +23,7 @@ class BestCyclicAssignment(Cyclic):
         list_customers_to_assign: List[Customer] = list(Problem.get_problem().get_customers().copy())
         
         # Obtener la matriz de costos.
-        cost_matrix = np.array(Problem.get_problem().get_cost_matrix())
+        cost_matrix = Problem.get_problem().get_cost_matrix()
         
         # Inicializar variables auxiliares.
         total_items = len(list_customers_to_assign)

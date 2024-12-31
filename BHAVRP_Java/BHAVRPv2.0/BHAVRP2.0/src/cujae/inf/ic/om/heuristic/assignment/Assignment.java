@@ -13,7 +13,7 @@ import cujae.inf.ic.om.problem.output.solution.Cluster;
 
 public abstract class Assignment extends AssignmentTemplate {
 	
-	public static DistanceType distanceType = DistanceType.Real;
+	public static DistanceType distanceType = DistanceType.Euclidean;
 	
 	/**
 	 * @param  int identificador del cluster

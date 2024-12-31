@@ -1,22 +1,17 @@
 import numpy as np
 from typing import List
-from partitional import Partitional
-from ..seed_type import SeedType
-from .....controller.utils.distance_type import DistanceType
+from by_centroids import ByCentroids
 from .....problem.input.problem import Problem
 from .....problem.input.customer import Customer
 from .....problem.input.depot import Depot
 from .....problem.output.solution.solution import Solution
 from .....problem.output.solution.cluster import Cluster
 
-class KMEANS(Partitional):
+class KMEANS(ByCentroids):
     
     def __init__(self):
-        self.distance_type = DistanceType.Euclidean
-        self.seed_type = SeedType.NEAREST_DEPOT
-        self.count_max_iterations = 100                 # Configurable
-        self.current_iteration = 0
-    
+        super().__init__()
+        
     def get_current_iteration(self) -> int:
         return self.current_iteration
     
