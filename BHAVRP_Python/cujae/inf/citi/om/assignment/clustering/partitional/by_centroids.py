@@ -21,7 +21,6 @@ class ByCentroids(Partitional):
         total_depots: int = Problem.get_problem().get_total_depots()
         counter = total_depots
         
-        cost_matrix: np.ndarray = None
         id_element = -1
         
         depot = Depot()
@@ -30,15 +29,8 @@ class ByCentroids(Partitional):
         
         list_depot = [depot]
         
-        if distance_type == DistanceType.REAL:
-            pass
-        else:
-            try:
-                cost_matrix = Problem.get_problem().fill_cost_matrix(
-                    Problem.get_problem().get_customers(), list_depot, distance_type
-                )
-            except (AttributeError, TypeError, ValueError) as e:
-                print(f"Error filling cost matrix: {e}")
+        cost_matrix: np.ndarray = self.initialize_cost_matrix(
+            Problem.get_problem().get_customers(), list_depot, distance_type)
         
         print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
         

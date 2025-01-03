@@ -31,29 +31,6 @@ class LoadFile:
 
         return load
     
-    """
-    def load_file(self, path_file) -> bool:
-    load = False
-    self.instance_file = []
-    
-    try:
-        with open(path_file, 'r') as file:
-            cad = ''
-            while cad.strip() != "EOF":
-                cad = file.readline()
-                if cad:
-                    self.instance_file.append(cad.strip())
-                    load = True
-                else:
-                    load = False
-                    break
-    except Exception as e:
-        print(f"Error loading file: {e}")
-        load = False
-
-    return load
-    """
-    
     def load_count_vehicles_for_depot(self, count_vehicles: List[List[int]]):
         first_line_tokens = self.instance_file[0].split()
         total_vehicles = int(first_line_tokens[0])
@@ -89,7 +66,7 @@ class LoadFile:
 
     def load_capacity_vehicles(self, capacity_vehicles: List[List[float]]):
         total_depots = self.load_total_depots()
-
+        
         for i in range(1, total_depots + 1):
             try:
                 line_tokens = self.instance_file[i].split()

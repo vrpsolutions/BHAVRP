@@ -22,7 +22,7 @@ public class MainDePrueba
 		*/
 		
 		String pathFiles = "C-mdvrp//p"; 
-		int totalInstances = 21; // instancia 6, 10, 15 y 19
+		int totalInstances = 1; // instancia 6, 10, 15 y 19
 		LoadFile load = new LoadFile();
 
 		//for(int i = 0; i < totalInstances; i++)

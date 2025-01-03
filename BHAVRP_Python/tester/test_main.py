@@ -4,6 +4,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import time
+from typing import List
 from tester.load_file import LoadFile
 from cujae.inf.citi.om.controller.controller import Controller
 from cujae.inf.citi.om.factory.interfaces.assignment_type import AssignmentType
@@ -23,26 +24,23 @@ def main():
     print(f"INSTANCIA: P{total_instances}")
     print("-------------------------------------------------------------------------------")
 
-    id_customers = []
-    axis_x_customers = []
-    axis_y_customers = []
-    request_customers = []
+    id_customers: List[int] = []
+    axis_x_customers: List[float] = []
+    axis_y_customers: List[float] = []
+    request_customers: List[float] = []
 
-    id_depots = []
-    axis_x_depots = []
-    axis_y_depots = []
-    count_vehicles = []
-    capacity_vehicles = []
-
-    list_distances = []
+    id_depots: List[int] = []
+    axis_x_depots: List[float] = []
+    axis_y_depots: List[float] = []
+    count_vehicles: List[List[int]] = []
+    capacity_vehicles: List[List[float]] = []
         
     load.load_count_vehicles_for_depot(count_vehicles)
     load.load_capacity_vehicles(capacity_vehicles)
+    print(f"Capacidades cargadas (inmediatamente después de load_capacity_vehicles): {capacity_vehicles}")
     load.load_customers(id_customers, axis_x_customers, axis_y_customers, request_customers)
     load.load_depots(id_depots, axis_x_depots, axis_y_depots)
-        
-    load.fill_list_distances(id_customers, axis_x_customers, axis_y_customers, id_depots, axis_x_depots, axis_y_depots, list_distances)
-        
+
     # Cargar el problema en el controlador
     if Controller.get_instance().load_problem(id_customers, request_customers, axis_x_customers, axis_y_customers, 
                                               id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles):

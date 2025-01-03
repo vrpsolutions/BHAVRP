@@ -4,6 +4,7 @@ from .customer import Customer
 from .depot import Depot
 from .fleet import Fleet
 from .location import Location
+from ...service.distance import Distance
 from ...service.osrm_service import OSRMService
 from ...service.distance_type import DistanceType
 
@@ -185,14 +186,6 @@ class Problem:
                 total_capacity += capacity_vehicle * count_vehicles
         return total_capacity
     
-    # Método encargado de obtener la lista de las capacidades de los depósitos.
-    def get_capacities_depot(self) -> List[float]:
-        capacities = []
-        for depot in self.depots:
-            capacity_depot = self.get_total_capacity_by_depot(depot.get_id_depot())
-            capacities.append(capacity_depot)
-        return capacities
-    
     # Método encargado de obtener el id del depósito con mayor capacidad.
     def get_depot_with_mu(self) -> int:
         max_capacity_depot = self.get_total_capacity_by_depot(self.depots[0].get_id_depot())
@@ -243,18 +236,6 @@ class Problem:
     def get_list_id(self, customers: List[Customer]) -> List[int]:
         list_id = [customer.get_id_customer() for customer in customers]
         return list_id
-
-    # Método encargado de cargar los datos de los clientes sin coordenadas.
-    def load_customer(
-        self, 
-        id_customers: List[int], 
-        request_customers: List[float]
-    ):
-        for i in range(len(id_customers)):
-            customer = Customer()
-            customer.set_id_customer(id_customers[i])
-            customer.set_request_customer(request_customers[i])
-            self.customers.append(customer)
 
     # Método encargado de cargar los datos de los clientes con coordenadas.
     def load_customer(
@@ -319,11 +300,7 @@ class Problem:
         # Crear una matriz de costos de tamaño totalCustomers + totalDepots
         cost_matrix = np.full((total_customers + total_depots, total_customers + total_depots), np.inf)
 
-        # Crear el objeto de distancia según el tipo
-        distance = self.new_distance(distance_type)
-
         last_pint_one = 0
-        last_point_two = 0
 
         for i in range(total_customers + total_depots):
             if i < total_customers:
@@ -333,6 +310,8 @@ class Problem:
                 axis_x_ini = depots[last_pint_one].get_location_depot().get_axis_x()
                 axis_y_ini = depots[last_pint_one].get_location_depot().get_axis_y()
                 last_pint_one += 1
+            
+            last_point_two = 0
 
             for j in range(total_customers + total_depots):
                 if j < total_customers:
@@ -346,7 +325,7 @@ class Problem:
                 if i == j:
                     cost_matrix[i, j] = float('inf')
                 else:
-                    cost = distance.calculate_distance(axis_x_ini, axis_y_ini, axis_x_end, axis_y_end)
+                    cost = Distance.calculate_distance(axis_x_ini, axis_y_ini, axis_x_end, axis_y_end, distance_type)
                     cost_matrix[i, j] = cost
                     cost_matrix[j, i] = cost
 
@@ -406,11 +385,10 @@ class Problem:
         self, 
         centroids: List[Depot], 
         depots: List[Depot], 
-        type_distance: DistanceType
+        distance_type: DistanceType
     ) -> np.ndarray:
         total_depots = len(depots)
         cost_matrix = np.full((total_depots, total_depots))
-        distance = self.new_distance(type_distance)
 
         axis_x_point_one = 0.0
         axis_y_point_one = 0.0
@@ -435,7 +413,7 @@ class Problem:
                 print(f"DEPOSITO {j} X: {axis_x_point_two}")
                 print(f"DEPOSITO {j} Y: {axis_y_point_two}")
 
-                cost = distance.calculate_distance(axis_x_point_one, axis_y_point_one, axis_x_point_two, axis_y_point_two)
+                cost = Distance.calculate_distance(axis_x_point_one, axis_y_point_one, axis_x_point_two, axis_y_point_two, distance_type)
 
                 print(f"COSTO: {cost}")
 

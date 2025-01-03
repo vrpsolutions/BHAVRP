@@ -42,13 +42,13 @@ class Controller:
         count_vehicles: List[List[int]], 
         capacity_vehicles: List[List[float]]
     ) -> bool:
-        
         loaded: bool = False
         
         print("ENTRADA A LA CARGA DE DATOS")
         print("-------------------------------------------------------------------------------")
         print(f"CANTIDAD DE CLIENTES: {len(id_customers)}")
         print("-------------------------------------------------------------------------------")
+        
         for i in range(len(id_customers)):
             print(f"ID CLIENTE: {id_customers[i]}")
             print(f"DEMANDA : {request_customers[i]}")
@@ -58,8 +58,7 @@ class Controller:
         print(f"CANTIDAD DE DEPÓSITOS: {len(id_depots)}")
         print("-------------------------------------------------------------------------------")
 
-        total_vehicles = 0
-        capacity_vehicle = 0.0
+        total_capacity = 0.0
 
         for i in range(len(id_depots)):
             print(f"ID DEPÓSITO: {id_depots[i]}")
@@ -67,14 +66,19 @@ class Controller:
             print(f"Y : {axis_y_depots[i]}")
 
             print(f"CANTIDAD DE FLOTAS DEL DEPÓSITO: {len(count_vehicles[i])}")
+            
+            total_depot_capacity = 0.0
+            
             for j in range(len(count_vehicles[i])):
-                total_vehicles = count_vehicles[i][j]
-                capacity_vehicle = capacity_vehicles[i][j]
+                vehicles = count_vehicles[i][j]
+                capacity = capacity_vehicles[i][j]
+                total_depot_capacity += vehicles * capacity
+                
+                print(f"CANTIDAD DE VEHÍCULOS: {vehicles}")
+                print(f"CAPACIDAD DE LOS VEHÍCULOS: {capacity}")
 
-                print(f"CANTIDAD DE VEHÍCULOS: {count_vehicles[i][j]}")
-                print(f"CAPACIDAD DE LOS VEHÍCULOS: {capacity_vehicles[i][j]}")
-
-            print(f"CAPACIDAD TOTAL DEL DEPÓSITO: {total_vehicles * capacity_vehicle}")
+            print(f"CAPACIDAD TOTAL DEL DEPÓSITO: {total_depot_capacity}")
+            total_capacity += total_depot_capacity
             print("-------------------------------------------------------------------------------")
 
         # Validar las condiciones necesarias para proceder con la carga
@@ -82,13 +86,12 @@ class Controller:
             id_depots and axis_x_depots and axis_y_depots and count_vehicles and
             capacity_vehicles):
             
-            problem = Problem.get_problem()
-            problem.load_customer(id_customers, request_customers, axis_x_customers, axis_y_customers)
-            problem.load_depot(id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles)
+            Problem.get_problem().load_customer(id_customers, request_customers, axis_x_customers, axis_y_customers)
+            Problem.get_problem().load_depot(id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles)
             loaded = True
             
         print(f"DEMANDA TOTAL DE LOS CLIENTES: {Problem.get_problem().get_total_request()}")
-        print(f"CAPACIDAD TOTAL DE LOS DEPÓSITOS: {Problem.get_problem().get_total_capacity()}")
+        print(f"CAPACIDAD TOTAL DE LOS DEPÓSITOS: {total_capacity}")
         print("-------------------------------------------------------------------------------")
         print(f"CARGA EXITOSA: {loaded}")
         print("FIN DE LA CARGA DE DATOS")
