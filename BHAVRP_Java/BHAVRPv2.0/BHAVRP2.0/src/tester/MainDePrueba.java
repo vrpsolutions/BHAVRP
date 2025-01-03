@@ -14,10 +14,12 @@ public class MainDePrueba
 {
 	public static void main(String arg[]) throws IOException, IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
 	{	
+		/*
 		String pathFileEnd = "result//";
 		String nameFile = "INSTANCIA_1.xls"; 
 		pathFileEnd += nameFile;
 		SaveFile.getSaveFile().createResultFile(pathFileEnd);
+		*/
 		
 		String pathFiles = "C-mdvrp//p"; 
 		int totalInstances = 21; // instancia 6, 10, 15 y 19
