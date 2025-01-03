@@ -471,30 +471,6 @@ public class Problem {
 		}
 	}
 
-	/* Método encargado de llenar la matriz de costo usando listas de distancias.*/
-	public void fillCostMatrix(ArrayList<ArrayList<Double>> distances) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException{
-		int totalDistances = distances.size(); 
-		int totalElements;
-		costMatrix = new NumericMatrix(totalDistances, totalDistances);
-
-		int row = -1;
-		int col = -1;
-		double costInDistance = 0.0;
-
-		for(int i = 0; i < totalDistances; i++)
-		{
-			row = i;
-			totalElements = distances.get(i).size();
-			
-			for(int j = 0; j < totalElements; j++)
-			{
-				col = j;	
-				costInDistance = distances.get(i).get(j);
-				costMatrix.setItem(row, col, costInDistance);	
-			}
-		}
-	}
-
 	/* Método encargado de llenar la matriz de costo usando la distancia aproximada deseada.*/
 	public NumericMatrix fillCostMatrix(ArrayList<Customer> customers, ArrayList<Depot> depots, DistanceType distanceType) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		int totalCustomers = customers.size();
