@@ -30,15 +30,15 @@ class ByCentroids(Partitional):
         
         list_depot = [depot]
         
-        if distance_type.value in [1, 2, 3, 4]:
+        if distance_type == DistanceType.REAL:
+            pass
+        else:
             try:
                 cost_matrix = Problem.get_problem().fill_cost_matrix(
                     Problem.get_problem().get_customers(), list_depot, distance_type
                 )
             except (AttributeError, TypeError, ValueError) as e:
                 print(f"Error filling cost matrix: {e}")
-        elif distance_type.ordinal() == 5:
-            pass
         
         print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
         

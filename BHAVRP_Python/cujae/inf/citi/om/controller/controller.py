@@ -98,9 +98,7 @@ class Controller:
     
     # Método encargado de ejecutar la heurística de asignación
     def execute_assignment(self, assignment_type: AssignmentType):
-        
-        print(assignment_type)
-        
+                
         assignment: Assignment = self.new_assignment(assignment_type)
         
         print("EJECUCIÓN DE LA HEURÍSTICA")

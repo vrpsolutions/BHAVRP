@@ -16,13 +16,10 @@ class FactoryAssignment(IFactoryAssignment):
             module_name, class_name = class_path.rsplit(".", 1)
            
             module = importlib.import_module(module_name)
-            
-            assignment_class = None
-            if hasattr(module, class_name):
-                assignment_class = getattr(module, class_name)
+
+            assignment_class = getattr(module, class_name, None)
             
             if assignment_class:
-                print(f"Clase obtenida: {class_name}")
                 assignment = assignment_class()
             else:
                 print(f"La clase '{class_name}' no se encuentra en el módulo '{module_name}'")
