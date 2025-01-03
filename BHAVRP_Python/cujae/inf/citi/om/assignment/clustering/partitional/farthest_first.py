@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List
-from by_centroids import ByCentroids
+from .by_centroids import ByCentroids
 from ....service.distance_type import DistanceType
 from ....service.osrm_service import OSRMService
 from ....problem.input.problem import Problem

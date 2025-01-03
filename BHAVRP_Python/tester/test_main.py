@@ -1,15 +1,21 @@
 import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import time
-from load_file import LoadFile
-from ..cujae.inf.citi.om.controller.controller import Controller
-from ..cujae.inf.citi.om.factory.interfaces.assignment_type import AssignmentType
-from ..cujae.inf.citi.om.problem.input.problem import Problem
+from tester.load_file import LoadFile
+from cujae.inf.citi.om.controller.controller import Controller
+from cujae.inf.citi.om.factory.interfaces.assignment_type import AssignmentType
+from cujae.inf.citi.om.problem.input.problem import Problem
 
 def main():
-    base_path = r"C:\Users\eriza\Downloads\PPII\Implementacion\BHAVRP"
-    instance_path = os.path.join(base_path, "BHAVRP_Java", "BHAVRPv2.0", "BHAVRP2.0", "C-mdvrp", f"p{total_instances}")
+    
     total_instances = 1      # p21 para reales, p500 instancia grande
     load = LoadFile()
+    
+    base_path = r"C:\Users\eriza\Downloads\PPII\Implementacion\BHAVRP"
+    instance_path = os.path.join(base_path, "BHAVRP_Java", "BHAVRPv2.0", "BHAVRP2.0", "C-mdvrp", f"p{total_instances}")
 
     load.load_file(instance_path)
 
@@ -35,10 +41,11 @@ def main():
     load.load_customers(id_customers, axis_x_customers, axis_y_customers, request_customers)
     load.load_depots(id_depots, axis_x_depots, axis_y_depots)
         
-    load.fill_list_distances(id_customers, axis_x_customers, axis_y_customers, id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles, list_distances)
+    load.fill_list_distances(id_customers, axis_x_customers, axis_y_customers, id_depots, axis_x_depots, axis_y_depots, list_distances)
         
     # Cargar el problema en el controlador
-    if Controller.get_instance().load_problem(id_customers, request_customers, axis_x_customers, axis_y_customers, id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles, list_distances):
+    if Controller.get_instance().load_problem(id_customers, request_customers, axis_x_customers, axis_y_customers, 
+                                              id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles):
         avg_time = 0.0
         run_time = 0.0
         
@@ -60,9 +67,9 @@ def main():
             elif j == 4:
                 Controller.get_instance().execute_assignment(AssignmentType.CyclicAssignment)
             elif j == 5:
-                Controller.get_instance().execute_assignment(AssignmentType.Farthest_First)
+                Controller.get_instance().execute_assignment(AssignmentType.FarthestFirst)
             elif j == 6:
-                Controller.get_instance().execute_assignment(AssignmentType.KMEANS)
+                Controller.get_instance().execute_assignment(AssignmentType.Kmeans)
             elif j == 7:
                 #Controller.get_instance().execute_assignment(AssignmentType.Modified_KMEANS)
                 pass

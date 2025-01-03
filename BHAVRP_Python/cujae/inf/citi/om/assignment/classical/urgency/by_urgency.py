@@ -10,6 +10,9 @@ y ordenar depósitos por cercanía para cada cliente.
 """
 class ByUrgency(Heuristic):
     
+    def __init__(self):
+        super().__init__()
+    
     # Método para calcular la urgencia.
     def calculate_urgency(self, first_distance: float, other_distance: float) -> float:
         return other_distance - first_distance

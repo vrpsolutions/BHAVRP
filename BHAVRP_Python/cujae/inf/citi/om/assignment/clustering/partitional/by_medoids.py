@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from typing import List
-from partitional import Partitional
+from .partitional import Partitional
 from ..sampling_type import SamplingType
 from ....service.distance_type import DistanceType
 from ....problem.input.problem import Problem

@@ -1,4 +1,4 @@
-from i_assignment import IAssignment
+from .i_assignment import IAssignment
 from ..problem.solution.solution import Solution
 
 class AssignmentTemplate(IAssignment):

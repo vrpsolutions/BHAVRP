@@ -1,4 +1,4 @@
-from location import Location
+from .location import Location
 
 class Customer:
     # Constructor para la clase Customer.
@@ -11,6 +11,11 @@ class Customer:
         self.id_customer = id_customer
         self.request_customer = request_customer
         self.location_customer = location_customer
+    
+    def __init__(self):
+        self.id_customer = None
+        self.request_customer = 0.0
+        self.location_customer = None
     
     def get_id_customer(self) -> int:
         return self.id_customer

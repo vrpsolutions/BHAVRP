@@ -5,7 +5,7 @@ from ...problem.input.problem import Problem
 from ...problem.input.customer import Customer
 
 class Tools:
-    
+        
     @staticmethod
     def random_ordenate():
         random.shuffle(Problem.get_problem().depots)

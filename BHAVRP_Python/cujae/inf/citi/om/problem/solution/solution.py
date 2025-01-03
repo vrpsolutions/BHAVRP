@@ -1,5 +1,5 @@
 from typing import List
-from cluster import Cluster
+from .cluster import Cluster
 
 class Solution:
     # Constructor para la clase Solution.

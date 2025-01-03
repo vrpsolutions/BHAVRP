@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List
-from by_medoids import ByMedoids
+from .by_medoids import ByMedoids
 from ..sampling_type import SamplingType
 from ....problem.input.problem import Problem
 from ....problem.input.customer import Customer

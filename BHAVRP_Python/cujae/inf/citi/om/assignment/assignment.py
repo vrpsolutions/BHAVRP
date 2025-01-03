@@ -1,7 +1,7 @@
 import traceback
 import numpy as np
 from typing import List
-from assignment_template import AssignmentTemplate
+from .assignment_template import AssignmentTemplate
 from ..service.distance_type import DistanceType
 from ..problem.input.problem import Problem
 from ..problem.input.customer import Customer
@@ -12,8 +12,9 @@ from ..problem.solution.cluster import Cluster
 class Assignment(AssignmentTemplate):
     
     def __init__(self):
-        self.distance_type = DistanceType.REAL
-        self.solution = Solution
+        super().__init__()
+        self.distance_type = DistanceType.EUCLIDEAN
+        self.solution = Solution()
     
     # Método que busca la posición de un cluster en el listado de clusters.
     def find_cluster(self, id_cluster: int, clusters: List[Cluster]) -> int:

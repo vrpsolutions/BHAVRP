@@ -2,7 +2,6 @@ import random
 import numpy as np
 from typing import List
 from ..seed_type import SeedType
-from ..sampling_type import SamplingType
 from ..clustering import Clustering
 from ....service.distance_type import DistanceType
 from ....problem.input.problem import Problem
@@ -14,6 +13,7 @@ from ....problem.solution.cluster import Cluster
 class Partitional(Clustering):
     
     def __init__(self):
+        super().__init__()
         self.seed_type = SeedType.NEAREST_DEPOT
         self.count_max_iterations = 100   # Configurable
         self.current_iteration = 0

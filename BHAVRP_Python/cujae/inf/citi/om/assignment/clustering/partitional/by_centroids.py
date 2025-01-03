@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List
-from partitional import Partitional
+from .partitional import Partitional
 from ....service.distance_type import DistanceType
 from ....problem.input.problem import Problem
 from ....problem.input.customer import Customer

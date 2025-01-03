@@ -2,41 +2,41 @@ from enum import Enum
 
 # Enumerado que indica los tipos de métodos de asignación.
 class AssignmentType(Enum):
-    BestCyclicAssignment = "cujae.inf.ic.om.heuristic.assignment.others.basedcyclic.BestCyclicAssignment"
+    BestCyclicAssignment = "cujae.inf.citi.om.assignment.others.basedcyclic.best_cyclic_assignment"
     
-    BestNearest = "cujae.inf.ic.om.heuristic.assignment.others.distance.BestNearest"
+    BestNearest = "cujae.inf.citi.om.assignment.others.distance.best_nearest"
     
-    Clara = "cujae.inf.ic.om.heuristic.assignment.clustering.partitional.Clara"
+    Clara = "cujae.inf.citi.om.assignment.clustering.partitional.clara"
     
-    CoefficientPropagation = "cujae.inf.ic.om.heuristic.assignment.classical.cluster.CoefficientPropagation"
+    CoefficientPropagation = "cujae.inf.citi.om.assignment.classical.cluster.coefficient_propagation"
     
-    CyclicAssignment = "cujae.inf.ic.om.heuristic.assignment.classical.cyclic.CyclicAssignment"
+    CyclicAssignment = "cujae.inf.citi.om.assignment.classical.cyclic.cyclic_assignment"
     
-    FarthestFirst = "cujae.inf.ic.om.heuristic.assignment.clustering.partitional.Farthest_First"
+    FarthestFirst = "cujae.inf.citi.om.assignment.clustering.partitional.farthest_first"
     
-    Kmeans = "cujae.inf.ic.om.heuristic.assignment.clustering.partitional.Kmeans"
+    Kmeans = "cujae.inf.citi.om.assignment.clustering.partitional.k_means"
     
-    NearestByCustomer = "cujae.inf.ic.om.heuristic.assignment.others.distance.NearestByCustomer"
+    NearestByCustomer = "cujae.inf.citi.om.assignment.others.distance.nearest_by_customer"
     
-    NearestByDepot = "cujae.inf.ic.om.heuristic.assignment.others.distance.NearestByDepot"
+    NearestByDepot = "cujae.inf.citi.om.assignment.others.distance.nearest_by_depot"
     
-    PAM = "cujae.inf.ic.om.heuristic.assignment.clustering.partitional.PAM"
+    PAM = "cujae.inf.citi.om.assignment.clustering.partitional.pam"
     
-    Parallel = "cujae.inf.ic.om.heuristic.assignment.classical.urgency.Parallel"
+    Parallel = "cujae.inf.citi.om.assignment.classical.urgency.parallel"
     
-    RandomByElement = "cujae.inf.ic.om.heuristic.assignment.others.distance.RandomByElement"
+    RandomByElement = "cujae.inf.citi.om.assignment.others.distance.random_by_element"
     
-    RandomSequentialCyclic = "cujae.inf.ic.om.heuristic.assignment.others.basedcyclic.RandomSequentialCyclic"
+    RandomSequentialCyclic = "cujae.inf.citi.om.assignment.others.basedcyclic.random_sequential_cyclic"
     
-    SequentialCyclic = "cujae.inf.ic.om.heuristic.assignment.others.basedcyclic.SequentialCyclic"
+    SequentialCyclic = "cujae.inf.citi.om.assignment.others.basedcyclic.sequential_cyclic"
     
-    Simplified = "cujae.inf.ic.om.heuristic.assignment.classical.urgency.Simplified"
+    Simplified = "cujae.inf.citi.om.assignment.classical.urgency.simplified"
     
-    Sweep = "cujae.inf.ic.om.heuristic.assignment.classical.urgency.Sweep"
+    Sweep = "cujae.inf.citi.om.assignment.classical.urgency.sweep"
     
-    ThreeCriteriaClustering = "cujae.inf.ic.om.heuristic.assignment.classical.cluster.ThreeCriteriaClustering"
+    ThreeCriteriaClustering = "cujae.inf.citi.om.assignment.classical.cluster.three_criteria_clustering"
     
-    UPGMC = "cujae.inf.ic.om.heuristic.assignment.clustering.hierarchical.UPGMC"
+    UPGMC = "cujae.inf.citi.om.assignment.clustering.hierarchical.upgmc"
     
     def __str__(self):
         return self.value

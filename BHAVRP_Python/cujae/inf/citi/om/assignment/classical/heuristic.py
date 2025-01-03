@@ -5,6 +5,9 @@ from ...problem.solution.cluster import Cluster
 
 class Heuristic(Assignment):
     
+    def __init__(self):
+        super().__init__()
+    
     # Método para inicializar una lista de clusters.
     def initialize_clusters(self) -> List[Cluster]:
         list_clusters: List[Cluster] = []

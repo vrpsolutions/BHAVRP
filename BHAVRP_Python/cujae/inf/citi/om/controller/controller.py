@@ -1,19 +1,19 @@
 from typing import List
-from ..problem.input.problem import Problem
 from .tools.tools import Tools
 from .tools.order_type import OrderType
 from ..assignment.assignment import Assignment;
 from ..factory.methods.factory_assignment import FactoryAssignment
 from ..factory.interfaces.assignment_type import AssignmentType
 from ..factory.interfaces.ifactory_assignment import IFactoryAssignment
+from ..problem.input.problem import Problem
 from ..problem.solution.solution import Solution
 
 class Controller:
     _instance = None   # Atributo para la instancia Singleton
     
     def __init__(self):
-        if Controller._instance is None:
-            raise Exception
+        if Controller._instance is not None:
+            raise Exception("This class is a Singleton! Use get_instance() instead.")
         self.solution = None
         
     # Método Singleton para obtener la única instancia de la clase controladora.  
@@ -87,7 +87,6 @@ class Controller:
             problem.load_depot(id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles)
             loaded = True
             
-        print("-------------------------------------------------------------------------------")
         print(f"DEMANDA TOTAL DE LOS CLIENTES: {Problem.get_problem().get_total_request()}")
         print(f"CAPACIDAD TOTAL DE LOS DEPÓSITOS: {Problem.get_problem().get_total_capacity()}")
         print("-------------------------------------------------------------------------------")
@@ -100,6 +99,8 @@ class Controller:
     # Método encargado de ejecutar la heurística de asignación
     def execute_assignment(self, assignment_type: AssignmentType):
         
+        print(assignment_type)
+        
         assignment: Assignment = self.new_assignment(assignment_type)
         
         print("EJECUCIÓN DE LA HEURÍSTICA")
@@ -111,10 +112,9 @@ class Controller:
             AssignmentType.NearestByCustomer,
             AssignmentType.SequentialCyclic,
             AssignmentType.CyclicAssignment,
-            AssignmentType.KMEANS,
+            AssignmentType.Kmeans,
             AssignmentType.CoefficientPropagation,
-            AssignmentType.NearestByDepot,
-            AssignmentType.RandomSequentialNearestByDepot,
+            AssignmentType.NearestByDepot
         ]:
             if self.order_type == OrderType.ASCENDENT:
                 Tools.ascendent_ordenate()

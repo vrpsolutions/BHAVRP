@@ -1,14 +1,14 @@
 from typing import List
-from fleet import Fleet
-from location import Location
+from .fleet import Fleet
+from .location import Location
 
 class Depot:
     # Constructor para la clase Depot.
     def __init__(
         self, 
         id_depot: int, 
-        location_depot: Location = None, 
-        fleet_depot: List[Fleet] = None
+        location_depot: Location, 
+        fleet_depot: List[Fleet]
     ):
         # Si no se pasa una ubicación, se inicializa con coordenadas por defecto
         if location_depot is None:
@@ -19,6 +19,11 @@ class Depot:
         self.id_depot = id_depot
         self.location_depot = location_depot
         self.fleet_depot = fleet_depot
+    
+    def __init__(self):
+        self.id_depot = None
+        self.location_depot = None
+        self.fleet_depot = None
     
     def get_id_depot(self) -> int:
         return self.id_depot

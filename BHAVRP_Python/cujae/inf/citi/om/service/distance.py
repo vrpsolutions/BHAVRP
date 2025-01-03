@@ -1,4 +1,4 @@
-from distance_type import DistanceType
+from .distance_type import DistanceType
 from scipy.spatial import distance as scipy_distance
 import osrm
 

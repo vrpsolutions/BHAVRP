@@ -1,15 +1,14 @@
 import numpy as np
 from typing import List
-from customer import Customer
-from depot import Depot
-from fleet import Fleet
-from location import Location
+from .customer import Customer
+from .depot import Depot
+from .fleet import Fleet
+from .location import Location
 from ...service.osrm_service import OSRMService
-from ...service.distance import Distance
 from ...service.distance_type import DistanceType
-from ...controller.tools.tools import Tools
 
 class Problem:
+        
     _problem = None   # Atributo para la instancia Singleton.
     
     def __init__(self):
@@ -270,13 +269,14 @@ class Problem:
             customer.set_id_customer(id_customers[i])
             customer.set_request_customer(request_customers[i])
             
-            location = Location(Tools.truncate_double(axis_x_customers[i], 6), Tools.truncate_double(axis_y_customers[i], 6))
+            location = Location(round(axis_x_customers[i], 6), round(axis_y_customers[i], 6))
             customer.set_location_customer(location)
             
             self.customers.append(customer)
             
     # Método encargado de cargar los datos de los depósitos (con coordenadas) y las flotas.
     def load_depot(
+        self,
         id_depots: List[int], 
         axis_x_depots: List[float], 
         axis_y_depots: List[float], 
@@ -298,32 +298,6 @@ class Problem:
 
             for j in range(total_fleets):
                 fleet = Fleet()
-                fleet.set_ount_vehicles(count_vehicles[i][j])
-                fleet.set_capacity_vehicle(capacity_vehicles[i][j])
-
-                fleets.append(fleet)
-
-            depot.set_fleet_depot(fleets)
-            depots.append(depot)
-            
-    # Método encargado de cargar los datos de los depósitos (sin coordenadas) y las flotas.
-    def load_depot(
-        id_depots: List[int], 
-        count_vehicles: List[List[int]], 
-        capacity_vehicles: List[List[float]]
-    ):
-        depots = []
-        total_depots = len(id_depots)
-
-        for i in range(total_depots):
-            depot = Depot()
-            depot.set_id_depot(id_depots[i])
-
-            fleets = []
-            total_fleets = len(count_vehicles[i])
-
-            for j in range(total_fleets):
-                fleet = Fleet()
                 fleet.set_count_vehicles(count_vehicles[i][j])
                 fleet.set_capacity_vehicle(capacity_vehicles[i][j])
 
@@ -334,7 +308,8 @@ class Problem:
                      
     # Método encargado de llenar la matriz de costo usando la distancia deseada.
     def fill_cost_matrix(
-        self, customers: List[Customer], 
+        self, 
+        customers: List[Customer], 
         depots: List[Depot], 
         distance_type: DistanceType
     ) -> np.ndarray:

@@ -1,6 +1,6 @@
+import sys
 import importlib
-from abc import ABC, abstractmethod
-from interfaces.assignment_type import AssignmentType
+from ..interfaces.assignment_type import AssignmentType
 from ..interfaces.ifactory_assignment import IFactoryAssignment
 from ...assignment.assignment import Assignment
 
@@ -13,14 +13,20 @@ class FactoryAssignment(IFactoryAssignment):
         
         try:
             class_path = str(assignment_type)
-            
             module_name, class_name = class_path.rsplit(".", 1)
            
             module = importlib.import_module(module_name)
-            assignment_class = getattr(module, class_name)
             
-            assignment = assignment_class()
-    
+            assignment_class = None
+            if hasattr(module, class_name):
+                assignment_class = getattr(module, class_name)
+            
+            if assignment_class:
+                print(f"Clase obtenida: {class_name}")
+                assignment = assignment_class()
+            else:
+                print(f"La clase '{class_name}' no se encuentra en el módulo '{module_name}'")
+
         except (ModuleNotFoundError, AttributeError) as e:
             print(f"Error: Class '{assignment_type}' not found: {e}")
         except Exception as e:

@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List
-from by_centroids import ByCentroids
+from .by_centroids import ByCentroids
 from ....problem.input.problem import Problem
 from ....problem.input.customer import Customer
 from ....problem.input.depot import Depot
