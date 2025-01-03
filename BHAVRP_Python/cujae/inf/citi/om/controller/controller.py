@@ -2,11 +2,11 @@ from typing import List
 from ..problem.input.problem import Problem
 from .tools.tools import Tools
 from .tools.order_type import OrderType
-from ..heuristic.assignment.assignment import Assignment;
+from ..assignment.assignment import Assignment;
 from ..factory.methods.factory_assignment import FactoryAssignment
 from ..factory.interfaces.assignment_type import AssignmentType
 from ..factory.interfaces.ifactory_assignment import IFactoryAssignment
-from ..problem.output.solution.solution import Solution
+from ..problem.solution.solution import Solution
 
 class Controller:
     _instance = None   # Atributo para la instancia Singleton

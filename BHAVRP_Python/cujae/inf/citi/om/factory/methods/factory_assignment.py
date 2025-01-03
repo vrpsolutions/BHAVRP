@@ -2,7 +2,7 @@ import importlib
 from abc import ABC, abstractmethod
 from interfaces.assignment_type import AssignmentType
 from ..interfaces.ifactory_assignment import IFactoryAssignment
-from ...heuristic.assignment.assignment import Assignment
+from ...assignment.assignment import Assignment
 
 # Clase que implementa el Patrón Factory Method para la carga dinámica de un determinado 
 # método de asignación.
