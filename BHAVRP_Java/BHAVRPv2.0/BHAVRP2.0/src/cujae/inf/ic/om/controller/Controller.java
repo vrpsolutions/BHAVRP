@@ -129,7 +129,7 @@ public class Controller {
 					Tools.descendentOrdenate();
 					break;
 				}
-				case 4:
+				case 3:
 				{
 					Tools.randomOrdenate();
 					break;

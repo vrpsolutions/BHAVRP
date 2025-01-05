@@ -7,105 +7,11 @@ from ....problem.input.customer import Customer
 from ....problem.input.depot import Depot
 from ....problem.input.fleet import Fleet
 from ....problem.input.location import Location
-from ....problem.solution.cluster import Cluster
 
 class ByCentroids(Partitional):
     
     def __init__(self):
         super().__init__()
-    
-    # Método que genera elementos iniciales (centroides) para los clústeres.
-    def generate_elements(self) -> List[int]:
-        id_elements: List[int] = []
-        total_depots: int = Problem.get_problem().get_total_depots()
-
-        counter = total_depots
-        depot = Depot()
-        depot.set_id_depot(-1)
-        depot.set_location_depot(self.calculate_mean_coordinate())
-        
-        list_depot = [depot]
-        
-        cost_matrix: np.ndarray = self.initialize_cost_matrix(
-            Problem.get_problem().get_customers(), list_depot, self.distance_type)
-        
-        print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
-
-        while counter > 0:
-            max_value_index = np.argmax(cost_matrix)
-            row = max_value_index // cost_matrix.shape[1]
-            col = max_value_index % cost_matrix.shape[1]
-            
-            print(f"FILA SELECCIONADA: {row}")
-            print(f"COLUMNA SELECCIONADA: {col}")
-            print(f"VALOR SELECCIONADO: {cost_matrix[row, col]}")
-            
-            id_element = Problem.get_problem().get_customers()[col].get_id_customer()
-            id_elements.append(id_element)
-            
-            print(f"ELEMENTO: {id_element}")
-            print(f"LISTADO DE ELEMENTOS ACTUALIZADOS: {id_elements}")
-                
-            cost_matrix[row, col] = float('-inf')
-            counter -= 1   
-        
-        print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}") 
-        
-        return self.sorted_elements(id_elements, self.distance_type)
-    
-    # Método que ordena los elementos por proximidad a los depósitos según el tipo de distancia, 
-    # utilizando una matriz de costos para determinar el orden.
-    def sorted_elements(self, id_elements: List[int], distance_type: DistanceType) -> List[int]:
-        total_depots = Problem.get_problem().get_total_depots()
-        j = 0
-        
-        sorted_elements: List[int] = [-1] * len(id_elements)
-        customers: List[Customer] = []
-        
-        for element_id in id_elements:
-            customers.append(Problem.get_problem().get_customer_by_id_customer(element_id))
-
-        cost_matrix: np.ndarray = self.initialize_cost_matrix(
-            customers, Problem.get_problem().get_depots(), distance_type)
-                
-        while j < len(id_elements):
-            min_index = np.argmin(cost_matrix)
-            row = min_index // cost_matrix.shape[1]
-            col = min_index % cost_matrix.shape[1]
-            
-            print(f"ROW SELECCIONADA: {row}")
-            print(f"COL SELECCIONADA: {col}")
-            print(f"VALOR SELECCIONADO: {cost_matrix[row, col]}")
-
-            cost_matrix[0:len(id_elements), col] = float('inf')
-            cost_matrix[row, 0:len(id_elements) + total_depots - 1] = float('inf')
-
-            sorted_elements[col - len(id_elements)] = id_elements[row]
-
-            print(f"LISTADO DE ELEMENTOS SELECCIONADOS ORDENADOS ACTUALIZADA: {sorted_elements}")
-            j += 1
-            
-        print(f"LISTADO DE ELEMENTOS SELECCIONADOS ORDENADOS: {sorted_elements}")
-
-        return sorted_elements
-    
-    # Método que calcula y retorna la coordenada promedio de todas las ubicaciones de los clientes.
-    def calculate_mean_coordinate(self) -> Location:
-        axis_x: float = 0.0
-        axis_y: float = 0.0
-
-        list_coordinates_customers: List[Location] = list(Problem.get_problem().get_list_coordinates_customers())
-
-        for customer in list_coordinates_customers:
-            axis_x += customer.get_axis_x()
-            axis_y += customer.get_axis_y()
-
-        axis_x /= len(list_coordinates_customers)
-        axis_y /= len(list_coordinates_customers)
-
-        mean_location = Location(axis_x, axis_y)
-
-        return mean_location
     
     # Método que verifica y actualiza los centroides de los clústeres.
     def verify_centroids(self) -> bool:

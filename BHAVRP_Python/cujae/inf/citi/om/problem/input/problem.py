@@ -447,5 +447,5 @@ class Problem:
     def clean_info_problem(self):
         self.customers.clear()
         self.depots.clear()
-        self.cost_matrix.clear()
+        self.cost_matrix = np.empty((0, 0))
         self.problem = None

@@ -38,12 +38,11 @@ class Clustering(Assignment):
                     list_id_customers.append(self.list_id_elements[i])
                     cluster = Cluster(
                         self.list_id_elements[i], 
-                        Problem.get_problem().get_request_by_id_customer(total_elements[i]), 
+                        Problem.get_problem().get_request_by_id_customer(self.list_id_elements[i]), 
                         list_id_customers
                     )
                 else:
                     cluster = Cluster(self.list_id_elements[i], 0.0, list_id_customers)
-                    print(f"CLUSTER CREADO 2: {cluster}")
                 clusters.append(cluster)
 
         print("--------------------------------------------------")

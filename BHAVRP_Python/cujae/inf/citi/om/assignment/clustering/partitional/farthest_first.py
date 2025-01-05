@@ -1,7 +1,6 @@
-import numpy as np
 from typing import List
 from .by_centroids import ByCentroids
-from ....service.distance_type import DistanceType
+from ..seed_type import SeedType
 from ....service.osrm_service import OSRMService
 from ....problem.input.problem import Problem
 from ....problem.input.customer import Customer
@@ -13,10 +12,11 @@ class FarthestFirst(ByCentroids):
     
     def __init__(self):
         super().__init__()
-        self.list_id_elements: List[int] = []
-        self.list_clusters: List[Cluster] = []
-        self.list_customers_to_assign: List[Customer] = []
-        self.list_centroids: List[Depot] = []
+        self.seed_type = SeedType.FARTHEST_DEPOT
+        self.list_id_elements: List[int]
+        self.list_clusters: List[Cluster]
+        self.list_customers_to_assign: List[Customer]
+        self.list_centroids: List[Depot]
         
     def get_current_iteration(self) -> int:
         return self.current_iteration
@@ -36,7 +36,7 @@ class FarthestFirst(ByCentroids):
     def assign(self):
         change: bool = True
         first: bool = True
-        
+
         while change and self.current_iteration < self.count_max_iterations:
             if first:
                 self.list_customers_to_assign = list(Problem.get_problem().get_customers())
@@ -44,9 +44,9 @@ class FarthestFirst(ByCentroids):
                 self.list_centroids = self.create_centroids()
                 first = False
             else:
-                self.clean_clusters(self.list_clusters)
-                self.list_customers_to_assign = list(Problem.get_problem().get_customers())              
-            
+                self.clean_clusters(self.list_clusters)      
+                self.list_customers_to_assign = list(Problem.get_problem().get_customers())
+                 
             self.step_assignment(self.list_clusters)
             change = self.verify_centroids()
             

@@ -1,5 +1,4 @@
 import random
-import copy
 import numpy as np
 from typing import List
 from ..seed_type import SeedType
@@ -15,77 +14,68 @@ class Partitional(Clustering):
     
     def __init__(self):
         super().__init__()
-        self.seed_type = SeedType.NEAREST_DEPOT
         self.count_max_iterations = 100   # Configurable
         self.current_iteration = 0
-        
+    
     # Método que genera elementos iniciales (centroides o medoides) para los clústeres.
-    def generate_elements(self, seed_type: SeedType, distance_type: DistanceType) -> List[int]:
+    def generate_elements(self) -> List[int]:
         id_elements: List[int] = []
-        
-        total_customers: int = Problem.get_problem().get_total_customers()
         total_depots: int = Problem.get_problem().get_total_depots()
-        counter: int = total_depots
-        
-        cost_matrix: np.ndarray = self.initialize_cost_matrix(
-            Problem.get_problem().get_customers(),
-            Problem.get_problem().get_depots(),
-            distance_type
-        )
+        total_customers = Problem.get_problem().get_total_customers()
+        counter = total_depots
 
-        id_element = -1
-        
-        if seed_type == SeedType.FARTHEST_DEPOT:
-            id_elements = [-1] * counter
+        print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
+
+        if self.seed_type == SeedType.FARTHEST_DEPOT:
+            depot = Depot()
+            depot.set_id_depot(-1)
+            depot.set_location_depot(self.calculate_mean_coordinate())
+            list_depot = [depot]
             
-            print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
+            cost_matrix: np.ndarray = self.initialize_cost_matrix(
+                Problem.get_problem().get_customers(), list_depot, self.distance_type)
             
             while counter > 0:
-                row, col = np.unravel_index(
-                    np.argmax(cost_matrix[total_customers:, :]), cost_matrix[total_customers:, :].shape
-                )
-                row += total_customers
+                max_value_index = np.argmax(cost_matrix)
+                row = max_value_index // cost_matrix.shape[1]
+                col = max_value_index % cost_matrix.shape[1]
                 
                 print(f"FILA SELECCIONADA: {row}")
                 print(f"COLUMNA SELECCIONADA: {col}")
                 print(f"VALOR SELECCIONADO: {cost_matrix[row, col]}")
                 
                 id_element = Problem.get_problem().get_customers()[col].get_id_customer()
-                id_elements[row - total_customers] = id_element
+                id_elements.append(id_element)
                 
                 print(f"ELEMENTO: {id_element}")
                 print(f"LISTADO DE ELEMENTOS ACTUALIZADOS: {id_elements}")
-                
-                cost_matrix[total_customers:, col] = -np.inf
-                cost_matrix[row, :] = -np.inf
-                counter -= 1
+                    
+                cost_matrix[row, col] = float('-inf')
+                counter -= 1   
         
-        elif seed_type == SeedType.NEAREST_DEPOT:
-            id_elements = [-1] * counter
-            
-            print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
+        elif self.seed_type == SeedType.NEAREST_DEPOT:
+
+            cost_matrix: np.ndarray = Problem.get_problem().get_cost_matrix()
             
             while counter > 0:
-                row, col = np.unravel_index(
-                    np.argmin(cost_matrix[total_customers:, :]), cost_matrix[total_customers:, :].shape
-                )
-                row += total_customers
-                
+                min_value_index = np.argmin(cost_matrix)
+                row = min_value_index // cost_matrix.shape[1]
+                col = min_value_index % cost_matrix.shape[1]
+            
                 print(f"FILA SELECCIONADA: {row}")
                 print(f"COLUMNA SELECCIONADA: {col}")
                 print(f"VALOR SELECCIONADO: {cost_matrix[row, col]}")
                 
                 id_element = Problem.get_problem().get_customers()[col].get_id_customer()
-                id_elements[row - total_customers] = id_element
+                id_elements.append(id_element)
                 
                 print(f"ELEMENTO: {id_element}")
                 print(f"LISTADO DE ELEMENTOS ACTUALIZADOS: {id_elements}")
                 
-                cost_matrix[total_customers:, col] = np.inf
-                cost_matrix[row, :] = np.inf
+                cost_matrix[row, col] = float('-inf')
                 counter -= 1
         
-        elif seed_type == SeedType.RANDOM_DEPOT:
+        elif self.seed_type == SeedType.RANDOM_DEPOT:
             random.seed()
             
             while counter > 0:
@@ -96,14 +86,68 @@ class Partitional(Clustering):
                 print(f"LISTADO DE ELEMENTOS ACTUALIZADOS: {id_elements}")
                 
                 counter -= 1
-                
+            
         print(f"--------------------------------------------------")
         print(f"CENTROIDES/MEDOIDES INICIALES")
         print(f"{id_elements}")
         print(f"--------------------------------------------------")
+            
+        return id_elements 
+    
+    # Método que ordena los elementos por proximidad a los depósitos según el tipo de distancia, 
+    # utilizando una matriz de costos para determinar el orden.
+    def sorted_elements(self, id_elements: List[int], distance_type: DistanceType) -> List[int]:
+        total_depots = Problem.get_problem().get_total_depots()
+        j = 0
         
-        return id_elements    
+        sorted_elements: List[int] = [-1] * len(id_elements)
+        customers: List[Customer] = []
         
+        for element_id in id_elements:
+            customers.append(Problem.get_problem().get_customer_by_id_customer(element_id))
+
+        cost_matrix: np.ndarray = self.initialize_cost_matrix(
+            customers, Problem.get_problem().get_depots(), distance_type)
+                
+        while j < len(id_elements):
+            min_index = np.argmin(cost_matrix)
+            row = min_index // cost_matrix.shape[1]
+            col = min_index % cost_matrix.shape[1]
+            
+            print(f"ROW SELECCIONADA: {row}")
+            print(f"COL SELECCIONADA: {col}")
+            print(f"VALOR SELECCIONADO: {cost_matrix[row, col]}")
+
+            cost_matrix[0:len(id_elements), col] = float('inf')
+            cost_matrix[row, 0:len(id_elements) + total_depots - 1] = float('inf')
+
+            sorted_elements[col - len(id_elements)] = id_elements[row]
+
+            print(f"LISTADO DE ELEMENTOS SELECCIONADOS ORDENADOS ACTUALIZADA: {sorted_elements}")
+            j += 1
+            
+        print(f"LISTADO DE ELEMENTOS SELECCIONADOS ORDENADOS: {sorted_elements}")
+
+        return sorted_elements
+    
+    # Método que calcula y retorna la coordenada promedio de todas las ubicaciones de los clientes.
+    def calculate_mean_coordinate(self) -> Location:
+        axis_x: float = 0.0
+        axis_y: float = 0.0
+
+        list_coordinates_customers: List[Location] = list(Problem.get_problem().get_list_coordinates_customers())
+
+        for customer in list_coordinates_customers:
+            axis_x += customer.get_axis_x()
+            axis_y += customer.get_axis_y()
+
+        axis_x /= len(list_coordinates_customers)
+        axis_y /= len(list_coordinates_customers)
+
+        mean_location = Location(axis_x, axis_y)
+
+        return mean_location
+         
     # Método que crea una lista de centroides a partir de los identificadores de elementos, 
     # asignando a cada uno su ubicación correspondiente según la posición de los clientes.
     def create_centroids(self) -> List[Depot]:
@@ -126,110 +170,6 @@ class Partitional(Clustering):
                 print(f"Cliente con ID {self.list_id_elements[i]} no encontrado.")
 
         return centroids
-    
-    """
-    # Método de asignación de clientes a clusters según los depósitos, basado en la matriz de costos, 
-    # la demanda de los clientes y la capacidad de los depósitos.
-    def step_assignment(
-        self, 
-        clusters: List[Cluster], 
-        customer_to_assign: List[Customer], 
-        cost_matrix: np.ndarray
-    ) -> List[Cluster]:
-        total_customers = len(customer_to_assign)
-        total_depots = len(clusters)
-        list_customers = customer_to_assign[:]
-        clusters_copy = copy.deepcopy(clusters)
-        
-        print("--------------------------------------------------------------------")
-        print(f"PROCESO DE ASIGNACIÓN")
-        
-        assigned_customers = set()
-
-        while customer_to_assign:
-            min_index = np.argmin(cost_matrix)
-            row_best = min_index // cost_matrix.shape[1]
-            col_best = min_index % cost_matrix.shape[1]
-            
-            if col_best >= len(customer_to_assign):
-                break
-            
-            pos_customer = col_best
-            selected_customer: Customer = list_customers[pos_customer]   
-            id_customer = selected_customer.get_id_customer()
-            
-            if id_customer in assigned_customers:
-                cost_matrix[pos_depot, pos_customer] = float('inf')
-                break
-            
-            assigned_customers.add(id_customer)
-            request_customer = selected_customer.get_request_customer()
-            
-            print("-----------------------------------------------------------")
-            print(f"ID CLIENTE SELECCIONADO: {id_customer}")
-            print(f"POSICIÓN DEL CLIENTE SELECCIONADO: {pos_customer}")
-            print(f"DEMANDA DEL CLIENTE SELECCIONADO: {request_customer}")
-            
-            pos_depot =  row_best
-            selected_depot: Depot = Problem.get_problem().get_depots()[pos_depot]
-            id_depot = selected_depot.get_id_depot()
-            capacity_depot = Problem.get_problem().get_total_capacity_by_depot(id_depot)
-            
-            pos_cluster = self.find_cluster(id_depot, clusters_copy)
-            
-            print(f"ID DEPOSITO SELECCIONADO: {id_depot}")
-            print(f"POSICIÓN DEL DEPOSITO SELECCIONADO: {pos_depot}")
-            print(f"CAPACIDAD TOTAL DEL DEPOSITO SELECCIONADO: {capacity_depot}")
-            print(f"POSICION DEL CLUSTER: {pos_cluster}")
-
-            if pos_cluster != -1:
-                cluster: Cluster = clusters_copy[pos_cluster]
-                new_demand = cluster.get_request_cluster() + request_customer
-                
-                print(f"ID DEL CLUSTER: {cluster.get_id_cluster()}")
-                print(f"DEMANDA DEL CLUSTER ANTES DE LA ASIGNACIÓN: {cluster.get_request_cluster()}")
-                print(f"DEMANDA DEL CLIENTE: {request_customer}")
-                print(f"CAPACIDAD DEL DEPÓSITO: {capacity_depot}")
-                print(f"DEMANDA NUEVA DEL CLUSTER: {new_demand}")
-    
-                if capacity_depot >= new_demand:
-                    cluster.set_request_cluster(new_demand)
-                    items_of_cluster: List[int] = cluster.get_items_of_cluster()
-                    items_of_cluster.append(id_customer)
-                    cluster.set_items_of_cluster(items_of_cluster)
-
-                    print(f"DEMANDA DEL CLUSTER ACTUALIZADA: {new_demand}")
-                    print(f"ELEMENTOS DEL CLUSTER: {items_of_cluster}")
-
-                    cost_matrix[pos_depot, :] = float('inf')
-                    cost_matrix[:, pos_customer] = float('inf')  
-                   
-                    customer_to_assign.pop(pos_customer)
-
-                    print(f"CANTIDAD DE CLIENTES SIN ASIGNAR: {len(customer_to_assign)}")
-                    
-                else:
-                    cost_matrix[row_best, pos_customer] = float('inf')
-
-                if self.is_full_depot(customer_to_assign, cluster.get_request_cluster(), capacity_depot):
-                    print("DEPOSITO LLENO")
-                    cost_matrix[row_best, 0:total_customers] = float('inf')
-         
-            if np.all(cost_matrix[0:total_depots, 0:total_customers] == float('inf')):
-                break 
-                    
-        print("--------------------------------------------------")
-        print("LISTA DE CLUSTERS")
-
-        for cluster in clusters_copy:
-            print(f"ID CLUSTER: {cluster.get_id_cluster()}")
-            print(f"DEMANDA DEL CLUSTER: {cluster.get_request_cluster()}")
-            print(f"CANTIDAD DE ELEMENTOS EN EL CLUSTER: {len(cluster.get_items_of_cluster())}")
-            print(f"ELEMENTOS DEL CLUSTER: {cluster.get_items_of_cluster()}")
-        print("--------------------------------------------------")
-
-        return clusters
-    """
     
     # Método de asignación de clientes a clusters según los depósitos, basado en la matriz de costos, 
     # la demanda de los clientes y la capacidad de los depósitos.

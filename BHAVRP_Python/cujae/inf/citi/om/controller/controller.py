@@ -10,6 +10,8 @@ from ..problem.solution.solution import Solution
 
 class Controller:
     _instance = None   # Atributo para la instancia Singleton
+    order_type = OrderType.INPUT  # Instancia de OrderType
+    distance_type = Assignment.distance_type
     
     def __init__(self):
         if Controller._instance is not None:
@@ -119,7 +121,7 @@ class Controller:
         ]:
             if self.order_type == OrderType.ASCENDENT:
                 Tools.ascendent_ordenate()
-            elif self.order_type == OrderType.DESCENDENT:
+            elif self.order_type == OrderType.DESCENDENT or self.order_type == OrderType.INPUT:
                 Tools.descendent_ordenate()
             elif self.order_type == OrderType.RANDOM:
                 Tools.random_ordenate()

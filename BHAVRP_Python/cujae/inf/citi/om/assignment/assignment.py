@@ -10,10 +10,10 @@ from ..problem.solution.solution import Solution
 from ..problem.solution.cluster import Cluster
 
 class Assignment(AssignmentTemplate):
+    distance_type = DistanceType.EUCLIDEAN
     
     def __init__(self):
         super().__init__()
-        self.distance_type = DistanceType.EUCLIDEAN
     
     # Método que busca la posición de un cluster en el listado de clusters.
     def find_cluster(self, id_cluster: int, clusters: List[Cluster]) -> int:
@@ -25,8 +25,8 @@ class Assignment(AssignmentTemplate):
         return pos_cluster
     
     # Método que crea la matriz de costos a partir del tipo de distancia.
+    @staticmethod
     def initialize_cost_matrix(
-        self, 
         list_customers: List[Customer], 
         list_depots: List[Depot], 
         distance_type: DistanceType
