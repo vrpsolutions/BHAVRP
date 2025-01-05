@@ -2,6 +2,8 @@ from typing import List
 from .cluster import Cluster
 
 class Solution:
+    
+
     # Constructor para la clase Solution.
     def __init__(
         self, 
@@ -25,7 +27,7 @@ class Solution:
         
     # Verifica si existen elementos no asignados.
     def exist_unassigned_items(self) -> bool:
-        return not self.unassigned_items
+        return bool(self.unassigned_items)
     
     # Devuelve la cantidad total de elementos no asignados.
     def get_total_unassigned_items(self) -> int:

@@ -87,7 +87,7 @@ class Controller:
             capacity_vehicles):
             
             Problem.get_problem().load_customer(id_customers, request_customers, axis_x_customers, axis_y_customers)
-            Problem.get_problem().load_depot(id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles)
+            Problem.get_problem().load_depot(id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles)         
             loaded = True
             
         print(f"DEMANDA TOTAL DE LOS CLIENTES: {Problem.get_problem().get_total_request()}")
@@ -124,14 +124,14 @@ class Controller:
             elif self.order_type == OrderType.RANDOM:
                 Tools.random_ordenate()
         
-        self.solution = assignment.to_clustering()
+        solution: Solution = assignment.to_clustering()
         
         print("-------------------------------------------------------------------------------")
         print("SOLUTION:")
-        print(f"CANTIDAD DE CLUSTERS: {len(self.solution.get_clusters())}")
+        print(f"CANTIDAD DE CLUSTERS: {len(solution.get_clusters())}")
         print("-------------------------------------------------------------------------------")
         
-        for cluster in self.solution.get_clusters():
+        for cluster in solution.get_clusters():
             print(f"ID CLUSTER: {cluster.get_id_cluster()}")
             print(f"DEMANDA DEL CLUSTER: {cluster.get_request_cluster()}")
             print(f"TOTAL DE ELEMENTOS DEL CLUSTER: {len(cluster.get_items_of_cluster())}")
@@ -141,17 +141,17 @@ class Controller:
                 print(f"ID DEL ELEMENTO: {int(item)}")
             print("-------------------------------------------------------------------------------")
         
-        print(f"TOTAL DE CLIENTES NO ASIGNADOS: {self.solution.get_total_unassigned_items()}")
+        print(f"TOTAL DE CLIENTES NO ASIGNADOS: {solution.get_total_unassigned_items()}")
         
-        if self.solution.get_total_unassigned_items() > 0:
+        if solution.get_total_unassigned_items() > 0:
             print("CLIENTES NO ASIGNADOS:")
             print("-------------------------------------------------------------------------------")
             
-            for item in self.solution.get_unassigned_items():
+            for item in solution.get_unassigned_items():
                 print(f"ID DEL ELEMENTO NO ASIGNADO: {int(item)}")
             print("-------------------------------------------------------------------------------")
         
-        id_dep_without_cust = self.get_depots_without_customers()
+        id_dep_without_cust = self.get_depots_without_customers(solution)
         
         print(f"TOTAL DE DEPÓSITOS SIN ASIGNACIÓN DE CLIENTES: {len(id_dep_without_cust)}")
         
@@ -188,11 +188,11 @@ class Controller:
         return request_depot
     
     # Método encargado de devolver los depósitos a los que no se les asigno ningún cliente en la solución
-    def get_depots_without_customers(self) -> List[int]:
+    def get_depots_without_customers(self, solution: Solution) -> List[int]:
         id_depots: List[int] = []
 
         total_depots = len(Problem.get_problem().get_depots())
-        total_clusters = len(self.solution.get_clusters())
+        total_clusters = len(solution.get_clusters())
 
         if total_clusters < total_depots:
             for i in range(total_depots):
@@ -202,7 +202,7 @@ class Controller:
                 id_depot = Problem.get_problem().get_depots()[i].get_id_depot()
 
                 while j < total_clusters and not found:
-                    if self.solution.get_clusters()[j].get_id_cluster() == id_depot:
+                    if solution.get_clusters()[j].get_id_cluster() == id_depot:
                         found = True
                     else:
                         j += 1

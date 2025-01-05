@@ -12,32 +12,38 @@ class Clustering(Assignment):
         super().__init__()
     
     # Método para inicializar una lista de clusters con una lista de elementos.
-    def initialize_clusters(self, list_id_elements: List[int]) -> List[Cluster]:
-        clusters: List[Cluster] = []
+    def initialize_clusters(self) -> List[Cluster]:
+        if not self.list_id_elements:
+            raise ValueError("La lista de elementos no puede estar vacía.")
         
-        total_elements = len(list_id_elements)
+        clusters: List[Cluster] = []
+        total_elements = len(self.list_id_elements)
 
         if total_elements == len(Problem.get_problem().get_depots()):
             for i in range(total_elements):
-                list_id_customers: List[int] = [list_id_elements[i]]
+                list_id_customers: List[int] = [self.list_id_elements[i]]
                 cluster = Cluster(
                     Problem.get_problem().get_depots()[i].get_id_depot(),
-                    Problem.get_problem().get_request_by_id_customer(list_id_elements[i]),
+                    Problem.get_problem().get_request_by_id_customer(self.list_id_elements[i]),
                     list_id_customers
                 )
                 clusters.append(cluster)
+                print(f"CLUSTER CREADO 1: {cluster}")
         else:
             for i in range(total_elements):
                 list_id_customers: List[int] = []
-                if Problem.get_problem().find_pos_depot(Problem.get_problem().get_depots(), list_id_elements[i]) == -1:
-                    list_id_customers.append(list_id_elements[i])
+                pos_depot = Problem.get_problem().find_pos_depot(Problem.get_problem().get_depots(), self.list_id_elements[i])
+            
+                if pos_depot == -1:  # No es un depot
+                    list_id_customers.append(self.list_id_elements[i])
                     cluster = Cluster(
-                        list_id_elements[i], 
+                        self.list_id_elements[i], 
                         Problem.get_problem().get_request_by_id_customer(total_elements[i]), 
                         list_id_customers
                     )
                 else:
-                    cluster = Cluster(list_id_elements[i], 0.0, list_id_customers)
+                    cluster = Cluster(self.list_id_elements[i], 0.0, list_id_customers)
+                    print(f"CLUSTER CREADO 2: {cluster}")
                 clusters.append(cluster)
 
         print("--------------------------------------------------")

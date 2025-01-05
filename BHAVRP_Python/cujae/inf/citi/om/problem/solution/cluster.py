@@ -1,17 +1,12 @@
 from typing import List
+from dataclasses import dataclass, field
 
+@dataclass
 class Cluster:
-    # Constructor para la clase Cluster.
-    def __init__(
-        self, 
-        id_cluster: int = -1, 
-        request_cluster: float = 0.0, 
-        items_of_cluster: List[int] = None
-    ):
-        self._id_cluster = id_cluster
-        self._request_cluster = request_cluster
-        self._items_of_cluster = items_of_cluster if items_of_cluster is not None else []
-        
+    id_cluster: int = -1
+    request_cluster: float = 0.0
+    items_of_cluster: List[int] = field(default_factory=list)
+    
     def get_id_cluster(self) -> int:
         return self.id_cluster
     
@@ -29,7 +24,7 @@ class Cluster:
 
     def set_items_of_cluster(self, value: List[int]):
         self.items_of_cluster = value
-        
+            
     # Limpia el cluster reiniciando la solicitud y vaciando la lista de elementos.       
     def clean_cluster(self):
         self.request_cluster = 0.0

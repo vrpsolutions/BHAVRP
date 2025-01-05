@@ -37,7 +37,6 @@ def main():
         
     load.load_count_vehicles_for_depot(count_vehicles)
     load.load_capacity_vehicles(capacity_vehicles)
-    print(f"Capacidades cargadas (inmediatamente después de load_capacity_vehicles): {capacity_vehicles}")
     load.load_customers(id_customers, axis_x_customers, axis_y_customers, request_customers)
     load.load_depots(id_depots, axis_x_depots, axis_y_depots)
 

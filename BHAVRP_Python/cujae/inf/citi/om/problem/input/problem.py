@@ -286,7 +286,9 @@ class Problem:
 
             depot.set_fleet_depot(fleets)
             depots.append(depot)
-                     
+        
+        self.depots = depots
+                        
     # Método encargado de llenar la matriz de costo usando la distancia deseada.
     def fill_cost_matrix(
         self, 
@@ -298,36 +300,25 @@ class Problem:
         total_depots = len(depots)
 
         # Crear una matriz de costos de tamaño totalCustomers + totalDepots
-        cost_matrix = np.full((total_customers + total_depots, total_customers + total_depots), np.inf)
+        cost_matrix = np.zeros((total_depots, total_customers))
 
-        last_pint_one = 0
+        for depot_index, depot in enumerate(depots):
+            axis_x_depot = depot.get_location_depot().get_axis_x()
+            axis_y_depot = depot.get_location_depot().get_axis_y()
 
-        for i in range(total_customers + total_depots):
-            if i < total_customers:
-                axis_x_ini = customers[i].get_location_customer().get_axis_x()
-                axis_y_ini = customers[i].get_location_customer().get_axis_y()
-            else:
-                axis_x_ini = depots[last_pint_one].get_location_depot().get_axis_x()
-                axis_y_ini = depots[last_pint_one].get_location_depot().get_axis_y()
-                last_pint_one += 1
-            
-            last_point_two = 0
-
-            for j in range(total_customers + total_depots):
-                if j < total_customers:
-                    axis_x_end = customers[j].get_location_customer().get_axis_x()
-                    axis_y_end = customers[j].get_location_customer().get_axis_y()
-                else:
-                    axis_x_end = depots[last_point_two].get_location_depot().get_axis_x()
-                    axis_y_end = depots[last_point_two].get_location_depot().get_axis_y()
-                    last_point_two += 1
-
-                if i == j:
-                    cost_matrix[i, j] = float('inf')
-                else:
-                    cost = Distance.calculate_distance(axis_x_ini, axis_y_ini, axis_x_end, axis_y_end, distance_type)
-                    cost_matrix[i, j] = cost
-                    cost_matrix[j, i] = cost
+            for customer_index, customer in enumerate(customers):
+                axis_x_customer = customer.get_location_customer().get_axis_x()
+                axis_y_customer = customer.get_location_customer().get_axis_y()
+                
+                cost = Distance.calculate_distance(
+                    axis_x_depot, 
+                    axis_y_depot, 
+                    axis_x_customer, 
+                    axis_y_customer, 
+                    distance_type
+                )
+                
+                cost_matrix[depot_index, customer_index] = cost
 
         return cost_matrix
         
@@ -388,39 +379,28 @@ class Problem:
         distance_type: DistanceType
     ) -> np.ndarray:
         total_depots = len(depots)
-        cost_matrix = np.full((total_depots, total_depots))
+        total_centroids = len(centroids)
+        
+        # Crear una matriz de costos de tamaño totalCustomers + totalDepots
+        cost_matrix = np.zeros((total_depots, total_centroids))
 
-        axis_x_point_one = 0.0
-        axis_y_point_one = 0.0
-        axis_x_point_two = 0.0
-        axis_y_point_two = 0.0
-        cost = 0.0
+        for centroid_index, centroid in enumerate(centroids):
+            axis_x_centroid = centroid.get_location_depot().get_axis_x()
+            axis_y_centroid = centroid.get_location_depot().get_axis_y()
 
-        print("----------------------------------------------------")
+            for depot_index, depot in enumerate(depots):
+                axis_x_depot = depot.get_location_depot().get_axis_x()
+                axis_y_depot = depot.get_location_depot().get_axis_y()
 
-        for i in range(total_depots):
-            axis_x_point_one = centroids[i].get_location_depot().get_axis_x()
-            axis_y_point_one = centroids[i].get_location_depot().get_axis_y()
-
-            print(f"CENTROIDE {i} X: {axis_x_point_one}")
-            print(f"CENTROIDE {i} Y: {axis_y_point_one}")
-            print("----------------------------------------------------")
-
-            for j in range(total_depots):
-                axis_x_point_two = depots[j].get_location_depot().get_axis_x()
-                axis_y_point_two = depots[j].get_location_depot().get_axis_y()
-
-                print(f"DEPOSITO {j} X: {axis_x_point_two}")
-                print(f"DEPOSITO {j} Y: {axis_y_point_two}")
-
-                cost = Distance.calculate_distance(axis_x_point_one, axis_y_point_one, axis_x_point_two, axis_y_point_two, distance_type)
-
-                print(f"COSTO: {cost}")
-
-                cost_matrix[i, j] = cost
-
-            print("----------------------------------------------------")
-
+                cost = Distance.calculate_distance(
+                    axis_x_centroid, 
+                    axis_y_centroid, 
+                    axis_x_depot, 
+                    axis_y_depot, 
+                    distance_type
+                )
+                cost_matrix[depot_index, centroid_index] = cost
+                
         return cost_matrix
     
     # Calcula una matriz de costos basada en distancias reales entre centroids y depots usando datos reales.

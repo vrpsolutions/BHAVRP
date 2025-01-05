@@ -27,59 +27,44 @@ class FarthestFirst(ByCentroids):
         return self.finish()
         
     def initialize(self):
-        self.list_id_elements = self.generate_elements(self.distance_type)
-        self.list_clusters = self.initialize_clusters(self.list_id_elements)
+        self.list_id_elements = self.generate_elements()
+        self.list_clusters = self.initialize_clusters()
         self.list_customers_to_assign = []
         self.list_centroids = []
         self.current_iteration = 0
     
     def assign(self):
-        change: bool = False
+        change: bool = True
         first: bool = True
         
-        # Ciclo que itera hasta que los centroides dejen de cambiar o se alcance el número máximo de 
-        # iteraciones, asignando clientes a clústeres y actualizando los centroides en cada ciclo.
         while change and self.current_iteration < self.count_max_iterations:
-            self.list_customers_to_assign = list(Problem.get_problem().get_customers())
-
             if first:
-                self.update_customer_to_assign(self.list_customers_to_assign, self.list_id_elements)
-                list_centroids = self.create_centroids(self.list_id_elements)
+                self.list_customers_to_assign = list(Problem.get_problem().get_customers())
+                self.update_customer_to_assign()
+                self.list_centroids = self.create_centroids()
                 first = False
             else:
                 self.clean_clusters(self.list_clusters)
-
-            # Crear la matriz de costos
-            cost_matrix: np.ndarray = self.initialize_cost_matrix(
-                self.list_customers_to_assign, 
-                self.list_centroids,
-                self.distance_type
-            )
+                self.list_customers_to_assign = list(Problem.get_problem().get_customers())              
             
-            # Asignar clientes a clústeres
-            self.step_assignment(self.list_clusters, self.list_customers_to_assign, cost_matrix)
-
-            if self.distance_type == DistanceType.REAL:
-                change = self.verify_centroids(self.list_clusters, self.list_centroids)
-            else:
-                change = self.verify_centroids(self.list_clusters, self.list_centroids, self.distance_type)
-
+            self.step_assignment(self.list_clusters)
+            change = self.verify_centroids()
+            
             self.current_iteration += 1
-            
             print(f"ITERACIÓN ACTUAL: {self.current_iteration}")
 
     def finish(self) -> Solution:
-        # Procesar clientes no asignados
+        solution = Solution()
+        
         if self.list_customers_to_assign:
-            for customer in self.calculate_mean_coordinatelist_customers_to_assign:
-                self.solution.get_total_unassigned_items().append(customer.get_id_customer())
+            for customer in self.list_customers_to_assign:
+                solution.get_unassigned_items().append(customer.get_id_customer())
 
-        # Agregar clústeres con elementos al resultado
         if self.list_clusters:
             for cluster in self.list_clusters:
                 if cluster.get_items_of_cluster():
-                    self.solution.get_clusters().append(cluster) 
+                    solution.get_clusters().append(cluster) 
 
         OSRMService.clear_distance_cache()
         
-        return self.solution
+        return solution
