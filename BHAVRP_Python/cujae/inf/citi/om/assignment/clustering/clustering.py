@@ -28,7 +28,6 @@ class Clustering(Assignment):
                     list_id_customers
                 )
                 clusters.append(cluster)
-                print(f"CLUSTER CREADO 1: {cluster}")
         else:
             for i in range(total_elements):
                 list_id_customers: List[int] = []

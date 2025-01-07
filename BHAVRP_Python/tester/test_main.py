@@ -51,14 +51,14 @@ def main():
         for k in range(run):
             start = time.time() * 1000  # Convertir a milisegundos
                 
-            j = 6
+            j = 11
                         
             if j == 0:
                 Controller.get_instance().execute_assignment(AssignmentType.BestCyclicAssignment)
             elif j == 1:
                 Controller.get_instance().execute_assignment(AssignmentType.BestNearest)
             elif j == 2:
-                Controller.get_instance().execute_assignment(AssignmentType.CLARA)
+                Controller.get_instance().execute_assignment(AssignmentType.Clara)
             elif j == 3:
                 Controller.get_instance().execute_assignment(AssignmentType.CoefficientPropagation)
             elif j == 4:

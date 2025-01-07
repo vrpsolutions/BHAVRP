@@ -3,6 +3,7 @@ import numpy as np
 from typing import List
 from ..seed_type import SeedType
 from ..clustering import Clustering
+from ....factory.interfaces.assignment_type import AssignmentType
 from ....service.distance_type import DistanceType
 from ....problem.input.problem import Problem
 from ....problem.input.problem import Customer
@@ -14,6 +15,7 @@ class Partitional(Clustering):
     
     def __init__(self):
         super().__init__()
+        self.seed_type = SeedType.NEAREST_DEPOT
         self.count_max_iterations = 100   # Configurable
         self.current_iteration = 0
     
@@ -56,6 +58,10 @@ class Partitional(Clustering):
         elif self.seed_type == SeedType.NEAREST_DEPOT:
 
             cost_matrix: np.ndarray = Problem.get_problem().get_cost_matrix()
+            if cost_matrix is None or not isinstance(cost_matrix, (np.ndarray, list)) or len(cost_matrix) == 0:
+                cost_matrix = self.initialize_cost_matrix(
+                    Problem.get_problem().get_customers(), Problem.get_problem().get_depots(), self.distance_type
+                )
             
             while counter > 0:
                 min_value_index = np.argmin(cost_matrix)
@@ -173,7 +179,7 @@ class Partitional(Clustering):
     
     # Método de asignación de clientes a clusters según los depósitos, basado en la matriz de costos, 
     # la demanda de los clientes y la capacidad de los depósitos.
-    def step_assignment(self, list_clusters: List[Cluster]) -> List[Cluster]:
+    def step_assignment(self, list_clusters: List[Cluster], list_centroids: List[Depot]) -> List[Cluster]:
         total_customers = len(self.list_customers_to_assign)
         #total_depots = len(self.list_clusters)
         
@@ -184,7 +190,7 @@ class Partitional(Clustering):
             
             cost_matrix: np.ndarray = self.initialize_cost_matrix(
                 self.list_customers_to_assign, 
-                self.list_centroids,
+                list_centroids,
                 self.distance_type
             )
             

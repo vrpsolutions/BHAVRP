@@ -223,5 +223,4 @@ class Controller:
     # Método encargado de destruir la instancia de la controladora
     @staticmethod
     def destroy_controller():
-        global controller
-        controller = None
+        Controller._instance = None

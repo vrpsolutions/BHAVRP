@@ -132,29 +132,50 @@ class Problem:
     
     # Método encargado de devolver la posición del elemento en la matriz de costo.
     def get_pos_element(self, id_element: int) -> int:
-        # Buscar en los depósitos
-        for i, depot in enumerate(self.depots):
-            if depot.get_id_depot() == id_element:
-                return i + len(self.customers)
+        pos_element = -1
+        total_depots = len(self.depots)
+        counter = 0
+        found = True
         
-        # Buscar en los clientes
-        for i, customer in enumerate(self.customers):
-            if customer.get_id_customer() == id_element:
-                return i
-        return -1  # Retorna -1 si no encuentra el elemento
+        while counter < total_depots and found:
+            if self.depots[counter].get_id_depot() == id_element:
+                pos_element = counter + len(self.customers)
+                found = False
+            else:
+                counter += 1
+        if found:
+            counter = 0
+            while counter < len(self.customers) and found:
+                if self.customers[counter].get_id_customer() == id_element:
+                    pos_element = counter
+                    found = False
+                else:
+                    counter += 1
+        return pos_element
     
     # Método encargado de devolver la posición del elemento en la matriz de costo (usando una lista personalizada de clientes).
-    def get_pos_element(self, id_element: int, list_customers: List[Customer]) -> int:
-        # Buscar en los depósitos
-        for i, depot in enumerate(self.depots):
-            if depot.get_id_depot() == id_element:
-                return i + len(list_customers)
+    def get_pos_element_in_list(self, id_element: int, list_customers: List[Customer]) -> int:
+        pos_element = -1
+        total_customers = len(list_customers)
+        total_depots = len(self.depots)
+        counter = 0
+        found = True
         
-        # Buscar en la lista de clientes
-        for i, customer in enumerate(list_customers):
-            if customer.get_id_customer() == id_element:
-                return i
-        return -1  # Retorna -1 si no encuentra el elemento
+        while counter < total_depots and found:
+            if self.depots[counter].get_id_depot() == id_element:
+                pos_element = counter
+                found = False
+            else:
+                counter += 1
+        if found:
+            counter = 0
+            while counter < total_customers and found:
+                if list_customers[counter].get_id_customer() == id_element:
+                    pos_element = counter
+                    found = False
+                else:
+                    counter += 1
+        return pos_element
     
     # Método encargado de devolver la capacidad total de los depósitos.
     def get_total_capacity(self) -> float:

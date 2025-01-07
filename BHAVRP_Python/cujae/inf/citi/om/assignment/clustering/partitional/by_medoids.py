@@ -34,7 +34,7 @@ class ByMedoids(Partitional):
         print(f"TOTAL DE PARTICIONES: {total_partitions}")
         print("---------------------------------------------------------------")
         
-        if sampling_type == 0:
+        if sampling_type == SamplingType.RANDOM_SAMPLING:
             j = 0
             customers = list(Problem.get_problem().get_customers())
             
@@ -53,7 +53,7 @@ class ByMedoids(Partitional):
                 partitions.append(partition)
                 partition = []
         
-        elif sampling_type == 2:
+        elif sampling_type == SamplingType.SEQUENTIAL_SAMPLING:
             j = 0
             
             for i in range(total_partitions):
@@ -73,44 +73,37 @@ class ByMedoids(Partitional):
         return partitions
     
     # Método que genera elementos iniciales (centroides o medoides) para los clústeres.
-    def generate_elements(self, customers: List[Customer], distance_type: DistanceType) -> List[int]:
-        id_elements: List[int] = [-1] * Problem.get_problem().get_total_depots()
-        
-        total_customers: int = len(customers)
+    def generate_elements(self, customers: List[Customer]) -> List[int]:
+        id_elements: List[int] = []
         total_depots: int = Problem.get_problem().get_total_depots()
+        total_customers: int = len(customers)
         counter = total_depots
         
         cost_matrix: np.ndarray = self.initialize_cost_matrix(
-            customers,
-            Problem.get_problem().get_depots(),
-            distance_type
-        )
-        
-        id_element = -1
+            customers, Problem.get_problem().get_depots(), self.distance_type)
         
         print(f"LISTADO DE ELEMENTOS SELECCIONADOS: {id_elements}")
         
         while counter > 0:
-            row, col = np.unravel_index(
-                np.argmin(cost_matrix[total_customers:, :]), cost_matrix[total_customers:, :].shape
-            )
+            min_value_index = np.argmin(cost_matrix)
+            row = min_value_index // cost_matrix.shape[1]
+            col = min_value_index % cost_matrix.shape[1]
             
             print(f"FILA SELECCIONADA: {row}")
             print(f"COLUMNA SELECCIONADA: {col}")
             print(f"VALOR SELECCIONADO: {cost_matrix[row, col]}")
             
             id_element = customers[col].get_id_customer()
-            id_elements[row - total_customers] = id_element
+            id_elements.append(id_element)
         
             print(f"ELEMENTO: {id_element}")
             print(f"LISTADO DE ELEMENTOS ACTUALIZADOS: {id_elements}")
             
-            cost_matrix[total_customers:, col] = np.inf
-            cost_matrix[row, :] = np.inf
+            cost_matrix[row, col] = float('inf')
             counter -= 1
         
         print("--------------------------------------------------")
-        print("CENTROIDES/MEDOIDES INICIALES")
+        print("MEDOIDES INICIALES")
         print(id_elements)
         print("--------------------------------------------------")
         
@@ -170,68 +163,27 @@ class ByMedoids(Partitional):
         print("MEDOIDES/CENTROIDES ACTUALES")
 
         for i, depot in enumerate(depots):
-            new_depot = Depot()
+            depot = Depot()
+            depot.set_id_depot(depots[i].get_id_depot())
 
-            new_depot.set_id_depot(depot.get_id_depot())
-
-            axis_x = depot.get_location_depot().get_axis_x()
-            axis_y = depot.get_location_depot().get_axis_y()
+            axis_x = depots[i].get_location_depot().get_axis_x()
+            axis_y = depots[i].get_location_depot().get_axis_y()
 
             location = Location()
             location.set_axis_x(axis_x)
             location.set_axis_y(axis_y)
-            new_depot.set_location_depot(location)
+            depot.set_location_depot(location)
 
-            fleet = depot.get_fleet_depot()
-            new_depot.set_fleet_depot(fleet)
+            fleet = Problem.get_problem().get_depots()[i].get_fleet_depot()
+            depot.set_fleet_depot(fleet)
 
-            new_depots.append(new_depot)
+            new_depots.append(depot)
 
             print("--------------------------------------------------")
-            print(f"ID MEDOIDE/CENTROIDE: {new_depot.get_id_depot()}")
-            print(f"X: {new_depot.get_location_depot().get_axis_x()}")
-            print(f"Y: {new_depot.get_location_depot().get_axis_y()}")
-            print(f"CAPACIDAD DE VEHÍCULO: {new_depot.get_fleet_depot()[0].get_capacity_vehicle()}")
-            print(f"CANTIDAD DE VEHÍCULOS: {new_depot.get_fleet_depot()[0].get_count_vehicles()}")
+            print(f"ID MEDOIDE/CENTROIDE: {new_depots[i].get_id_depot()}")
+            print(f"X: {new_depots[i].get_location_depot().get_axis_x()}")
+            print(f"Y: {new_depots[i].get_location_depot().get_axis_y()}")
+            print(f"CAPACIDAD DE VEHÍCULO: {new_depots[i].get_fleet_depot()[0].get_capacity_vehicle()}")
+            print(f"CANTIDAD DE VEHÍCULOS: {new_depots[i].get_fleet_depot()[0].get_count_vehicles()}")
 
         return new_depots
-    
-    # Método que calcula el coeficiente de disimilitud promedio entre los elementos de los clústeres, 
-    # utilizando una matriz de disimilitud basada en el tipo de distancia especificado.
-    def calculate_dissimilarity(self, distance_type: DistanceType, clusters: List[Cluster]) -> float:
-        current_dissimilarity: float = 0.0
-        dissimilarity_matrix: np.ndarray = None
-        
-        if distance_type.value in [1, 2, 3, 4]:
-            try:
-                dissimilarity_matrix = Problem.get_problem().fill_cost_matrix(
-                    Problem.get_problem().get_customers(),
-                    Problem.get_problem().get_depots(),
-                    distance_type
-                )
-            except Exception as e:
-                print(f"Error al llenar la matriz de disimilitud: {e}")
-
-        elif distance_type.value == 5:
-            pass
-        
-        total_clusters = len(clusters)
-        current_dissimilarity_sum = 0.0
-        
-        for cluster in clusters:
-            total_items = len(cluster.get_items_of_cluster())
-            
-            for j in range(total_items):
-                pos_first_item = Problem.get_problem().get_pos_element(cluster.get_items_of_cluster()[j])
-                
-                for k in range(j + 1, total_items):
-                    pos_second_item = Problem.get_problem().get_pos_element(cluster.get_items_of_cluster()[k])
-                    
-                    current_dissimilarity_sum += dissimilarity_matrix[pos_first_item, pos_second_item]
-                    
-        current_dissimilarity = current_dissimilarity_sum / total_clusters
-        
-        print(f"COEFICIENTE DE DISIMILITUD ACTUAL: {current_dissimilarity}")
-        print("-------------------------------------------------------------------------------")
-
-        return current_dissimilarity

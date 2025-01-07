@@ -47,7 +47,7 @@ class FarthestFirst(ByCentroids):
                 self.clean_clusters(self.list_clusters)      
                 self.list_customers_to_assign = list(Problem.get_problem().get_customers())
                  
-            self.step_assignment(self.list_clusters)
+            self.step_assignment(self.list_clusters, self.list_centroids)
             change = self.verify_centroids()
             
             self.current_iteration += 1
