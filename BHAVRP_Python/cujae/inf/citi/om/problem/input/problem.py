@@ -187,10 +187,12 @@ class Problem:
     # Método encargado de devolver la capacidad total de un depósito dado el depósito.
     def get_total_capacity_by_depot(self, depot: Depot) -> float:
         total_capacity = 0.0
+        
         for fleet in depot.get_fleet_depot():
             capacity_vehicle = fleet.get_capacity_vehicle()
             count_vehicles = fleet.get_count_vehicles()
             total_capacity += capacity_vehicle * count_vehicles
+        
         return total_capacity
     
     # Método encargado de devolver la capacidad total de un depósito dado su identificador.

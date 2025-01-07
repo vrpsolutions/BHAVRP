@@ -17,11 +17,16 @@ class Assignment(AssignmentTemplate):
     
     # Método que busca la posición de un cluster en el listado de clusters.
     def find_cluster(self, id_cluster: int, clusters: List[Cluster]) -> int:
-        pos_cluster = -1
-        for i, cluster in enumerate(clusters):
-            if cluster.get_id_cluster() == id_cluster:
-                pos_cluster = i
-                break
+        pos_cluster: int = -1
+        counter: int = 0
+        found: bool = True
+        
+        while counter < len(clusters) and found:
+            if clusters[counter].get_id_cluster() == id_cluster:
+                found = False
+                pos_cluster = counter
+            else:
+                counter += 1
         return pos_cluster
     
     # Método que crea la matriz de costos a partir del tipo de distancia.

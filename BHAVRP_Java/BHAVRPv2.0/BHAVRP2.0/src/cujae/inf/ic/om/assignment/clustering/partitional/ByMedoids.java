@@ -223,36 +223,4 @@ public abstract class ByMedoids extends Partitional {
 		
 		return newDepots;
 	}
-
-	protected double calculateDissimilarity(DistanceType distanceType, ArrayList<Cluster> clusters) {
-		double currentDissimilarity = 0.0;
-		NumericMatrix dissimilarityMatrix = initializeCostMatrix(Problem.getProblem().getCustomers(), Problem.getProblem().getDepots(), distanceType);
-		
-		int posFirstItem = -1;
-		int posSecondItem = -1;
-		int totalClusters = clusters.size(); 
-		int totalItems = 0; 
-		
-		for(int i = 0; i < totalClusters; i++)
-		{
-			totalItems = clusters.get(i).getItemsOfCluster().size(); 
-			
-			for(int j = 0; j < totalItems; j++)
-			{
-				posFirstItem = Problem.getProblem().getPosElement(clusters.get(i).getItemsOfCluster().get(j));
-				
-				for(int k = (j + 1); k < totalItems; k++)
-				{
-					posSecondItem = Problem.getProblem().getPosElement(clusters.get(i).getItemsOfCluster().get(k));
-					currentDissimilarity += dissimilarityMatrix.getItem(posFirstItem, posSecondItem);
-				}
-			}
-		}
-		
-		currentDissimilarity /= totalClusters;
-		
-		System.out.println("COEFICIENTE DE DISIMILITUD ACTUAL: " + currentDissimilarity);	
-		
-		return currentDissimilarity;
-	}
 }

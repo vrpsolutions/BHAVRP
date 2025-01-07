@@ -1,4 +1,3 @@
-import sys
 import importlib
 from ..interfaces.assignment_type import AssignmentType
 from ..interfaces.ifactory_assignment import IFactoryAssignment
