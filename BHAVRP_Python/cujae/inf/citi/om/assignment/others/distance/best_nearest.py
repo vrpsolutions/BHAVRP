@@ -1,8 +1,10 @@
 import numpy as np
 from typing import List
 from ...classical.by_not_urgency import ByNotUrgency
+from ....service.osrm_service import OSRMService
 from ....problem.input.problem import Problem
 from ....problem.input.customer import Customer
+from ....problem.input.depot import Depot
 from ....problem.solution.solution import Solution
 from ....problem.solution.cluster import Cluster
 
@@ -10,89 +12,73 @@ class BestNearest(ByNotUrgency):
     
     def __init__(self):
         super().__init__()
+        self.solution = Solution()
+        self.list_clusters: List[Cluster]
+        self.list_customers_to_assign: List[Customer]
+        self.list_id_depots: List[int]
         
     def to_clustering(self):
-        solution = Solution()
+        self.initialize()
+        self.assign()
+        return self.finish()
+    
+    def initialize(self):
+        self.list_clusters = self.initialize_clusters()
+        self.list_customers_to_assign = list(Problem.get_problem().get_customers())
+        self.list_id_depots = list(Problem.get_problem().get_list_id_depots())
         
-        # Inicialización de listas.
-        list_clusters: List[Cluster] = self.initialize_clusters()
-        list_customers_to_assign: List[Customer] = list(Problem.get_problem().get_customers())
-        list_id_depots: List[int] = list(Problem.get_problem().get_list_id_depots())
-        cost_matrix = np.array(Problem.get_problem().get_cost_matrix())
-        total_customers = len(list_customers_to_assign)
+    def assign(self):
+        cost_matrix: np.ndarray = self.initialize_cost_matrix(self.list_customers_to_assign, Problem.get_problem().get_depots(), self.distance_type)
+        
+        while any(self.list_customers_to_assign) and self.list_clusters:
+            min_value = np.min(cost_matrix) 
+            print(min_value)
+            row_best, col_best = np.where(cost_matrix == min_value)
+            row_best, col_best = row_best[0], col_best[0]
 
-        # Variables auxiliares.
-        id_customer = -1
-        pos_customer = -1
-        request_customer = 0.0
-        
-        id_depot = -1
-        pos_depot = -1
-        capacity_depot = 0.0
-        
-        pos_cluster = -1
-        request_cluster = 0.0
-        
-        while(
-            list_customers_to_assign
-            and list_clusters
-            and not np.all(cost_matrix[:total_customers, :] == float("inf"))
-        ):
-            # Buscar el menor costo en la matriz.
-            row, col = np.unravel_index(
-                np.argmin(cost_matrix[:total_customers, :], axis=None),
-                cost_matrix[:total_customers, :].shape
-            )
-            
-            # Obtener información del depósito.
-            pos_depot = row - total_customers
-            id_depot = list_id_depots[pos_depot]
-            capacity_depot = Problem.get_problem().get_total_capacity_by_depot(
-                Problem.get_problem().get_depot_by_id_depot(id_depot)
-            )
-            
-            # Obtener información del cliente.
-            pos_customer = col
-            customer = Problem.get_problem().get_customers()[pos_customer]
-            id_customer = customer.get_id_customer()
-            request_customer = customer.get_request_customer()
-            
-            # Buscar el clúster correspondiente.
-            pos_cluster = self.find_cluster(id_depot, list_clusters)
-            
+            selected_customer = Problem.get_problem().get_customers()[col_best]
+            request_customer = selected_customer.get_request_customer()
+              
+            id_depot = Problem.get_problem().get_list_id_depots()[row_best]    
+            selected_depot: Depot = Problem.get_problem().get_depot_by_id_depot(id_depot)
+            capacity_depot = Problem.get_problem().get_total_capacity_by_depot(selected_depot)
+                
+            pos_cluster = self.find_cluster(id_depot, self.list_clusters)
+
             if pos_cluster != -1:
-                request_cluster = list_clusters[pos_cluster].get_request_cluster()
-                
-                # Verificar si se puede asignar el cliente al depósito.
+                cluster: Cluster = self.list_clusters[pos_cluster]
+                request_cluster = cluster.get_request_cluster()
+        
                 if capacity_depot >= (request_cluster + request_customer):
-                    request_cluster += request_customer
+                    cluster.set_request_cluster(request_cluster + request_customer)
+                    cluster.get_items_of_cluster().append(selected_customer.get_id_customer())
+
+                    capacity_depot -= request_customer
+                    self.list_customers_to_assign[col_best] = None
                     
-                    list_clusters[pos_cluster].set_request_cluster(request_cluster)
-                    list_clusters[pos_cluster].get_items_of_cluster().append(id_customer)
+                    if self.is_full_depot(self.list_customers_to_assign, cluster.get_request_cluster(), capacity_depot):
+                        if cluster.get_items_of_cluster():
+                            self.solution.get_clusters().append(self.list_clusters.pop(pos_cluster))
                     
-                    cost_matrix[:, pos_customer] = float("inf")
-                    list_customers_to_assign.remove(customer)
-                else:
-                    cost_matrix.setItem[row,pos_customer] = float("inf")
-                
-                # Verificar si el depósito está lleno.
-                if self.is_full_depot(list_customers_to_assign, request_cluster, capacity_depot):
-                    if list_clusters[pos_cluster].get_items_of_cluster():
-                        solution.get_clusters().append(list_clusters.pop(pos_cluster))
-                    else:
-                        list_clusters.pop(pos_cluster)
-                
-                cost_matrix[row, :] = float("inf")
+                    cost_matrix[:, col_best] = float('inf')    
             
-            # Manejar clientes no asignados.
-            if list_customers_to_assign:
-                for customer in list_customers_to_assign:
-                    solution.get_unassigned_items().append(customer.get_id_customer())
+        if np.all(cost_matrix == float("inf")):
+            for customer in self.list_customers_to_assign:
+                if customer is not None:
+                    self.solution.get_total_unassigned_items().append(selected_customer.get_id_customer())
+
+              
+    def finish(self):
+        if self.list_customers_to_assign:
+            for customer in self.list_customers_to_assign:
+                if customer is not None:
+                    self.solution.get_unassigned_items().append(customer.get_id_customer())
             
-            # Manejar clusters restantes.
-            if list_clusters:
-                for cluster in list_clusters:
-                    if cluster.get_items_of_cluster():
-                        solution.get_clusters().append(cluster)
+        if self.list_clusters:
+            for cluster in self.list_clusters:
+                if cluster.get_items_of_cluster():
+                    self.solution.get_clusters().append(cluster)
                         
-        return solution
+        OSRMService.clear_distance_cache()
+        
+        return self.solution

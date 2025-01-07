@@ -153,41 +153,16 @@ class Partitional(Clustering):
         mean_location = Location(axis_x, axis_y)
 
         return mean_location
-         
-    # Método que crea una lista de centroides a partir de los identificadores de elementos, 
-    # asignando a cada uno su ubicación correspondiente según la posición de los clientes.
-    def create_centroids(self) -> List[Depot]:
-        centroids: List[Depot] = []
-
-        for i in range(len(self.list_id_elements)):
-            centroid = Depot()
-            customer = Problem.get_problem().get_customer_by_id_customer(self.list_id_elements[i])
-
-            if customer is not None:  # Verificar si el cliente existe
-                centroid.set_id_depot(self.list_id_elements[i])
-
-                location = Location()
-                location.set_axis_x(customer.get_location_customer().get_axis_x())
-                location.set_axis_y(customer.get_location_customer().get_axis_y())
-                centroid.set_location_depot(location)
-
-                centroids.append(centroid)
-            else:
-                print(f"Cliente con ID {self.list_id_elements[i]} no encontrado.")
-
-        return centroids
     
     # Método de asignación de clientes a clusters según los depósitos, basado en la matriz de costos, 
     # la demanda de los clientes y la capacidad de los depósitos.
     def step_assignment(self, list_clusters: List[Cluster], list_centroids: List[Depot]) -> List[Cluster]:
         total_customers = len(self.list_customers_to_assign)
-        #total_depots = len(self.list_clusters)
         
         print("--------------------------------------------------------------------")
         print(f"PROCESO DE ASIGNACIÓN")
         
         while self.list_customers_to_assign:
-            
             cost_matrix: np.ndarray = self.initialize_cost_matrix(
                 self.list_customers_to_assign, 
                 list_centroids,
@@ -260,7 +235,30 @@ class Partitional(Clustering):
         print("--------------------------------------------------")
 
         return list_clusters
-    
+         
+    # Método que crea una lista de centroides a partir de los identificadores de elementos, 
+    # asignando a cada uno su ubicación correspondiente según la posición de los clientes.
+    def create_centroids(self) -> List[Depot]:
+        centroids: List[Depot] = []
+
+        for i in range(len(self.list_id_elements)):
+            centroid = Depot()
+            customer = Problem.get_problem().get_customer_by_id_customer(self.list_id_elements[i])
+
+            if customer is not None:  # Verificar si el cliente existe
+                centroid.set_id_depot(self.list_id_elements[i])
+
+                location = Location()
+                location.set_axis_x(customer.get_location_customer().get_axis_x())
+                location.set_axis_y(customer.get_location_customer().get_axis_y())
+                centroid.set_location_depot(location)
+
+                centroids.append(centroid)
+            else:
+                print(f"Cliente con ID {self.list_id_elements[i]} no encontrado.")
+
+        return centroids
+        
     # Método para actualizar la lista de clientes por asignar, eliminando aquellos cuyos IDs 
     # coincidan con los elementos especificados en una lista de IDs.
     def update_customer_to_assign(self):

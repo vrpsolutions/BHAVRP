@@ -196,7 +196,7 @@ class Problem:
         return total_capacity
     
     # Método encargado de devolver la capacidad total de un depósito dado su identificador.
-    def get_total_capacity_by_depot(self, id_depot: int) -> float:
+    def get_total_capacity_by_id_depot(self, id_depot: int) -> float:
         total_capacity = 0.0
         # Encontrar el depósito por ID
         depot = next((d for d in self.depots if d.get_id_depot() == id_depot), None)
