@@ -58,11 +58,13 @@ class Clustering(Assignment):
     def is_full_depot(self, customers: List[Customer], request_cluster: float, capacity_depot: float) -> bool:
         is_full: bool = True
         current_request: float = capacity_depot - request_cluster
+        
         if current_request > 0:
             for customer in customers:
-                if customer.get_request_customer() <= current_request:
+                if customer is not None and customer.get_request_customer() <= current_request:
                     is_full = False
                     break
+                
         return is_full
     
     # Método que recalcula el centroide de un cluster basado en las ubicaciones de sus clientes asignados.

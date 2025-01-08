@@ -32,7 +32,6 @@ class BestNearest(ByNotUrgency):
         
         while any(self.list_customers_to_assign) and self.list_clusters:
             min_value = np.min(cost_matrix) 
-            print(min_value)
             row_best, col_best = np.where(cost_matrix == min_value)
             row_best, col_best = row_best[0], col_best[0]
 

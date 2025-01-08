@@ -77,7 +77,8 @@ class CLARA(ByMedoids):
             
             if self.list_customers_to_assign:
                 for customer in self.list_customers_to_assign:
-                    self.unassigned_items_in_partition.append(customer.get_id_customer())
+                    if customer is not None:
+                        self.unassigned_items_in_partition.append(customer.get_id_customer())
             
             elements_in_partition: List[int] = list(Problem.get_problem().get_list_id(partition))
             
@@ -108,9 +109,10 @@ class CLARA(ByMedoids):
     def finish(self) -> Solution:
         solution = Solution()
 
-        if self.list_unassigned_customers:
-            for customer_id in self.list_unassigned_customers:
-                solution.get_unassigned_items().append(customer_id)
+        if self.list_customers_to_assign:
+            for customer in self.list_customers_to_assign:
+                if customer is not None:
+                    solution.get_unassigned_items().append(customer.get_id_customer())
 
         if self.best_cluster:
             for cluster in self.best_cluster:

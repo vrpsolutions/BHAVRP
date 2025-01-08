@@ -58,8 +58,9 @@ class KMEANS(ByCentroids):
         
         if self.list_customers_to_assign:
             for customer in self.list_customers_to_assign:
-                solution.get_total_unassigned_items().append(customer.get_id_customer())
-        
+                if customer is not None:
+                    solution.get_unassigned_items().append(customer.get_id_customer())
+
         if self.list_clusters:
             for cluster in self.list_clusters:
                 if cluster.get_items_of_cluster():

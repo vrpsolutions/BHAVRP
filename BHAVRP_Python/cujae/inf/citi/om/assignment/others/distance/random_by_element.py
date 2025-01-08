@@ -30,7 +30,7 @@ class RandomByElement(ByNotUrgency):
             pos_rdm_depot = random.randint(0, len(self.list_id_depots) - 1)
             id_depot = self.list_id_depots[pos_rdm_depot]
             depot = Problem.get_problem().get_depot_by_id_depot(id_depot)
-            capacity_depot = Problem.get_problem().get_total_capacity_by_depot(depot.get_id_depot())
+            capacity_depot = Problem.get_problem().get_total_capacity_by_depot(depot)
             
             pos_rdm_customer = random.randint(0, len(self.list_customers_to_assign) - 1)
             customer = self.list_customers_to_assign[pos_rdm_customer]
