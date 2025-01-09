@@ -11,9 +11,10 @@ class Parallel(ByUrgency, IUrgency):
     
     def __init__(self):
         super().__init__()
+        self.solution = Solution()
         
     def to_clustering(self) -> Solution:
-        solution = Solution()
+        
         
         list_clusters: List[Cluster] = self.initialize_clusters()
         list_customers_to_assign: List[Customer] = list(Problem.get_problem().get_customers().copy())

@@ -51,7 +51,7 @@ def main():
         for k in range(run):
             start = time.time() * 1000  # Convertir a milisegundos
                 
-            j = 2
+            j = 12
                         
             if j == 0:
                 Controller.get_instance().execute_assignment(AssignmentType.BestCyclicAssignment)
