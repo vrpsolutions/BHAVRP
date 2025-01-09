@@ -88,7 +88,7 @@ public class MainDePrueba
 				{
 					double start = System.currentTimeMillis();
 					
-					int j = 13;
+					int j = 5;
 					
 					//for(int j = 1; j < AssignmentType.values().length; j++)
 					//{

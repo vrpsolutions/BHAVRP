@@ -67,8 +67,11 @@ public class Farthest_First extends ByCentroids {
 				first = false;
 			}
 			else
+			{
 				cleanClusters(listClusters);
-			
+				listCustomersToAssign = new ArrayList<Customer>(Problem.getProblem().getCustomers());
+			}
+				
 			NumericMatrix costMatrix = initializeCostMatrix(listCustomersToAssign, listCentroids, distanceType);
 
 			stepAssignment(listClusters, listCustomersToAssign, costMatrix);
