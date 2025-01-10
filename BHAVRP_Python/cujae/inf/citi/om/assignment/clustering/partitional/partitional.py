@@ -9,7 +9,7 @@ from ....problem.input.problem import Problem
 from ....problem.input.problem import Customer
 from ....problem.input.problem import Depot
 from ....problem.input.location import Location
-from ....problem.solution.cluster import Cluster
+from ....problem.output.cluster import Cluster
 
 class Partitional(Clustering):
     

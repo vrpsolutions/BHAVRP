@@ -1,4 +1,4 @@
-package cujae.inf.ic.om.problem.solution;
+package cujae.inf.ic.om.problem.output;
 
 import java.util.ArrayList;
 

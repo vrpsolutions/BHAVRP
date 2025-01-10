@@ -6,7 +6,7 @@ from ..factory.methods.factory_assignment import FactoryAssignment
 from ..factory.interfaces.assignment_type import AssignmentType
 from ..factory.interfaces.ifactory_assignment import IFactoryAssignment
 from ..problem.input.problem import Problem
-from ..problem.solution.solution import Solution
+from ..problem.output.solution import Solution
 
 class Controller:
     _instance = None   # Atributo para la instancia Singleton

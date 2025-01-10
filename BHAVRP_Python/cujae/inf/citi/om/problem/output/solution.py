@@ -3,7 +3,6 @@ from .cluster import Cluster
 
 class Solution:
     
-
     # Constructor para la clase Solution.
     def __init__(
         self, 

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from ..problem.solution.solution import Solution
+from ..problem.output.solution import Solution
 
 class IAssignment(ABC):
     

@@ -1,7 +1,7 @@
 from typing import List
 from ..assignment import Assignment
 from ...problem.input.problem import Problem
-from ...problem.solution.cluster import Cluster
+from ...problem.output.cluster import Cluster
 
 class Heuristic(Assignment):
     

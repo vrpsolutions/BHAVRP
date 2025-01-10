@@ -12,7 +12,7 @@ import cujae.inf.ic.om.problem.input.Depot;
 import cujae.inf.ic.om.problem.input.Fleet;
 import cujae.inf.ic.om.problem.input.Location;
 import cujae.inf.ic.om.problem.input.Problem;
-import cujae.inf.ic.om.problem.solution.Cluster;
+import cujae.inf.ic.om.problem.output.Cluster;
 
 public abstract class ByMedoids extends Partitional {
 	

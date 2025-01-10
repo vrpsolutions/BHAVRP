@@ -14,7 +14,7 @@ import cujae.inf.ic.om.factory.interfaces.IFactoryAssignment;
 import cujae.inf.ic.om.factory.methods.FactoryAssignment;
 
 import cujae.inf.ic.om.problem.input.Problem;
-import cujae.inf.ic.om.problem.solution.Solution;
+import cujae.inf.ic.om.problem.output.Solution;
 
 public class Controller {
 	private static Controller controller = null;

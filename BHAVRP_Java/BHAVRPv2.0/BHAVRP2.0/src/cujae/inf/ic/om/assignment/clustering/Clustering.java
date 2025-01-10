@@ -7,7 +7,7 @@ import cujae.inf.ic.om.controller.tools.Tools;
 import cujae.inf.ic.om.problem.input.Customer;
 import cujae.inf.ic.om.problem.input.Location;
 import cujae.inf.ic.om.problem.input.Problem;
-import cujae.inf.ic.om.problem.solution.Cluster;
+import cujae.inf.ic.om.problem.output.Cluster;
 
 public abstract class Clustering extends Assignment {
 	

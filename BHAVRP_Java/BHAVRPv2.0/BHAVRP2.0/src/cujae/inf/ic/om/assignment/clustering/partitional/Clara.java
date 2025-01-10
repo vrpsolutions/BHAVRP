@@ -10,8 +10,8 @@ import cujae.inf.ic.om.problem.input.Depot;
 import cujae.inf.ic.om.problem.input.Location;
 import cujae.inf.ic.om.problem.input.Problem;
 
-import cujae.inf.ic.om.problem.solution.Cluster;
-import cujae.inf.ic.om.problem.solution.Solution;
+import cujae.inf.ic.om.problem.output.Cluster;
+import cujae.inf.ic.om.problem.output.Solution;
 import cujae.inf.ic.om.service.OSRMService;
 
 import cujae.inf.ic.om.matrix.NumericMatrix;

@@ -6,8 +6,8 @@ from ....problem.input.problem import Problem
 from ....problem.input.customer import Customer
 from ....problem.input.depot import Depot
 from ....problem.input.location import Location
-from ....problem.solution.solution import Solution
-from ....problem.solution.cluster import Cluster
+from ....problem.output.solution import Solution
+from ....problem.output.cluster import Cluster
 
 class PAM(ByMedoids):
     

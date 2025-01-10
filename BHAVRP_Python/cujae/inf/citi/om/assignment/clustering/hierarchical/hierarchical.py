@@ -3,7 +3,7 @@ from ..clustering import Clustering
 from ....problem.input.problem import Problem
 from ....problem.input.customer import Customer
 from ....problem.input.depot import Depot
-from ....problem.solution.cluster import Cluster
+from ....problem.output.cluster import Cluster
 
 class Hierarchical(Clustering):
     

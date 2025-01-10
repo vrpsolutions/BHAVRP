@@ -1,5 +1,5 @@
 from .i_assignment import IAssignment
-from ..problem.solution.solution import Solution
+from ..problem.output.solution import Solution
 
 class AssignmentTemplate(IAssignment):
     

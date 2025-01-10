@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import cujae.inf.ic.om.assignment.Assignment;
 import cujae.inf.ic.om.problem.input.Problem;
-import cujae.inf.ic.om.problem.solution.Cluster;
+import cujae.inf.ic.om.problem.output.Cluster;
 
 public abstract class Heuristic extends Assignment {
 	
