@@ -56,12 +56,14 @@ class UPGMC(Hierarchical):
                 id_customer_one = self.list_customers_to_assign[col_best].get_id_customer()
                 id_customer_two = self.list_customers_to_assign[row_best].get_id_customer()
 
+                print("--------------------------------------")
                 print(f"ID Customer One: {id_customer_one}")
                 print(f"ID Customer Two: {id_customer_two}")
                 
                 pos_cluster_one = self.find_cluster(id_customer_one, self.list_clusters)
                 pos_cluster_two = self.find_cluster(id_customer_two, self.list_clusters)
                 
+                print("--------------------------------------")
                 print(f"Position Cluster One: {pos_cluster_one}")
                 print(f"Position Cluster Two: {pos_cluster_two}")
                 
@@ -70,6 +72,7 @@ class UPGMC(Hierarchical):
                     request_cluster_two = self.list_clusters[pos_cluster_two].get_request_cluster()
                     total_request = request_cluster_one + request_cluster_two
                     
+                    print("--------------------------------------")
                     print(f"Request Cluster One: {request_cluster_one}")
                     print(f"Request Cluster Two: {request_cluster_two}")
                     print(f"Total Request: {total_request}")
@@ -81,6 +84,7 @@ class UPGMC(Hierarchical):
                     pos_cluster = self.find_cluster(id_depot_with_mu, self.list_clusters)
                     request_cluster = self.list_clusters[pos_cluster].get_request_cluster()
                     
+                    print("--------------------------------------")
                     print(f"ID Depot with MU: {id_depot_with_mu}")
                     print(f"Position Depot: {pos_depot}")
                     print(f"Capacity Depot with MU: {capacity_depot_with_mu}")
@@ -94,12 +98,14 @@ class UPGMC(Hierarchical):
                         
                         new_location: Location = self.recalculate_centroid(self.list_clusters[pos_cluster_one])
                         
+                        print("--------------------------------------")
                         print(f"New Location X: {new_location.get_axis_x()}")
                         print(f"New Location Y: {new_location.get_axis_y()}")
 
                         pos_customer_one = Problem.get_problem().find_pos_customer(self.list_customers_to_assign, id_customer_one)
                         self.list_customers_to_assign[pos_customer_one].set_location_customer(new_location)
                         
+                        print("--------------------------------------")
                         print(f"New Location X: {new_location.get_axis_x()}")
                         print(f"New Location Y: {new_location.get_axis_y()}")
                         print(f"Position Customer One: {pos_customer_one}")                        
@@ -108,6 +114,7 @@ class UPGMC(Hierarchical):
                         pos_customer_two = Problem.get_problem().find_pos_customer(self.list_customers_to_assign, id_customer_two)
                         self.list_customers_to_assign.pop(pos_customer_two)
                         
+                        print("--------------------------------------")
                         print(f"List Clusters: {len(self.list_clusters)}")
                         print(f"Position Customer Two: {pos_customer_two}")
                         print(f"List Customers to Assign: {len(self.list_customers_to_assign)}")
