@@ -27,12 +27,14 @@ class Hierarchical(Clustering):
         return found
     
     # Método que determina si existen clientes que puedan ser asignados al depósito a partir de su demanda.
-    def is_full_depot(self, customers: List[Customer], request_cluster: float, capacity_depot: float) -> bool:
+    def is_full_depot(self, clusters: List[Cluster], customers: int, request_cluster: float, capacity_depot: float) -> bool:
         is_full: bool = True
         current_request: float = capacity_depot - request_cluster
         if current_request > 0:
-            for customer in customers:
-                if customer.get_request_customer() <= current_request:
+            i = 0;
+            while i < len(clusters) and i < customers and is_full:
+                if clusters[i].get_request_cluster() <= current_request:
                     is_full = False
-                    break
+                else:
+                    i += 1
         return is_full
