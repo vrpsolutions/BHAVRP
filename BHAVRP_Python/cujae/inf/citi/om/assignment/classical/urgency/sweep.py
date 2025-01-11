@@ -59,7 +59,7 @@ class Sweep(ByUrgency, IUrgencyWithMU):
                     capacity_depot -= request_customer
                     
                     self.list_customers_to_assign[pos_customer] = None
-                    self.list_urgencies[pos_customer] = 0.0
+                    self.list_urgencies[pos_customer] = -1.0
                     self.list_depots_ordered[pos_customer] = None
 
                     # Recalcular la urgencia si es necesario
@@ -67,8 +67,8 @@ class Sweep(ByUrgency, IUrgencyWithMU):
                         self.mu_id_depot = self.find_cluster_with_mu(self.list_clusters)
 
                         if id_closest_depot != self.mu_id_depot:
-                            urgency_matrix = np.array(Problem.get_problem().get_cost_matrix())
-                            list_urgencies = self.get_list_urgencies(self.list_customers_to_assign, self.list_depots_ordered, urgency_matrix, self.mu_id_depot)
+                            recalculate_urgency_matrix = self.initialize_cost_matrix(Problem.get_problem().get_customers(), Problem.get_problem().get_depots(), self.distance_type)
+                            list_urgencies = self.get_list_urgencies(self.list_customers_to_assign, self.list_depots_ordered, recalculate_urgency_matrix, self.mu_id_depot)
                 else:
                     if capacity_depot > request_cluster:
                         self.list_depots_ordered[pos_customer].pop(0)
@@ -77,7 +77,7 @@ class Sweep(ByUrgency, IUrgencyWithMU):
                             self.solution.get_unassigned_items().append(id_customer)
                             
                             self.list_customers_to_assign[pos_customer] = None
-                            self.list_urgencies[pos_customer] = 0.0
+                            self.list_urgencies[pos_customer] = -1.0
                             self.list_depots_ordered[pos_customer] = None
                         else:
                             list_urgencies[pos_customer] = self.get_urgency(id_customer, self.list_depots_ordered[pos_customer], urgency_matrix, self.mu_id_depot)
@@ -91,7 +91,7 @@ class Sweep(ByUrgency, IUrgencyWithMU):
                                     self.solution.get_unassigned_items().append(self.list_customers_to_assign[i].get_id_customer())
                                     
                                     self.list_customers_to_assign[i] = None
-                                    self.list_urgencies[i] = 0.0
+                                    self.list_urgencies[i] = -1.0
                                     self.list_depots_ordered[i] = None
                                 else:
                                     list_urgencies[i] = self.get_urgency(self.list_customers_to_assign[i].get_id_customer(), depots_ordered, urgency_matrix, self.mu_id_depot)
@@ -137,10 +137,12 @@ class Sweep(ByUrgency, IUrgencyWithMU):
 
         if len(list_id_depots) > 1:
             for i, customer in enumerate(list_customers_to_assign):
-                urgencies.append(self.get_urgency(customer.get_id_customer(), list_id_depots[i], urgency_matrix, mu_id_depot))
+                if customer is not None:
+                    urgencies.append(self.get_urgency(customer.get_id_customer(), list_id_depots[i], urgency_matrix, mu_id_depot))
         else:
             for i, customer in enumerate(list_customers_to_assign):
-                urgencies.append(self.get_urgency(customer.get_id_customer(), list_id_depots[0], urgency_matrix, mu_id_depot))
+                if customer is not None:
+                    urgencies.append(self.get_urgency(customer.get_id_customer(), list_id_depots[0], urgency_matrix, mu_id_depot))
         return urgencies
     
     # Implementacion del método encargado de obtener la urgencia.

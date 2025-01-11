@@ -11,12 +11,7 @@ class OSRMService:
     
     # Método para obtener la distancia entre dos puntos utilizando OSRM API.
     @staticmethod
-    def calculate_distance(
-        axis_x_ini: float, 
-        axis_y_ini: float, 
-        axis_x_end: float, 
-        axis_y_end: float
-    ) -> float:
+    def calculate_distance(axis_x_ini: float, axis_y_ini: float, axis_x_end: float, axis_y_end: float) -> float:
         
         key = f"{axis_x_ini},{axis_y_ini}->{axis_x_end},{axis_y_end}"
          

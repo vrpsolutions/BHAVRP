@@ -41,8 +41,7 @@ def main():
     load.load_depots(id_depots, axis_x_depots, axis_y_depots)
 
     # Cargar el problema en el controlador
-    if Controller.get_instance().load_problem(id_customers, request_customers, axis_x_customers, axis_y_customers, 
-                                              id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles):
+    if Controller.get_instance().load_problem(id_customers, request_customers, axis_x_customers, axis_y_customers, id_depots, axis_x_depots, axis_y_depots, count_vehicles, capacity_vehicles):
         avg_time = 0.0
         run_time = 0.0
         
