@@ -180,7 +180,6 @@ class UPGMC(Hierarchical):
         
     def finish(self) -> Solution:       
         pos_element = -1
-
         i = 0
         while i < len(self.list_clusters):
             clusters = self.list_clusters
