@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Optional, Tuple
+from typing import List
 from ...classical.by_not_urgency import ByNotUrgency
 from ....service.osrm_service import OSRMService
 from ....problem.input.problem import Problem

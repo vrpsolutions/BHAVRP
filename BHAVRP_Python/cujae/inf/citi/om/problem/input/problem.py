@@ -112,8 +112,9 @@ class Problem:
     # Método encargado de devolver la posición que ocupa un cliente en la lista pasada por parámetro.
     def find_pos_customer(self, customers: List[Customer], id_customer: int) -> int:
         for i, customer in enumerate(customers):
-            if customer.get_id_customer() == id_customer:
-                return i
+            if customer is not None:
+                if customer.get_id_customer() == id_customer:
+                    return i
         return -1  # Retorna -1 si no encuentra el cliente
 
     # Método encargado de devolver la posición que ocupa un depósito en la lista pasada por parámetro.
