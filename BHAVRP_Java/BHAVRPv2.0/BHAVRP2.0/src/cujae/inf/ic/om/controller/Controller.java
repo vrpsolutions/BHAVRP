@@ -3,6 +3,7 @@ package cujae.inf.ic.om.controller;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import cujae.inf.ic.om.assignment.Assignment;
 
@@ -93,11 +94,32 @@ public class Controller {
 			Problem.getProblem().loadDepot(idDepots, axisXDepots, axisYDepots, countVehicles, capacityVehicles);
 			loaded = true;
 		}
-
+		
+		System.out.println("RESUMEN DE LA CARGA DE DATOS:");
 		System.out.println("-------------------------------------------------------------------------------");
+		System.out.println("CANTIDAD DE CLIENTES: " + idCustomers.size());
 		System.out.println("DEMANDA TOTAL DE LOS CLIENTES: " + Problem.getProblem().getTotalRequest());
+		System.out.println("-------------------------------------------------------------------------------");
+		System.out.println("CANTIDAD DE DEPÓSITOS: " + idDepots.size());
 		System.out.println("CAPACIDAD TOTAL DE LOS DEPÓSITOS: " + Problem.getProblem().getTotalCapacity());
 		System.out.println("-------------------------------------------------------------------------------");
+		for(int i = 0; i < idDepots.size(); i++)
+		{
+			System.out.println("ID DEPÓSITO: " + idDepots.get(i));			
+			System.out.println("CANTIDAD DE FLOTAS DEL DEPÓSITO: " + countVehicles.get(i).size());
+			for(int j = 0; j < countVehicles.get(i).size(); j++)
+			{
+				totalVehicles = countVehicles.get(i).get(j);
+				capacityVehicle = capacityVehicles.get(i).get(j);
+				
+				System.out.println("CANTIDAD DE VEHÍCULOS: " + countVehicles.get(i).get(j));
+				System.out.println("CAPACIDAD DE LOS VEHÍCULOS: " + capacityVehicles.get(i).get(j));
+			}
+
+			System.out.println("CAPACIDAD TOTAL DEL DEPÓSITO: " + (totalVehicles * capacityVehicle));
+			System.out.println("-------------------------------------------------------------------------------");
+		}
+		
 		System.out.println("CARGA EXITOSA: " + loaded);
 		System.out.println("FIN DE LA CARGA DE DATOS");
 		System.out.println("-------------------------------------------------------------------------------");
@@ -139,6 +161,10 @@ public class Controller {
 
 		solution = assignment.toClustering();
 		
+		int[] clusterItems;
+		System.out.println("-------------------------------------------------------------------------------");
+		System.out.println("VERSION: ACTUALIZADA");
+		System.out.println("HEURÍSTICA: " + assignmentType.name());
 		System.out.println("-------------------------------------------------------------------------------");
 		System.out.println("SOLUTION: ");
 		System.out.println("CANTIDAD DE CLUSTERS: " + solution.getClusters().size());
@@ -149,10 +175,14 @@ public class Controller {
 			System.out.println("DEMANDA DEL CLUSTER: " + solution.getClusters().get(i).getRequestCluster());
 			System.out.println("TOTAL DE ELEMENTOS DEL CLUSTER : " + solution.getClusters().get(i).getItemsOfCluster().size());
 			System.out.println("-------------------------------------------------------------------------------");
+			
+			clusterItems = new int[solution.getClusters().get(i).getItemsOfCluster().size()];
 			for(int j = 0; j < solution.getClusters().get(i).getItemsOfCluster().size(); j++)
 			{
-				System.out.println("ID DEL ELEMENTO: " + solution.getClusters().get(i).getItemsOfCluster().get(j).intValue());
+				//System.out.println("ID DEL ELEMENTO: " + solution.getClusters().get(i).getItemsOfCluster().get(j).intValue());
+				clusterItems[j] =  solution.getClusters().get(i).getItemsOfCluster().get(j).intValue();
 			}	
+			System.out.println("ID DE LOS ELEMENTOS: " + Arrays.toString(clusterItems));
 			System.out.println("-------------------------------------------------------------------------------");
 		}
 		System.out.println("TOTAL DE CLIENTES NO ASIGNADOS: " + solution.getTotalUnassignedItems());

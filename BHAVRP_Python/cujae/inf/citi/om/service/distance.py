@@ -1,6 +1,7 @@
+import math
+import osrm
 from .distance_type import DistanceType
 from scipy.spatial import distance as scipy_distance
-import osrm
 
 class Distance:
 
@@ -14,6 +15,8 @@ class Distance:
             return Distance.chebyshev_distance(x1, y1, x2, y2)
         elif distance_type == DistanceType.MIKOWSKI:
             return Distance.minkowski_distance(x1, y1, x2, y2)
+        elif distance_type == DistanceType.HAVERSINE:
+            return Distance.haversine_distance(x1, y1, x2, y2)
         elif distance_type == DistanceType.REAL:
             return Distance.real_distance(x1, y1, x2, y2)
         else:
@@ -38,6 +41,26 @@ class Distance:
     @staticmethod
     def real_distance(x1: float, y1: float, x2: float, y2: float) -> float:
         return Distance.simulateOSRMCall(x1, y1, x2, y2)
+    
+    @staticmethod
+    def haversine_distance(x1: float, y1: float, x2: float, y2: float) -> float:
+        EARTH_RADIUS_KM = 6371.0  # Radio de la Tierra en kilómetros
+        
+        # Convertir coordenadas de grados a radianes
+        longitude_start = math.radians(x1)
+        latitude_start = math.radians(y1)
+        longitude_end = math.radians(x2)
+        latitude_end = math.radians(y2)
+        
+        # Calcular las diferencias
+        dif_latitude = latitude_end - latitude_start
+        dif_longitude = longitude_end - longitude_start
+        
+        # Fórmula de Haversine
+        a = math.sin(dif_latitude / 2) ** 2 + math.cos(latitude_start) * math.cos(latitude_end) * math.sin(dif_longitude / 2) ** 2
+        distance = 2 * EARTH_RADIUS_KM * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        
+        return distance
  
     # Calcula la distancia real entre dos puntos utilizando OSRM.
     @staticmethod

@@ -84,7 +84,7 @@ class LoadFile:
             id_customers.append(int(line_tokens[0]))
             axis_x_customers.append(float(line_tokens[1]))
             axis_y_customers.append(float(line_tokens[2]))
-            request_customers.append(1.0)
+            request_customers.append(float(line_tokens[3]))
 
     def load_depots(self, id_depots: List[int], axis_x_depots: List[float], axis_y_depots: List[float]):
         total_customers = self.load_total_customers()

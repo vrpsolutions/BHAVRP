@@ -83,12 +83,12 @@ public class MainDePrueba
 				//SaveFile.getSaveFile().createSheet(pathFileEnd, "p1", run, Problem.getProblem().getTotalRequest(), 0, 0);
 				//SaveFile.getSaveFile().writeData(idFile, countExecution, nameHeuristic, variant, pathFileEnd);
 
-				
+
 				for(int k = 0; k < run; k++)
 				{
 					double start = System.currentTimeMillis();
 					
-					int j = 5;
+					int j = 21;
 					
 					//for(int j = 1; j < AssignmentType.values().length; j++)
 					//{

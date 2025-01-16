@@ -32,18 +32,7 @@ class Controller:
         self.solution = solution
          
     # Método encargado de cargar los datos del problema (incluido las coordenadas) usando listas de distancias
-    def load_problem(
-        self, 
-        id_customers: List[int], 
-        request_customers: List[float], 
-        axis_x_customers: List[float], 
-        axis_y_customers: List[float], 
-        id_depots: List[int], 
-        axis_x_depots: List[float], 
-        axis_y_depots: List[float], 
-        count_vehicles: List[List[int]], 
-        capacity_vehicles: List[List[float]]
-    ) -> bool:
+    def load_problem(self, id_customers: List[int], request_customers: List[float], axis_x_customers: List[float], axis_y_customers: List[float], id_depots: List[int], axis_x_depots: List[float], axis_y_depots: List[float], count_vehicles: List[List[int]], capacity_vehicles: List[List[float]]) -> bool:
         loaded: bool = False
         
         print("ENTRADA A LA CARGA DE DATOS")
@@ -57,6 +46,8 @@ class Controller:
             print(f"X : {axis_x_customers[i]}")
             print(f"Y : {axis_y_customers[i]}")
 
+        print("-------------------------------------------------------------------------------")
+        print(f"CANTIDAD DE CLIENTES: {len(id_customers)}")
         print(f"CANTIDAD DE DEPÓSITOS: {len(id_depots)}")
         print("-------------------------------------------------------------------------------")
 
@@ -94,6 +85,37 @@ class Controller:
             
         print(f"DEMANDA TOTAL DE LOS CLIENTES: {Problem.get_problem().get_total_request()}")
         print(f"CAPACIDAD TOTAL DE LOS DEPÓSITOS: {total_capacity}")
+        
+        """
+        print("RESUMEN DE LA CARGA DE DATOS:")
+        print("-------------------------------------------------------------------------------")
+        print(f"CANTIDAD DE CLIENTES: {len(id_customers)}")
+        print(f"DEMANDA TOTAL DE LOS CLIENTES: {Problem.get_problem().get_total_request()}")
+        print("-------------------------------------------------------------------------------")
+        print(f"CANTIDAD DE DEPÓSITOS: {len(id_depots)}")
+        print(f"CAPACIDAD TOTAL DE LOS DEPÓSITOS: {Problem.get_problem().get_total_capacity()}")
+        print("-------------------------------------------------------------------------------")
+
+        # Iterando sobre los depósitos
+        for i in range(len(id_depots)):
+            print(f"ID DEPÓSITO: {id_depots[i]}")            
+            print(f"CANTIDAD DE FLOTAS DEL DEPÓSITO: {len(count_vehicles[i])}")
+
+            # Iterando sobre los vehículos en cada flota
+            total_vehicles = 0
+            capacity_vehicle = 0
+
+            for j in range(len(count_vehicles[i])):
+                total_vehicles = count_vehicles[i][j]
+                capacity_vehicle = capacity_vehicles[i][j]
+                
+                print(f"CANTIDAD DE VEHÍCULOS: {total_vehicles}")
+                print(f"CAPACIDAD DE LOS VEHÍCULOS: {capacity_vehicle}")
+
+            print(f"CAPACIDAD TOTAL DEL DEPÓSITO: {total_vehicles * capacity_vehicle}")
+            print("-------------------------------------------------------------------------------")
+        """
+        
         print("-------------------------------------------------------------------------------")
         print(f"CARGA EXITOSA: {loaded}")
         print("FIN DE LA CARGA DE DATOS")
@@ -129,6 +151,9 @@ class Controller:
         solution: Solution = assignment.to_clustering()
         
         print("-------------------------------------------------------------------------------")
+        #print("VERSION: PYTHON")
+        print(f"HEURÍSTICA: {assignment_type.name}")        
+        print("-------------------------------------------------------------------------------")
         print("SOLUTION:")
         print(f"CANTIDAD DE CLUSTERS: {len(solution.get_clusters())}")
         print("-------------------------------------------------------------------------------")
@@ -138,11 +163,13 @@ class Controller:
             print(f"DEMANDA DEL CLUSTER: {cluster.get_request_cluster()}")
             print(f"TOTAL DE ELEMENTOS DEL CLUSTER: {len(cluster.get_items_of_cluster())}")
             print("-------------------------------------------------------------------------------")
+            #print(f"ID DE LOS ELEMENTOS: {cluster.get_items_of_cluster()}")
+            #print("-------------------------------------------------------------------------------")
             
             for item in cluster.get_items_of_cluster():
                 print(f"ID DEL ELEMENTO: {int(item)}")
             print("-------------------------------------------------------------------------------")
-        
+            
         print(f"TOTAL DE CLIENTES NO ASIGNADOS: {solution.get_total_unassigned_items()}")
         
         if solution.get_total_unassigned_items() > 0:

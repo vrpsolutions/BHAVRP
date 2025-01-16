@@ -262,13 +262,7 @@ class Problem:
         return list_id
 
     # Método encargado de cargar los datos de los clientes con coordenadas.
-    def load_customer(
-        self, 
-        id_customers: List[int], 
-        request_customers: List[float], 
-        axis_x_customers: List[float], 
-        axis_y_customers: List[float]
-    ):
+    def load_customer(self, id_customers: List[int], request_customers: List[float], axis_x_customers: List[float], axis_y_customers: List[float]):
         for i in range(len(id_customers)):
             customer = Customer()
             customer.set_id_customer(id_customers[i])
@@ -280,14 +274,7 @@ class Problem:
             self.customers.append(customer)
             
     # Método encargado de cargar los datos de los depósitos (con coordenadas) y las flotas.
-    def load_depot(
-        self,
-        id_depots: List[int], 
-        axis_x_depots: List[float], 
-        axis_y_depots: List[float], 
-        count_vehicles: List[List[int]], 
-        capacity_vehicles: List[List[float]]
-    ):
+    def load_depot(self, id_depots: List[int], axis_x_depots: List[float], axis_y_depots: List[float], count_vehicles: List[List[int]], capacity_vehicles: List[List[float]]):
         depots = []
         total_depots = len(id_depots)
 
@@ -312,14 +299,9 @@ class Problem:
             depots.append(depot)
         
         self.depots = depots
-                        
+             
     # Método encargado de llenar la matriz de costo usando la distancia deseada.
-    def fill_cost_matrix(
-        self, 
-        customers: List[Customer], 
-        depots: List[Depot], 
-        distance_type: DistanceType
-    ) -> np.ndarray:
+    def fill_cost_matrix(self, customers: List[Customer], depots: List[Depot], distance_type: DistanceType) -> np.ndarray:
         total_customers = len(customers)
         total_depots = len(depots)
 
@@ -345,13 +327,9 @@ class Problem:
                 cost_matrix[depot_index, customer_index] = cost
 
         return cost_matrix
-        
+    
     # Método para llenar la matriz de costos usando distancias reales entre clientes y depósitos.
-    def fill_cost_matrix_real(
-        self,
-        customers: List[Customer],
-        depots: List[Depot]    
-    ) -> np.ndarray:
+    def fill_cost_matrix_real(self, customers: List[Customer], depots: List[Depot]) -> np.ndarray:
         total_customers = len(customers)
         total_depots = len(depots)
         total_points = total_customers + total_depots
@@ -394,14 +372,85 @@ class Problem:
                 cost_matrix[j, i] = cost  # Distancia simétrica
         
         return cost_matrix
+    
+    def fill_cost_matrix_test(self, customers: List[Customer], depots: List[Depot], distance_type: DistanceType):
+        total_customers = len(customers)
+        total_depots = len(depots)
+        last_point_one = 0
+
+        # Crear una matriz de costos de tamaño 12x12 (10 clientes + 2 depósitos)
+        cost_matrix = np.zeros((total_customers + total_depots, total_customers + total_depots))
+
+        # Inicializar las ubicaciones y calcular las distancias
+        for i in range(total_customers + total_depots):
+            if i < total_customers:
+                axis_x_ini = customers[i].get_location_customer().get_axis_x()
+                axis_y_ini = customers[i].get_location_customer().get_axis_y()
+            else:
+                axis_x_ini = depots[last_point_one].get_location_depot().get_axis_x()
+                axis_y_ini = depots[last_point_one].get_location_depot().get_axis_y()
+                last_point_one += 1
+
+            last_point_two = 0
+
+            for j in range(total_customers + total_depots):
+                if j < total_customers:
+                    axis_x_end = customers[j].get_location_customer().get_axis_x()
+                    axis_y_end = customers[j].get_location_customer().get_axis_y()
+                else:
+                    axis_x_end = depots[last_point_two].get_location_depot().get_axis_x()
+                    axis_y_end = depots[last_point_two].get_location_depot().get_axis_y()
+                    last_point_two += 1
+
+                if i == j:
+                    cost_matrix[i, j] = float('inf')  # Distancia infinita en la diagonal
+                else:
+                    cost = Distance.calculate_distance(axis_x_ini, axis_y_ini, axis_x_end, axis_y_end, distance_type)
+                    cost_matrix[i, j] = cost
+                    cost_matrix[j, i] = cost  # Matriz simétrica
+
+        return cost_matrix
+    
+    def fill_cost_matrix_test_real(self, customers: List[Customer], depots: List[Depot]):
+        total_customers = len(customers)
+        total_depots = len(depots)
+        last_point_one = 0
+
+        # Crear una matriz de costos de tamaño 12x12 (10 clientes + 2 depósitos)
+        cost_matrix = np.zeros((total_customers + total_depots, total_customers + total_depots))
+
+        # Inicializar las ubicaciones y calcular las distancias
+        for i in range(total_customers + total_depots):
+            if i < total_customers:
+                axis_x_ini = customers[i].get_location_customer().get_axis_x()
+                axis_y_ini = customers[i].get_location_customer().get_axis_y()
+            else:
+                axis_x_ini = depots[last_point_one].get_location_depot().get_axis_x()
+                axis_y_ini = depots[last_point_one].get_location_depot().get_axis_y()
+                last_point_one += 1
+
+            last_point_two = 0
+
+            for j in range(total_customers + total_depots):
+                if j < total_customers:
+                    axis_x_end = customers[j].get_location_customer().get_axis_x()
+                    axis_y_end = customers[j].get_location_customer().get_axis_y()
+                else:
+                    axis_x_end = depots[last_point_two].get_location_depot().get_axis_x()
+                    axis_y_end = depots[last_point_two].get_location_depot().get_axis_y()
+                    last_point_two += 1
+
+                if i == j:
+                    cost_matrix[i, j] = float('inf')  # Distancia infinita en la diagonal
+                else:
+                    cost = OSRMService.calculate_distance(axis_x_ini, axis_y_ini, axis_x_end, axis_y_end)
+                    cost_matrix[i, j] = cost
+                    cost_matrix[j, i] = cost  # Matriz simétrica
+
+        return cost_matrix
 
     # Método para calcular la matriz de costos entre centroides y depósitos.
-    def calculate_cost_matrix(
-        self, 
-        centroids: List[Depot], 
-        depots: List[Depot], 
-        distance_type: DistanceType
-    ) -> np.ndarray:
+    def calculate_cost_matrix(self, centroids: List[Depot], depots: List[Depot], distance_type: DistanceType) -> np.ndarray:
         total_depots = len(depots)
         total_centroids = len(centroids)
         
@@ -428,11 +477,7 @@ class Problem:
         return cost_matrix
     
     # Calcula una matriz de costos basada en distancias reales entre centroids y depots usando datos reales.
-    def calculate_cost_matrix_real(
-        self, 
-        centroids: List[Depot], 
-        depots: List[Depot]
-    ) -> np.ndarray:
+    def calculate_cost_matrix_real(self, centroids: List[Depot], depots: List[Depot]) -> np.ndarray:
         total_depots = len(depots)
         cost_matrix = np.zeros((total_depots, total_depots))
         

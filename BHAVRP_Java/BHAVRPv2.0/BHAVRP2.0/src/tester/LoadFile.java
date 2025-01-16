@@ -118,8 +118,8 @@ public class LoadFile {
 			idCustomers.add(Integer.valueOf(tool.nextToken()));
 			axisXCustomers.add(Double.valueOf(tool.nextToken()));
 			axisYCustomers.add(Double.valueOf(tool.nextToken()));
-			//requestCustomers.add(Double.valueOf(tool.nextToken()));
-			requestCustomers.add(1.0);
+			requestCustomers.add(Double.valueOf(tool.nextToken()));
+			//requestCustomers.add(1.0);
 		}
 	}
 
