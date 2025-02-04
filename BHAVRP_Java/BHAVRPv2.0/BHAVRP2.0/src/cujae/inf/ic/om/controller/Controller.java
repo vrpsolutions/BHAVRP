@@ -128,7 +128,7 @@ public class Controller {
 	}
 	
 	/* Método encargado de ejecutar la heurística de asignación.*/
-	public void executeAssignment(AssignmentType assignmentType) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException{
+	public Solution executeAssignment(AssignmentType assignmentType) throws IllegalArgumentException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException{
 		Assignment assignment = newAssignment(assignmentType);
 		
 		System.out.println("EJECUCIÓN DE LA HEURÍSTICA");
@@ -206,6 +206,7 @@ public class Controller {
 		}
 		
 		//cleanController();
+		return solution;
 	}
 	
 	/* Método encargado de crear una método de asignación.*/
@@ -216,7 +217,7 @@ public class Controller {
 	}
 	
 	/*Método encargado de devolver los depósitos a los que no se les asigno ningún cliente en la solución.*/
-	private ArrayList<Integer> getDepotsWithOutCustomers(){
+	public ArrayList<Integer> getDepotsWithOutCustomers(){
 		ArrayList<Integer> idDepots = new ArrayList<Integer>();
 		
 		int totalDepots = Problem.getProblem().getDepots().size();

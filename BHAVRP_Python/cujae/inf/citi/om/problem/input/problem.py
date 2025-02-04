@@ -316,14 +316,7 @@ class Problem:
                 axis_x_customer = customer.get_location_customer().get_axis_x()
                 axis_y_customer = customer.get_location_customer().get_axis_y()
                 
-                cost = Distance.calculate_distance(
-                    axis_x_depot, 
-                    axis_y_depot, 
-                    axis_x_customer, 
-                    axis_y_customer, 
-                    distance_type
-                )
-                
+                cost = Distance.calculate_distance(axis_x_depot, axis_y_depot, axis_x_customer, axis_y_customer, distance_type)
                 cost_matrix[depot_index, customer_index] = cost
 
         return cost_matrix
@@ -332,44 +325,26 @@ class Problem:
     def fill_cost_matrix_real(self, customers: List[Customer], depots: List[Depot]) -> np.ndarray:
         total_customers = len(customers)
         total_depots = len(depots)
-        total_points = total_customers + total_depots
-        cost_matrix = np.full((total_points, total_points), np.inf)
+        cost_matrix = np.zeros((total_depots, total_customers))
         
-        # Llenar la matriz con distancias obtenidas de la API OSRM
-        for i in range(total_points):
-            
-            # Obtener las coordenadas del punto inicial (cliente o depósito)
-            if i < total_customers:
-                axis_x_ini = customers[i].get_location_customer().axis_x
-                axis_y_ini = customers[i].get_location_customer().axis_y
-            else:
-                axis_x_ini = depots[i - total_customers].get_location_depot().axis_x
-                axis_y_ini = depots[i - total_customers].get_location_depot().axis_y
+        for depot_index, depot in enumerate(depots):
+            axis_x_depot = depot.get_location_depot().get_axis_x()
+            axis_y_depot = depot.get_location_depot().get_axis_y()
 
-            for j in range(total_points):
-                
-                # Obtener las coordenadas del punto final (cliente o depósito)
-                if j < total_customers:
-                    axis_x_end = customers[j].get_location_customer().axis_x
-                    axis_y_end = customers[j].get_location_customer().axis_y
-                else:
-                    axis_x_end = depots[j - total_customers].get_location_depot().axis_x
-                    axis_y_end = depots[j - total_customers].get_location_depot().axis_y
+            for customer_index, customer in enumerate(customers):
+                axis_x_customer = customer.get_location_customer().get_axis_x()
+                axis_y_customer = customer.get_location_customer().get_axis_y()
 
-                # Evitar calcular la distancia de un punto consigo mismo
-                if i == j:
-                    continue
-                
-                # Llamar al servicio OSRM para obtener la distancia entre los puntos
-                try:
-                    cost = OSRMService.calculate_distance(axis_x_ini, axis_y_ini, axis_x_end, axis_y_end)
-                except Exception as e:
-                    print(f"Error al calcular la distancia entre el punto {i} y el punto {j}: {e}")
-                    cost = np.inf  # Si hay error, asignar infinito
-                    
-                # Asignar la distancia en ambas direcciones, ya que la distancia es simétrica
-                cost_matrix[i, j] = cost
-                cost_matrix[j, i] = cost  # Distancia simétrica
+                cost = None
+                while cost is None:
+                    try:
+                        cost = OSRMService.calculate_distance(axis_x_depot, axis_y_depot, axis_x_customer, axis_y_customer)
+                    except Exception as e:
+                        print(f"Error al calcular la distancia entre el depósito {depot_index} y el cliente {customer_index}: {e}")
+                        # Opcional: aquí podrías poner un `time.sleep()` si quieres hacer una espera entre intentos
+                        continue  # Reintenta el cálculo
+
+                cost_matrix[depot_index, customer_index] = cost
         
         return cost_matrix
     

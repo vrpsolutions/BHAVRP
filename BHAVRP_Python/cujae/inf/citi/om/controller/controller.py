@@ -151,7 +151,7 @@ class Controller:
         solution: Solution = assignment.to_clustering()
         
         print("-------------------------------------------------------------------------------")
-        #print("VERSION: PYTHON")
+        print("VERSION: PYTHON")
         print(f"HEURÍSTICA: {assignment_type.name}")        
         print("-------------------------------------------------------------------------------")
         print("SOLUTION:")
@@ -163,13 +163,13 @@ class Controller:
             print(f"DEMANDA DEL CLUSTER: {cluster.get_request_cluster()}")
             print(f"TOTAL DE ELEMENTOS DEL CLUSTER: {len(cluster.get_items_of_cluster())}")
             print("-------------------------------------------------------------------------------")
-            #print(f"ID DE LOS ELEMENTOS: {cluster.get_items_of_cluster()}")
-            #print("-------------------------------------------------------------------------------")
-            
+            print(f"ID DE LOS ELEMENTOS: {cluster.get_items_of_cluster()}")
+            print("-------------------------------------------------------------------------------")
+            """
             for item in cluster.get_items_of_cluster():
                 print(f"ID DEL ELEMENTO: {int(item)}")
             print("-------------------------------------------------------------------------------")
-            
+            """
         print(f"TOTAL DE CLIENTES NO ASIGNADOS: {solution.get_total_unassigned_items()}")
         
         if solution.get_total_unassigned_items() > 0:

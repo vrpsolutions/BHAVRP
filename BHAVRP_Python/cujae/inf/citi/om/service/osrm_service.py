@@ -1,5 +1,6 @@
 import requests
 import json
+import httpx
 from math import floor
 
 class OSRMService:
@@ -8,11 +9,11 @@ class OSRMService:
     distance_cache = {}
     remote_error_count = 0
     MAX_REMOTE_ERRORS = 3
+    client = httpx.Client()
     
     # Método para obtener la distancia entre dos puntos utilizando OSRM API.
     @staticmethod
     def calculate_distance(axis_x_ini: float, axis_y_ini: float, axis_x_end: float, axis_y_end: float) -> float:
-        
         key = f"{axis_x_ini},{axis_y_ini}->{axis_x_end},{axis_y_end}"
          
         if key in OSRMService.distance_cache:
@@ -36,18 +37,16 @@ class OSRMService:
                 return OSRMService.fetch_distance_from_server(local_url, key)
             except Exception as e:
                 raise Exception("Local servers failed to calculate distance.") from e
-    
+
     # Método auxiliar para ejecutar la solicitud al servidor y obtener la distancia.
     @staticmethod
     def fetch_distance_from_server(url: str, key: str) -> float:
-        response = requests.get(url)
-        
+        response = OSRMService.client.get(url, timeout=0.001)
         if response.status_code != 200:
             raise Exception(f"OSRM API returned status code: {response.status_code} for URL: {url}")
-
+        
         distance = OSRMService.parse_distance_from_response(response.text)
         OSRMService.distance_cache[key] = distance
-        
         return distance
     
     # Método auxiliar para parsear la distancia desde la respuesta de OSRM.
