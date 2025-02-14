@@ -38,30 +38,34 @@ class RandomSequentialCyclic(ByNotUrgency):
             pos_rdm_depot = random.randint(0, len(self.list_depots) - 1)
             current_depot = self.list_depots[pos_rdm_depot]
             capacity_depot = Problem.get_problem().get_total_capacity_by_depot(current_depot)
+            current_capacity_depot = capacity_depot
 
             pos_cluster = pos_rdm_depot
-            cluster = self.list_clusters[pos_cluster]
 
             if pos_cluster != -1:
-                request_cluster = cluster.get_request_cluster()
+                cluster = self.list_clusters[pos_cluster]
 
-                while not is_full:
-                    cost_row = cost_matrix[pos_rdm_depot, :] 
+                while not is_full and any(self.list_customers_to_assign):
+                    request_cluster = cluster.get_request_cluster()
+                    
+                    cost_row = cost_matrix[((cluster.get_id_cluster() - len(self.list_customers_to_assign)) - 1), :] 
                     col = np.argmin(cost_row)
-                    row = pos_rdm_depot
+                    row = ((cluster.get_id_cluster() - len(self.list_customers_to_assign)) - 1)
                     
                     selected_customer = self.list_customers_to_assign[col]
                     id_customer = selected_customer.get_id_customer()
                     request_customer = selected_customer.get_request_customer()
                     
-                    if capacity_depot >= (request_cluster + request_customer):
-                        request_cluster += request_customer
-                        
-                        cluster.set_request_cluster(request_cluster)
+                    if current_capacity_depot >= request_customer:
+                        current_capacity_depot -= request_customer
+                        cluster.set_request_cluster(request_cluster + request_customer)
                         cluster.get_items_of_cluster().append(id_customer)
                         
                         self.list_customers_to_assign[col] = None
                         cost_matrix[:, col] = float('inf')
+                        
+                    else:
+                        cost_matrix[row, col] = float('inf')
                         
                         if self.is_full_depot(self.list_customers_to_assign, request_cluster, capacity_depot):
                             if cluster.get_items_of_cluster():
@@ -71,8 +75,6 @@ class RandomSequentialCyclic(ByNotUrgency):
                                 
                             is_full = True
                             self.list_depots.pop(0)
-                    else:
-                        cost_matrix[row, col] = float('inf')
 
                 is_full = False
 

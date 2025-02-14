@@ -39,12 +39,13 @@ class SequentialCyclic(ByNotUrgency):
             capacity_depot = Problem.get_problem().get_total_capacity_by_depot(current_depot)
 
             pos_cluster = 0
-            cluster = self.list_clusters[pos_cluster]
             
             if pos_cluster != -1:
-                request_cluster = cluster.get_request_cluster()
+                cluster = self.list_clusters[pos_cluster]
                 
                 while not is_full:
+                    request_cluster = cluster.get_request_cluster()
+                    
                     cost_row = cost_matrix[current_depot_index, :] 
                     col = np.argmin(cost_row)
                     row = current_depot_index

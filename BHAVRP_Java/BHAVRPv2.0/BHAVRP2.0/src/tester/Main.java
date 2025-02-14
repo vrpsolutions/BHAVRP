@@ -59,13 +59,13 @@ public class Main {
 				{
 					double start = System.currentTimeMillis();
 					
-					int j = 1;
+					int j = 0;
 					
 						switch(j)
 						{
 							case 0:
 							{
-								cujae.inf.ic.om.controller.Controller.getController().executeAssignment(AssignmentType.BestNearest);
+								cujae.inf.ic.om.controller.Controller.getController().executeAssignment(AssignmentType.SequentialCyclic);
 								break;
 							}
 							
@@ -94,7 +94,7 @@ public class Main {
 					
 					listExTime.add(runTime);
 				}
-				
+				/*
 				System.out.println("-------------------------------------------------------------------------------");
 				System.out.println("RESUMEN DE LA CARGA DE DATOS:");
 				int totalCustomers = Problem.getProblem().getTotalCustomers();
@@ -155,6 +155,7 @@ public class Main {
 					System.out.println("MATRIZ DE COSTOS - REAL:");
 					printMatrix(realMatrix);
 				}
+				*/
 				System.out.println("-------------------------------------------------------------------------------");
 				System.out.println("NÚMERO DE EJECUCIONES: " + run);
 				System.out.println();

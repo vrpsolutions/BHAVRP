@@ -1,5 +1,4 @@
 from typing import List
-
 class LoadFile:
     
     def __init__(self):

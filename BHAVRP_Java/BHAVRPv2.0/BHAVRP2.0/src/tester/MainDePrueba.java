@@ -17,11 +17,11 @@ public class MainDePrueba
 	{	
 		Solution solution = null;
 
-		String pathFileEnd = "result//INSTANCIA_PR10.xls";
+		String pathFileEnd = "result//INSTANCIA_P01_1.xls";
 		SaveFile.getSaveFile().createResultFile(pathFileEnd);
 
-		String pathFiles = "C-mdvrp//pr"; 
-		int totalInstances = 10;
+		String pathFiles = "C-mdvrp//p"; 
+		int totalInstances = 1;
 		LoadFile load = new LoadFile();
 
 		AssignmentType heuristic = null;
@@ -72,11 +72,11 @@ public class MainDePrueba
 			ArrayList<Integer> unassignedCustomers = new ArrayList<>();
 			ArrayList<Integer> depotsWithOutCust = new ArrayList<>();
 			
-			for(int k = 0; k < heuristics.length; k++)
-			{
+			//for(int k = 0; k < heuristics.length; k++)
+			//{
 				double heuristicTotalTime = 0.0;
 
-				//int k = 2;
+				int k = 4;
 				
 				for(int j = 0; j < run; j++)
 				{
@@ -96,6 +96,9 @@ public class MainDePrueba
 					System.out.println();
 					System.out.println("Tiempo de Ejecución " + (j + 1) + ": " + runTime + " ms");
 					System.out.println();
+					cujae.inf.ic.om.controller.Controller.destroyController();
+					System.out.println("Controller limpio.");
+					System.out.println();
 
 				}
 				avgTime += heuristicTotalTime;
@@ -106,7 +109,9 @@ public class MainDePrueba
 				unassignedCustomers.clear();
 				depotsWithOutCust.clear();
 				
-			}
+				
+				
+			//}
 
 			System.out.println("-------------------------------------------------------------------------------");
 			System.out.println("Instancia ejecutada: " + "p" + totalInstances);

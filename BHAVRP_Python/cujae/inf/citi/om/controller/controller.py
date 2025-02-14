@@ -124,7 +124,7 @@ class Controller:
         return loaded
     
     # Método encargado de ejecutar la heurística de asignación
-    def execute_assignment(self, assignment_type: AssignmentType):
+    def execute_assignment(self, assignment_type: AssignmentType) -> Solution:
                 
         assignment: Assignment = self.new_assignment(assignment_type)
         
@@ -193,6 +193,7 @@ class Controller:
             print("-------------------------------------------------------------------------------")
         
         # self.clean_controller()
+        return solution
         
     # Método encargado de crear una método de asignación
     def new_assignment(self, type_assignment: AssignmentType) -> Assignment:

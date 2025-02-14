@@ -83,7 +83,7 @@ class CLARA(ByMedoids):
             elements_in_partition: List[int] = list(Problem.get_problem().get_list_id(partition))
             
             self.list_customers_to_assign = list(Problem.get_problem().get_customers())
-            self.update_customer_to_assign()
+            self.update_customer_to_assign_in_partition(self.list_customers_to_assign, elements_in_partition)
             
             self.step_assignment(self.list_clusters, self.list_medoids)
             
@@ -124,12 +124,7 @@ class CLARA(ByMedoids):
         return solution
     
     # Método que realiza la búsqueda de mejores medoides en cada clúster evaluando diferentes candidatos.    
-    def step_search_medoids(
-        self, 
-        clusters: List[Cluster], 
-        medoids: List[Depot],
-        list_partition: List[Customer]
-    ):
+    def step_search_medoids(self, clusters: List[Cluster], medoids: List[Depot], list_partition: List[Customer]):
         current_cost: float = 0.0
         
         old_medoids: List[Depot] = self.replicate_depots(medoids)
@@ -206,13 +201,29 @@ class CLARA(ByMedoids):
                 print("---------------------------------------------")
             
             medoids[i].set_location_depot(best_loc_medoid)
+            
+    def update_customer_to_assign_in_partition(self, list_customers_to_assign: List[Customer], elements_in_partition: List[int]):
+        
+        for id_element in elements_in_partition:
+            found: bool = False
+            i: int = 0
+            while not found and i < len(list_customers_to_assign):
+                if list_customers_to_assign[i].get_id_customer() == id_element:
+                    found = True
+                    del self.list_customers_to_assign[i]
+                else:
+                    i += 1
+                    
+        print("CLIENTES A ASIGNAR")
+        for customer in list_customers_to_assign:
+            print(f"--------------------------------------------------")
+            print(f"ID CLIENTE: {customer.get_id_customer()}")
+            print(f"X: {customer.get_location_customer().get_axis_x()}")
+            print(f"Y: {customer.get_location_customer().get_axis_y()}")
+            print(f"DEMANDA: {customer.get_request_customer()}")        
     
     # Método que calcula el costo total de los clústeres considerando los depósitos como medoides.
-    def calculate_cost(
-        self, 
-        medoids: List[Depot], 
-        list_partition: List[Customer]
-    ) -> float:
+    def calculate_cost(self, medoids: List[Depot], list_partition: List[Customer]) -> float:
         cost = 0.0
 
         print("-------------------------------------------------------------------------------")
