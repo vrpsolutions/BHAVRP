@@ -60,7 +60,7 @@
           <tags>persp.actionSet:org.eclipse.wst.server.ui.internal.webbrowser.actionSet</tags>
           <tags>persp.actionSet:org.eclipse.debug.ui.breakpointActionSet</tags>
           <tags>persp.actionSet:org.eclipse.wst.ws.explorer.explorer</tags>
-          <children xsi:type="basic:PartSashContainer" xmi:id="_SydBYd63Ee--P8IUN7kvSQ" selectedElement="_SydBYt63Ee--P8IUN7kvSQ" horizontal="true">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_SydBYd63Ee--P8IUN7kvSQ" selectedElement="_SydBZ963Ee--P8IUN7kvSQ" horizontal="true">
             <children xsi:type="basic:PartStack" xmi:id="_SydBYt63Ee--P8IUN7kvSQ" elementId="topLeft" containerData="2606" selectedElement="_SydBY963Ee--P8IUN7kvSQ">
               <tags>newtablook</tags>
               <children xsi:type="advanced:Placeholder" xmi:id="_SydBY963Ee--P8IUN7kvSQ" elementId="org.eclipse.ui.navigator.ProjectExplorer" ref="_SxTK0N63Ee--P8IUN7kvSQ"/>
@@ -68,7 +68,7 @@
               <children xsi:type="advanced:Placeholder" xmi:id="_SydBZd63Ee--P8IUN7kvSQ" elementId="org.eclipse.jdt.ui.TypeHierarchy" toBeRendered="false" ref="_SxW1MN63Ee--P8IUN7kvSQ"/>
               <children xsi:type="advanced:Placeholder" xmi:id="_SydBZt63Ee--P8IUN7kvSQ" elementId="org.eclipse.jdt.ui.PackagesView" toBeRendered="false" ref="_SyWTsN63Ee--P8IUN7kvSQ"/>
             </children>
-            <children xsi:type="basic:PartSashContainer" xmi:id="_SydBZ963Ee--P8IUN7kvSQ" containerData="7394" selectedElement="_SydBbd63Ee--P8IUN7kvSQ">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_SydBZ963Ee--P8IUN7kvSQ" containerData="7394" selectedElement="_SydBaN63Ee--P8IUN7kvSQ">
               <children xsi:type="basic:PartSashContainer" xmi:id="_SydBaN63Ee--P8IUN7kvSQ" containerData="5545" selectedElement="_SydBad63Ee--P8IUN7kvSQ" horizontal="true">
                 <children xsi:type="advanced:Placeholder" xmi:id="_SydBad63Ee--P8IUN7kvSQ" elementId="org.eclipse.ui.editorss" containerData="8472" ref="_SxDTMN63Ee--P8IUN7kvSQ"/>
                 <children xsi:type="basic:PartStack" xmi:id="_SydBat63Ee--P8IUN7kvSQ" elementId="topRight" visible="false" containerData="1528" selectedElement="_SydBa963Ee--P8IUN7kvSQ">
@@ -196,10 +196,25 @@
       <tags>categoryTag:Help</tags>
     </sharedElements>
     <sharedElements xsi:type="advanced:Area" xmi:id="_SxDTMN63Ee--P8IUN7kvSQ" elementId="org.eclipse.ui.editorss" selectedElement="_SxDTMd63Ee--P8IUN7kvSQ">
-      <children xsi:type="basic:PartStack" xmi:id="_SxDTMd63Ee--P8IUN7kvSQ" elementId="org.eclipse.e4.primaryDataStack">
+      <children xsi:type="basic:PartStack" xmi:id="_SxDTMd63Ee--P8IUN7kvSQ" elementId="org.eclipse.e4.primaryDataStack" selectedElement="_4MZOUPAFEe-h_crg-0k4xQ">
         <tags>newtablook</tags>
         <tags>org.eclipse.e4.primaryDataStack</tags>
         <tags>EditorStack</tags>
+        <children xsi:type="basic:Part" xmi:id="_2kZVwPAFEe-h_crg-0k4xQ" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="Clustering.java" iconURI="platform:/plugin/org.eclipse.jdt.ui//icons/full/obj16/jcu_obj.gif" tooltip="BHAVRP2.0/src/cujae/inf/ic/om/assignment/clustering/Clustering.java" closeable="true">
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;org.eclipse.jdt.ui.CompilationUnitEditor&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/BHAVRP2.0/src/cujae/inf/ic/om/assignment/clustering/Clustering.java&quot;/>&#xD;&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;0&quot; selectionTopPixel=&quot;0&quot;/>&#xD;&#xA;&lt;/editor>"/>
+          <tags>Editor</tags>
+          <tags>removeOnHide</tags>
+        </children>
+        <children xsi:type="basic:Part" xmi:id="_3SzT4PAFEe-h_crg-0k4xQ" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="Assignment.java" iconURI="platform:/plugin/org.eclipse.jdt.ui//icons/full/obj16/jcu_obj.gif" tooltip="BHAVRP2.0/src/cujae/inf/ic/om/assignment/Assignment.java" closeable="true">
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;org.eclipse.jdt.ui.CompilationUnitEditor&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/BHAVRP2.0/src/cujae/inf/ic/om/assignment/Assignment.java&quot;/>&#xD;&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;0&quot; selectionTopPixel=&quot;0&quot;/>&#xD;&#xA;&lt;/editor>"/>
+          <tags>Editor</tags>
+          <tags>removeOnHide</tags>
+        </children>
+        <children xsi:type="basic:Part" xmi:id="_4MZOUPAFEe-h_crg-0k4xQ" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="Partitional.java" iconURI="platform:/plugin/org.eclipse.jdt.ui//icons/full/obj16/jcu_obj.gif" tooltip="BHAVRP2.0/src/cujae/inf/ic/om/assignment/clustering/partitional/Partitional.java" closeable="true">
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;org.eclipse.jdt.ui.CompilationUnitEditor&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/BHAVRP2.0/src/cujae/inf/ic/om/assignment/clustering/partitional/Partitional.java&quot;/>&#xD;&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;0&quot; selectionTopPixel=&quot;0&quot;/>&#xD;&#xA;&lt;/editor>"/>
+          <tags>Editor</tags>
+          <tags>removeOnHide</tags>
+        </children>
       </children>
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_SxTK0N63Ee--P8IUN7kvSQ" elementId="org.eclipse.ui.navigator.ProjectExplorer" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Project Explorer" iconURI="platform:/plugin/org.eclipse.ui.navigator.resources//icons/full/eview16/resource_persp.gif" tooltip="Workspace" closeable="true">
